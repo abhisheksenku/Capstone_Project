@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinGuard - Responsive Portfolio & Fraud System</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* Fade In Animation */
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Sidebar Active */
+      .sidebar-link.active {
+        background-color: #334155;
+        color: white;
+        border-left: 4px solid #06b6d4;
+      }
+
+      /* Tab Active State */
+      .tab-btn.active {
+        color: #2563eb;
+        border-bottom: 2px solid #2563eb;
+      }
+
+      /* Toggle Button */
+      .toggle-checkbox:checked {
+        right: 0;
+        border-color: #10b981;
+      }
+
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #10b981;
+      }
+
+      /* Remove scrollbar for sidebar */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-700"
+  >
+    <!-- ========================================================= -->
+    <!-- HEADER (RESPONSIVE) -->
+    <!-- ========================================================= -->
+    <header
+      class="fixed top-0 left-0 w-full h-16 bg-white shadow-sm z-50 flex items-center justify-between px-4 sm:px-6 border-b border-slate-200"
+    >
+      <!-- LEFT SECTION -->
+      <div class="flex items-center gap-3">
+        <!-- MOBILE ONLY: MAIN MENU + MANAGEMENT ICONS -->
+        <div class="flex gap-4 lg:hidden">
+          <button
+            id="mobile-mainmenu-btn"
+            class="text-slate-700 hover:text-blue-600 transition"
+          >
+            <span class="material-icons text-3xl">menu</span>
+          </button>
+
+          <button
+            id="mobile-management-btn"
+            class="text-slate-700 hover:text-blue-600 transition"
+          >
+            <span class="material-icons text-3xl">widgets</span>
+          </button>
+        </div>
+
+        <!-- LOGO -->
+        <div class="flex items-center text-blue-600">
+          <span class="material-icons text-3xl mr-1 hidden sm:block"
+            >account_balance</span
+          >
+          <span
+            class="text-lg sm:text-xl font-bold tracking-tight text-slate-800"
+          >
+            FinGuard<span class="text-blue-600">Systems</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- RIGHT PROFILE -->
+      <div
+        class="flex items-center gap-4 cursor-pointer group p-1 rounded-full hover:bg-slate-50 transition"
+      >
+        <div class="text-right hidden sm:block">
+          <div
+            class="text-sm font-semibold text-slate-700 group-hover:text-blue-700"
+          >
+            Jane Doe
+          </div>
+          <div class="text-xs text-slate-500">Senior Analyst</div>
+        </div>
+
+        <div class="relative">
+          <img
+            src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff"
+            class="w-9 h-9 rounded-full border-2 border-white shadow-sm ring-2 ring-slate-100"
+          />
+          <div
+            class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"
+          ></div>
+        </div>
+
+        <span
+          class="material-icons text-slate-400 group-hover:text-slate-600"
+          id="profile-menu-toggle"
+        >
+          expand_more
+        </span>
+      </div>
+    </header>
+
+    <!-- ========================================================= -->
+    <!-- SIDEBAR (DESKTOP) -->
+    <!-- ========================================================= -->
+    <aside
+      id="sidebar"
+      class="hidden lg:block fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-slate-800 text-slate-300 overflow-y-auto no-scrollbar z-40 shadow-xl"
+    >
+      <nav class="py-6 flex flex-col gap-1">
+        <div class="px-6 mb-4 text-xs font-bold text-slate-500 uppercase">
+          Main Menu
+        </div>
+
+        <a
+          id="link-overview"
+          href="#overview"
+          class="sidebar-link active flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all duration-200 border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">dashboard</span>
+          <span class="font-medium text-sm">Overview</span>
+        </a>
+
+        <a
+          id="link-transactions"
+          href="#transactions"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all duration-200 border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80"
+            >receipt_long</span
+          >
+          <span class="font-medium text-sm">Transactions</span>
+        </a>
+
+        <a
+          id="link-fraud"
+          href="#fraud"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all duration-200 border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">policy</span>
+          <span class="font-medium text-sm">Fraud Analytics</span>
+        </a>
+
+        <div
+          class="px-6 mt-6 mb-4 text-xs font-bold text-slate-500 uppercase hidden lg:block"
+        >
+          Management
+        </div>
+
+        <a
+          id="link-alerts"
+          href="#alerts"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all duration-200 border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80"
+            >notifications_active</span
+          >
+          <span class="font-medium text-sm">Risk Alerts</span>
+          <span
+            class="ml-auto bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full"
+            >3</span
+          >
+        </a>
+
+        <a
+          id="link-features"
+          href="#features"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all duration-200 border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">star</span>
+          <span class="font-medium text-sm">Premium Features</span>
+        </a>
+
+        <a
+          id="link-settings"
+          href="#settings"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all duration-200 border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">settings</span>
+          <span class="font-medium text-sm">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MOBILE SLIDE PANEL: MAIN MENU -->
+    <div
+      id="mobile-mainmenu-panel"
+      class="fixed top-16 left-0 w-full max-h-[calc(100vh-4rem)] overflow-auto bg-slate-800 text-slate-200 z-50 shadow-xl transform-gpu transition-transform duration-200 lg:hidden hidden"
+    >
+      <div class="p-4">
+        <div class="mb-3 text-sm font-bold text-slate-400 uppercase">
+          Main Menu
+        </div>
+
+        <a
+          href="#overview"
+          class="mobile-link block py-3 px-3 rounded hover:bg-slate-700"
+          data-target-link="link-overview"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-icons">dashboard</span>
+            <span class="font-medium">Overview</span>
+          </div>
+        </a>
+
+        <a
+          href="#transactions"
+          class="mobile-link block py-3 px-3 rounded hover:bg-slate-700"
+          data-target-link="link-transactions"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-icons">receipt_long</span>
+            <span class="font-medium">Transactions</span>
+          </div>
+        </a>
+
+        <a
+          href="#fraud"
+          class="mobile-link block py-3 px-3 rounded hover:bg-slate-700"
+          data-target-link="link-fraud"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-icons">policy</span>
+            <span class="font-medium">Fraud Analytics</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- MOBILE SLIDE PANEL: MANAGEMENT -->
+    <div
+      id="mobile-management-panel"
+      class="fixed top-16 left-0 w-full max-h-[calc(100vh-4rem)] overflow-auto bg-slate-800 text-slate-200 z-50 shadow-xl transform-gpu transition-transform duration-200 lg:hidden hidden"
+    >
+      <div class="p-4">
+        <div class="mb-3 text-sm font-bold text-slate-400 uppercase">
+          Management
+        </div>
+
+        <a
+          href="#alerts"
+          class="mobile-link block py-3 px-3 rounded hover:bg-slate-700"
+          data-target-link="link-alerts"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-icons">notifications_active</span>
+            <span class="font-medium">Risk Alerts</span>
+          </div>
+        </a>
+
+        <a
+          href="#features"
+          class="mobile-link block py-3 px-3 rounded hover:bg-slate-700"
+          data-target-link="link-features"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-icons">star</span>
+            <span class="font-medium">Premium Features</span>
+          </div>
+        </a>
+
+        <a
+          href="#settings"
+          class="mobile-link block py-3 px-3 rounded hover:bg-slate-700"
+          data-target-link="link-settings"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-icons">settings</span>
+            <span class="font-medium">Settings</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- MOBILE OVERLAY -->
+    <div
+      id="mobile-overlay"
+      class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"
+    ></div>
+
+    <!-- ========================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================================================= -->
+    <main
+      class="lg:ml-64 mt-16 p-4 sm:p-6 min-h-[calc(100vh-4rem)] transition-all duration-300"
+    >
+      <!-- Dynamic Page Header -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 animate-fade-in gap-4"
+      >
+        <div>
+          <h1
+            id="page-title"
+            class="text-lg sm:text-2xl md:text-3xl font-bold text-slate-800"
+          >
+            Portfolio Overview
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Real-time data synchronization active
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-xs text-slate-400 font-mono hidden sm:block"
+            >Last Sync: 10:42:05 AM</span
+          >
+          <button
+            class="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all focus:ring-2 focus:ring-blue-100"
+          >
+            <span class="material-icons text-sm">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 1: DASHBOARD (Overview) -->
+      <!-- ======================================================= -->
+      <section id="view-overview" class="view-section animate-fade-in">
+        <!-- Tab Navigation -->
+        <div
+          class="flex flex-wrap border-b border-slate-200 mb-4 sm:mb-6 space-x-3 sm:space-x-6"
+        >
+          <button
+            class="tab-btn active pb-2 sm:pb-3 text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            data-target="tab-portfolio"
+          >
+            Portfolio Dashboard
+          </button>
+          <button
+            class="tab-btn pb-2 sm:pb-3 text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            data-target="tab-fraud-ops"
+          >
+            Fraud Detection Ops
+          </button>
+          <button
+            class="tab-btn pb-2 sm:pb-3 text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            data-target="tab-cases"
+          >
+            Analyst Case Manager
+          </button>
+        </div>
+
+        <!-- TAB A: PORTFOLIO -->
+        <div id="tab-portfolio" class="tab-content">
+          <!-- Metrics Grid -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          >
+            <!-- Metric Card 1 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1"
+              >
+                Total Investment
+              </h4>
+              <div class="text-xl sm:text-2xl font-bold text-slate-800">
+                $150,000.00
+              </div>
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-amber-500 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">remove</span>
+                Inception to Date
+              </div>
+            </div>
+
+            <!-- Metric Card 2 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1"
+              >
+                Total P/L
+              </h4>
+              <div class="text-xl sm:text-2xl font-bold text-emerald-600">
+                +$7,500.00
+              </div>
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-emerald-600 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">arrow_upward</span>
+                +5.0% Return
+              </div>
+            </div>
+
+            <!-- Metric Card 3 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1"
+              >
+                Today's P/L
+              </h4>
+              <div class="text-xl sm:text-2xl font-bold text-rose-500">
+                -$450.50
+              </div>
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-rose-500 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">arrow_downward</span>
+                -0.3% Today
+              </div>
+            </div>
+
+            <!-- Metric Card 4 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1"
+              >
+                Risk (VaR 99%)
+              </h4>
+              <div class="text-xl sm:text-2xl font-bold text-slate-700">
+                -$3,100
+              </div>
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-rose-500 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">warning</span> Breach
+                Warning
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Area -->
+          <div
+            class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          >
+            <div
+              class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+            >
+              <h4 class="text-sm sm:text-base font-bold text-slate-700 mb-3">
+                Portfolio Value History
+              </h4>
+              <div
+                class="w-full h-60 sm:h-72 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400"
+              >
+                <span class="material-icons text-4xl mb-2">show_chart</span>
+                <span class="text-sm font-medium"
+                  >Line Chart Visualization</span
+                >
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+            >
+              <h4 class="text-sm sm:text-base font-bold text-slate-700 mb-3">
+                Asset Allocation
+              </h4>
+              <div
+                class="w-full h-60 sm:h-72 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400"
+              >
+                <span class="material-icons text-4xl mb-2">pie_chart</span>
+                <span class="text-sm font-medium">Pie Chart Visualization</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Holdings Table -->
+          <div
+            class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+          >
+            <div
+              class="px-4 sm:px-6 py-3 border-b border-slate-100 font-semibold text-slate-700"
+            >
+              Current Holdings
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr
+                    class="bg-slate-50 text-slate-500 text-xs sm:text-[12px] uppercase tracking-wider"
+                  >
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Symbol</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Qty</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Avg Price</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">LTP</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Day Change</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Net P/L</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
+                      AAPL
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">150</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">$160.00</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
+                      $170.50
+                    </td>
+                    <td
+                      class="px-4 sm:px-6 py-3 text-emerald-600 font-semibold"
+                    >
+                      +1.2%
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
+                      +$1,575.00
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
+                      TSLA
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">50</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">$220.00</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
+                      $215.30
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-rose-500 font-semibold">
+                      -2.1%
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-rose-500 font-bold">
+                      -$235.00
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
+                      SPY
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">25</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">$420.00</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
+                      $425.80
+                    </td>
+                    <td
+                      class="px-4 sm:px-6 py-3 text-emerald-600 font-semibold"
+                    >
+                      +0.5%
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
+                      +$145.00
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: FRAUD OPS -->
+        <div id="tab-fraud-ops" class="tab-content hidden animate-fade-in">
+          <!-- Upload Area -->
+          <div
+            class="w-full bg-cyan-50 border-2 border-dashed border-cyan-300 rounded-xl p-6 sm:p-10 text-center mb-6 hover:bg-cyan-100 transition-colors cursor-pointer group"
+          >
+            <span
+              class="material-icons text-5xl text-cyan-500 group-hover:scale-110 transition-transform mb-3"
+              >cloud_upload</span
+            >
+            <h3 class="text-lg sm:text-xl font-bold text-cyan-900 mb-1">
+              Upload Transaction Batch
+            </h3>
+            <p class="text-sm text-cyan-700">
+              Drag and drop CSV files here or click to run model scoring.
+            </p>
+          </div>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          >
+            <div
+              class="bg-white p-4 sm:p-5 rounded-lg border border-slate-100 shadow-sm"
+            >
+              <div class="text-xs font-bold text-slate-400 uppercase">
+                Batch Status
+              </div>
+              <div class="text-lg sm:text-xl font-bold text-slate-800 mt-1">
+                Processed
+              </div>
+              <div class="text-xs text-slate-500 mt-1">10,000 Rows Scanned</div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-5 rounded-lg border border-slate-100 shadow-sm border-l-4 border-l-rose-500"
+            >
+              <div class="text-xs font-bold text-slate-400 uppercase">
+                Flagged Txns
+              </div>
+              <div class="text-lg sm:text-xl font-bold text-rose-600 mt-1">
+                45
+              </div>
+              <div class="text-xs text-rose-500 mt-1 font-semibold">
+                High Risk (&gt;0.85)
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-5 rounded-lg border border-slate-100 shadow-sm"
+            >
+              <div class="text-xs font-bold text-slate-400 uppercase">
+                Model Confidence
+              </div>
+              <div class="text-lg sm:text-xl font-bold text-blue-600 mt-1">
+                98.2%
+              </div>
+              <div class="text-xs text-slate-500 mt-1">Random Forest v2.4</div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-5 rounded-lg border border-slate-100 shadow-sm"
+            >
+              <div class="text-xs font-bold text-slate-400 uppercase">
+                Blocked Amount
+              </div>
+              <div class="text-lg sm:text-xl font-bold text-emerald-600 mt-1">
+                $12,450
+              </div>
+              <div class="text-xs text-slate-500 mt-1">Prevented Fraud</div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+          >
+            <div
+              class="px-4 sm:px-6 py-3 bg-rose-50 border-b border-rose-100 text-rose-700 font-bold flex items-center"
+            >
+              <span class="material-icons text-sm mr-2">error</span>
+              High Priority Anomalies
+            </div>
+
+            <div class="overflow-x-auto w-full">
+              <table class="w-full min-w-[600px] text-left">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 text-xs uppercase">
+                    <th class="px-4 sm:px-6 py-3">Txn ID</th>
+                    <th class="px-4 sm:px-6 py-3">User</th>
+                    <th class="px-4 sm:px-6 py-3">Fraud Score</th>
+                    <th class="px-4 sm:px-6 py-3">Anomaly Reason</th>
+                    <th class="px-4 sm:px-6 py-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                  <tr>
+                    <td class="px-4 sm:px-6 py-3 font-mono text-slate-600">
+                      TXN-98213
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-medium">
+                      U4501
+                    </td>
+                    <td class="px-4 sm:px-6 py-3">
+                      <span
+                        class="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-bold"
+                        >0.95</span
+                      >
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">
+                      Geo Change, High Value
+                    </td>
+                    <td class="px-4 sm:px-6 py-3">
+                      <button
+                        class="text-blue-600 hover:text-blue-800 font-medium text-xs border border-blue-200 px-3 py-1 rounded hover:bg-blue-50"
+                      >
+                        Create Case
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="px-4 sm:px-6 py-3 font-mono text-slate-600">
+                      TXN-98214
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-medium">
+                      U4508
+                    </td>
+                    <td class="px-4 sm:px-6 py-3">
+                      <span
+                        class="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-bold"
+                        >0.88</span
+                      >
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">
+                      Velocity, New Device
+                    </td>
+                    <td class="px-4 sm:px-6 py-3">
+                      <button
+                        class="text-blue-600 hover:text-blue-800 font-medium text-xs border border-blue-200 px-3 py-1 rounded hover:bg-blue-50"
+                      >
+                        Create Case
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB C: CASES -->
+        <div id="tab-cases" class="tab-content hidden animate-fade-in">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- CASE LIST -->
+            <div
+              class="col-span-1 lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+            >
+              <div
+                class="px-4 sm:px-6 py-3 border-b border-slate-100 font-semibold text-slate-700"
+              >
+                Open Cases Queue
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[600px] text-left">
+                  <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                    <tr>
+                      <th class="px-3 sm:px-4 py-3">Case ID</th>
+                      <th class="px-3 sm:px-4 py-3">Risk</th>
+                      <th class="px-3 sm:px-4 py-3">Status</th>
+                      <th class="px-3 sm:px-4 py-3">Assignee</th>
+                      <th class="px-3 sm:px-4 py-3">Action</th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="divide-y divide-slate-100 text-sm">
+                    <tr class="bg-blue-50/50">
+                      <td class="px-3 sm:px-4 py-3 font-bold text-slate-700">
+                        CASE-1002
+                      </td>
+                      <td class="px-3 sm:px-4 py-3">
+                        <span class="text-rose-600 font-bold">0.88</span>
+                      </td>
+                      <td class="px-3 sm:px-4 py-3">
+                        <span
+                          class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-xs"
+                          >In Progress</span
+                        >
+                      </td>
+                      <td class="px-3 sm:px-4 py-3 text-slate-600">Jane Doe</td>
+                      <td class="px-3 sm:px-4 py-3">
+                        <button class="text-blue-600 font-bold text-xs">
+                          View
+                        </button>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="px-3 sm:px-4 py-3 text-slate-600">
+                        CASE-1001
+                      </td>
+                      <td class="px-3 sm:px-4 py-3">
+                        <span class="text-rose-600 font-bold">0.95</span>
+                      </td>
+                      <td class="px-3 sm:px-4 py-3">
+                        <span
+                          class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs"
+                          >Pending</span
+                        >
+                      </td>
+                      <td class="px-3 sm:px-4 py-3 text-slate-400 italic">
+                        Unassigned
+                      </td>
+                      <td class="px-3 sm:px-4 py-3">
+                        <button
+                          class="text-slate-500 hover:text-blue-600 font-medium text-xs"
+                        >
+                          Pick Up
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- CASE DETAILS -->
+            <div
+              class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-6"
+            >
+              <div class="flex justify-between items-start mb-3">
+                <h3 class="text-base sm:text-lg font-bold text-blue-600">
+                  CASE-1002
+                </h3>
+                <span
+                  class="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded"
+                  >In Progress</span
+                >
+              </div>
+
+              <div class="space-y-3 text-sm text-slate-600 mb-4">
+                <div class="flex justify-between border-b border-slate-50 pb-2">
+                  <span class="text-slate-400">Transaction</span>
+                  <span class="font-mono font-medium">TXN-98214</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-50 pb-2">
+                  <span class="text-slate-400">Amount</span>
+                  <span class="font-medium">$4,500.00</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-50 pb-2">
+                  <span class="text-slate-400">User Tier</span>
+                  <span class="font-medium">Silver</span>
+                </div>
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <span
+                    class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded"
+                    >Velocity</span
+                  >
+                  <span
+                    class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded"
+                    >New IP</span
+                  >
+                </div>
+              </div>
+
+              <h4
+                class="text-xs sm:text-sm font-bold text-slate-800 uppercase mb-2"
+              >
+                Analyst Decision
+              </h4>
+              <div class="flex gap-2 mb-3">
+                <button
+                  class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg text-sm font-medium"
+                >
+                  Approve (Safe)
+                </button>
+                <button
+                  class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg text-sm font-medium"
+                >
+                  Reject (Fraud)
+                </button>
+              </div>
+
+              <textarea
+                class="w-full text-sm border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 mb-3"
+                rows="3"
+                placeholder="Add investigation notes..."
+              ></textarea>
+              <button
+                class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-lg text-sm font-medium"
+              >
+                Post Note
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 2: TRANSACTIONS -->
+      <!-- ======================================================= -->
+      <section
+        id="view-transactions"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <div
+          class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-100 flex flex-wrap gap-3 items-center mb-4"
+        >
+          <div class="relative flex-grow max-w-md">
+            <span
+              class="material-icons absolute left-3 top-2.5 text-slate-400 text-sm"
+              >search</span
+            >
+            <input
+              type="text"
+              placeholder="Search Symbol, ID..."
+              class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <select
+            class="p-2 border border-slate-300 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-blue-500"
+          >
+            <option>All Types</option>
+            <option>Buy</option>
+            <option>Sell</option>
+          </select>
+
+          <input
+            type="date"
+            class="p-2 border border-slate-300 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-blue-500"
+          />
+
+          <button
+            class="ml-auto bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+          >
+            <span class="material-icons text-sm">download</span> Export CSV
+          </button>
+        </div>
+
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+        >
+          <table class="w-full text-left border-collapse">
+            <thead
+              class="bg-slate-50 text-slate-500 text-xs sm:text-[12px] uppercase tracking-wider"
+            >
+              <tr>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Date & Time</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Txn ID</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Symbol</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Type</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Qty</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Price</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Total</th>
+                <th class="px-4 sm:px-6 py-3 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 sm:px-6 py-3 text-slate-600">
+                  2025-11-28 14:30
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-mono text-slate-500">
+                  #TXN-8849
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-bold text-slate-700">NVDA</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span class="text-emerald-600 font-bold">BUY</span>
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">10</td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">$450.00</td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800 font-medium">
+                  $4,500.00
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >Completed</span
+                  >
+                </td>
+              </tr>
+
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 sm:px-6 py-3 text-slate-600">
+                  2025-11-28 10:15
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-mono text-slate-500">
+                  #TXN-8848
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-bold text-slate-700">TSLA</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span class="text-rose-600 font-bold">SELL</span>
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">5</td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">$220.00</td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800 font-medium">
+                  $1,100.00
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >Completed</span
+                  >
+                </td>
+              </tr>
+
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 sm:px-6 py-3 text-slate-600">
+                  2025-11-27 09:00
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-mono text-slate-500">
+                  #TXN-8842
+                </td>
+                <td class="px-4 sm:px-6 py-3 font-bold text-slate-700">AAPL</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span class="text-emerald-600 font-bold">BUY</span>
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">100</td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">$160.00</td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800 font-medium">
+                  $16,000.00
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >Pending</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div
+            class="px-4 sm:px-6 py-3 border-t border-slate-100 flex justify-end gap-2"
+          >
+            <button
+              class="px-3 py-1 text-xs font-medium text-slate-500 border border-slate-200 rounded hover:bg-slate-50"
+            >
+              Prev
+            </button>
+            <button
+              class="px-3 py-1 text-xs font-medium text-blue-600 border border-blue-200 bg-blue-50 rounded"
+            >
+              1
+            </button>
+            <button
+              class="px-3 py-1 text-xs font-medium text-slate-500 border border-slate-200 rounded hover:bg-slate-50"
+            >
+              2
+            </button>
+            <button
+              class="px-3 py-1 text-xs font-medium text-slate-500 border border-slate-200 rounded hover:bg-slate-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 3: FRAUD ANALYTICS -->
+      <!-- ======================================================= -->
+      <section id="view-fraud" class="view-section hidden animate-fade-in mt-4">
+        <div
+          class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              Detection Rate
+            </h4>
+            <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-2">
+              1.2%
+            </div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-1">
+              of total volume
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              False Positives
+            </h4>
+            <div class="text-xl sm:text-2xl font-bold text-emerald-600 mt-2">
+              0.05%
+            </div>
+            <div class="text-xs sm:text-sm text-emerald-600 mt-1 font-semibold">
+              Below Threshold
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              Total Analyzed
+            </h4>
+            <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-2">
+              54.2K
+            </div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-1">
+              Transactions
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              High Risk Users
+            </h4>
+            <div class="text-xl sm:text-2xl font-bold text-rose-600 mt-2">
+              12
+            </div>
+            <div class="text-xs sm:text-sm text-rose-500 mt-1 font-semibold">
+              Active Watchlist
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm h-64 sm:h-80"
+          >
+            <h4 class="font-bold text-slate-700 mb-3">
+              Geographic Risk Heatmap
+            </h4>
+            <div
+              class="w-full h-52 sm:h-64 bg-slate-50 rounded border border-dashed border-slate-200 flex items-center justify-center text-slate-400"
+            >
+              <span class="material-icons text-3xl mr-2">public</span> [Map
+              Visualization: Red Zones]
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm h-64 sm:h-80"
+          >
+            <h4 class="font-bold text-slate-700 mb-3">
+              Fraud Score Distribution
+            </h4>
+            <div
+              class="w-full h-52 sm:h-64 bg-slate-50 rounded border border-dashed border-slate-200 flex items-center justify-center text-slate-400"
+            >
+              <span class="material-icons text-3xl mr-2">bar_chart</span>
+              [Histogram: Score Frequency]
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+        >
+          <div
+            class="px-4 sm:px-6 py-3 border-b border-slate-100 flex justify-between items-center"
+          >
+            <h3 class="font-bold text-slate-700">Rule Engine Performance</h3>
+            <button
+              class="text-xs bg-white border border-slate-300 px-3 py-1 rounded hover:bg-slate-50 transition-colors"
+            >
+              Configure Rules
+            </button>
+          </div>
+
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+              <tr>
+                <th class="px-4 sm:px-6 py-3">Rule Name</th>
+                <th class="px-4 sm:px-6 py-3">Trigger Count (24h)</th>
+                <th class="px-4 sm:px-6 py-3">Precision</th>
+                <th class="px-4 sm:px-6 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+              <tr>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  Rapid Velocity (10 txn / 1 min)
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">145</td>
+                <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
+                  High (98%)
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-bold"
+                    >Active</span
+                  >
+                </td>
+              </tr>
+
+              <tr>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  Large Transaction (&gt; $10k)
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">22</td>
+                <td class="px-4 sm:px-6 py-3 text-amber-600 font-bold">
+                  Medium (75%)
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-bold"
+                    >Active</span
+                  >
+                </td>
+              </tr>
+
+              <tr>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  IP Geolocation Mismatch
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-600">8</td>
+                <td class="px-4 sm:px-6 py-3 text-rose-500 font-bold">
+                  Low (45%)
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-bold"
+                    >Monitoring</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 4: ALERTS -->
+      <!-- ======================================================= -->
+      <section
+        id="view-alerts"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <div
+          class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-100 flex flex-wrap gap-3 items-center mb-4"
+        >
+          <select
+            class="p-2 border border-slate-300 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-blue-500"
+          >
+            <option>All Severities</option>
+            <option>High</option>
+            <option>Medium</option>
+          </select>
+
+          <select
+            class="p-2 border border-slate-300 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-blue-500"
+          >
+            <option>All Sources</option>
+            <option>Risk Engine</option>
+            <option>Fraud Model</option>
+          </select>
+
+          <button
+            class="ml-auto text-sm text-slate-500 hover:text-blue-600 font-medium"
+          >
+            Mark All as Read
+          </button>
+        </div>
+
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+        >
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+              <tr>
+                <th class="px-4 sm:px-6 py-3">Timestamp</th>
+                <th class="px-4 sm:px-6 py-3">Severity</th>
+                <th class="px-4 sm:px-6 py-3">Source</th>
+                <th class="px-4 sm:px-6 py-3">Alert Message</th>
+                <th class="px-4 sm:px-6 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+              <tr class="bg-rose-50/50">
+                <td class="px-4 sm:px-6 py-3 text-slate-500">10:45:00 AM</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >High</span
+                  >
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  Risk Engine
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800">
+                  <strong>VaR Breach:</strong> Portfolio VaR exceeded limit of
+                  $3,000.
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <button
+                    class="text-blue-600 font-medium text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50"
+                  >
+                    Ack
+                  </button>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="px-4 sm:px-6 py-3 text-slate-500">09:30:00 AM</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >Medium</span
+                  >
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  Fraud Engine
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800">
+                  Suspicious login attempt on Account.
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <button
+                    class="text-blue-600 font-medium text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 5: SETTINGS -->
+      <!-- ======================================================= -->
+      <section
+        id="view-settings"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <!-- PROFILE SECTION -->
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6"
+        >
+          <h2 class="text-xl font-bold text-slate-800 mb-4">My Profile</h2>
+
+          <!-- Avatar -->
+          <div class="flex items-center mb-6">
+            <div
+              class="w-16 h-16 bg-slate-700 text-white rounded-full flex items-center justify-center text-2xl font-bold"
+              id="profileAvatar"
+            >
+              J
+            </div>
+          </div>
+
+          <!-- Profile Form -->
+          <form id="profileForm" class="space-y-5">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Name</label
+              >
+              <input
+                type="text"
+                id="name"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
+                value="Jheepasani"
+                disabled
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="email"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
+                value="user.jheepasani@example.com"
+                disabled
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Mobile</label
+              >
+              <input
+                type="tel"
+                id="mobile"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
+                value="+91 9876543210"
+                disabled
+              />
+            </div>
+
+            <div class="flex gap-3">
+              <button
+                type="button"
+                id="editBtn"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+              >
+                Edit
+              </button>
+
+              <button
+                type="submit"
+                id="saveBtn"
+                class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-medium hover:bg-slate-700 hidden"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- PASSWORD RESET -->
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6"
+        >
+          <h2 class="text-xl font-bold text-slate-800 mb-4">Password Reset</h2>
+
+          <form id="passwordForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Current Password</label
+              >
+              <input
+                type="password"
+                id="currentPassword"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >New Password</label
+              >
+              <input
+                type="password"
+                id="newPassword"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Confirm New Password</label
+              >
+              <input
+                type="password"
+                id="confirmPassword"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium"
+            >
+              Update Password
+            </button>
+          </form>
+        </div>
+
+        <!-- DANGER ZONE -->
+        <div class="bg-white rounded-xl border border-rose-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-rose-600 mb-2">Danger Zone</h2>
+          <p class="text-slate-600 text-sm mb-4">
+            Deleting your account is permanent and cannot be undone.
+          </p>
+
+          <button
+            id="showDeleteModalBtn"
+            class="w-full bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-lg text-sm font-bold"
+          >
+            Delete My Account
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 6: FEATURES -->
+      <!-- ======================================================= -->
+      <section
+        id="view-features"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <div
+          id="premium-block"
+          class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+        >
+          <h2 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">
+            Unlock Premium Features
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 mb-3 leading-relaxed">
+            Upgrade to access the following tools:
+            <br />• Daily gold price updates <br />• Forecast pricing for
+            tomorrow <br />• Priority market risk alerts <br />• Enhanced fraud
+            protection layer
+          </p>
+          <button
+            id="premium-btn"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-blue-700 transition"
+          >
+            Upgrade Now
+          </button>
+        </div>
+
+        <div id="gold-prices" class="hidden mt-4 space-y-4">
+          <span
+            id="premium-badge"
+            class="hidden bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold"
+            >Premium Active</span
+          >
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">
+              Live Gold Market Summary
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-500 mb-3">
+              Updated daily at 10:00 AM IST
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+              <div
+                class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200"
+              >
+                <div class="text-slate-500 text-xs mb-1">Yesterday</div>
+                <div class="font-bold text-slate-800 text-lg sm:text-xl">
+                  ₹62,850
+                </div>
+                <div class="text-rose-500 font-semibold text-xs sm:text-sm">
+                  -0.3%
+                </div>
+              </div>
+
+              <div
+                class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200"
+              >
+                <div class="text-slate-500 text-xs mb-1">Today</div>
+                <div class="font-bold text-emerald-600 text-lg sm:text-xl">
+                  ₹63,120
+                </div>
+                <div class="text-emerald-600 font-semibold text-xs sm:text-sm">
+                  +0.2%
+                </div>
+              </div>
+
+              <div
+                class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200"
+              >
+                <div class="text-slate-500 text-xs mb-1">
+                  Tomorrow (Forecast)
+                </div>
+                <div class="font-bold text-blue-600 text-lg sm:text-xl">
+                  ₹63,260
+                </div>
+                <div class="text-blue-600 font-semibold text-xs sm:text-sm">
+                  +0.1%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h3 class="font-bold text-slate-800 mb-3">
+              Gold Price Trend (Last 7 Days)
+            </h3>
+            <div
+              class="w-full h-44 sm:h-56 bg-slate-50 border border-dashed border-slate-200 rounded-lg flex items-center justify-center text-slate-400"
+            >
+              [Chart Placeholder]
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h3 class="font-bold text-slate-800 mb-2">Coming Soon</h3>
+            <ul class="text-sm sm:text-base text-slate-600 space-y-1">
+              <li>• Silver price analytics</li>
+              <li>• Commodity volatility predictions</li>
+              <li>• Monthly gold volatility alerts</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="fixed top-20 right-4 sm:right-6 bg-white border-l-4 border-rose-500 text-slate-800 px-4 sm:px-6 py-3 rounded shadow-lg flex items-center gap-3 z-50 animate-bounce"
+    >
+      <span class="material-icons text-rose-500">warning</span>
+      <div>
+        <div class="font-bold text-sm">CRITICAL ALERT</div>
+        <div class="text-xs text-slate-500">Portfolio VaR Breach detected.</div>
+      </div>
+      <span
+        class="material-icons text-slate-400 text-sm cursor-pointer hover:text-slate-600 ml-2"
+        onclick="document.getElementById('toast').style.display='none'"
+        >close</span
+      >
+    </div>
+
+    <!-- ========================================= -->
+    <!-- JAVASCRIPT LOGIC                          -->
+    <!-- ========================================= -->
+    <script>
+      /* ============================================================
+      SIDEBAR + VIEW SWITCHING (DESKTOP)
+      ============================================================ */
+      const navLinks = document.querySelectorAll(".sidebar-link");
+
+      const views = {
+        "link-overview": "view-overview",
+        "link-transactions": "view-transactions",
+        "link-fraud": "view-fraud",
+        "link-alerts": "view-alerts",
+        "link-settings": "view-settings",
+        "link-features": "view-features",
+      };
+
+      const pageTitles = {
+        "link-overview": "Portfolio Overview",
+        "link-transactions": "Transaction History",
+        "link-fraud": "Fraud Analytics & Detection",
+        "link-alerts": "System & Risk Alerts",
+        "link-settings": "User Profile",
+        "link-features": "Features (Premium)",
+      };
+
+      const pageTitleElement = document.getElementById("page-title");
+
+      function showView(viewId) {
+        document
+          .querySelectorAll(".view-section")
+          .forEach((v) => v.classList.add("hidden"));
+        document.getElementById(viewId).classList.remove("hidden");
+      }
+
+      function setActiveLink(linkId) {
+        navLinks.forEach((l) => l.classList.remove("active"));
+        const activeLink = document.getElementById(linkId);
+        if (activeLink) activeLink.classList.add("active");
+      }
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const linkId = link.id;
+          const viewId = views[linkId];
+          setActiveLink(linkId);
+          showView(viewId);
+          pageTitleElement.textContent = pageTitles[linkId];
+        });
+      });
+
+      /* ============================================================
+      MOBILE MENU PANELS
+      ============================================================ */
+      const mobileMainMenuBtn = document.getElementById("mobile-mainmenu-btn");
+      const mobileMgmtMenuBtn = document.getElementById(
+        "mobile-management-btn"
+      );
+      const mobileMainMenuPanel = document.getElementById(
+        "mobile-mainmenu-panel"
+      );
+      const mobileManagementPanel = document.getElementById(
+        "mobile-management-panel"
+      );
+      const mobileOverlay = document.getElementById("mobile-overlay");
+
+      function closeAllMobilePanels() {
+        mobileMainMenuPanel.classList.add("hidden");
+        mobileManagementPanel.classList.add("hidden");
+        mobileOverlay.classList.add("hidden");
+      }
+
+      function openPanel(panel) {
+        closeAllMobilePanels();
+        panel.classList.remove("hidden");
+        mobileOverlay.classList.remove("hidden");
+      }
+
+      mobileMainMenuBtn.addEventListener("click", () =>
+        openPanel(mobileMainMenuPanel)
+      );
+      mobileMgmtMenuBtn.addEventListener("click", () =>
+        openPanel(mobileManagementPanel)
+      );
+
+      mobileOverlay.addEventListener("click", closeAllMobilePanels);
+
+      /* ============================================================
+      MOBILE PANEL LINKS → OPEN VIEWS LIKE SIDEBAR
+      ============================================================ */
+      document.querySelectorAll("[data-target-link]").forEach((mobileLink) => {
+        mobileLink.addEventListener("click", () => {
+          const targetSidebarId = mobileLink.getAttribute("data-target-link");
+          const viewId = views[targetSidebarId];
+
+          setActiveLink(targetSidebarId);
+          showView(viewId);
+
+          pageTitleElement.textContent = pageTitles[targetSidebarId];
+
+          closeAllMobilePanels();
+        });
+      });
+
+      /* ============================================================
+      PROFILE DROPDOWN (DESKTOP + MOBILE)
+      ============================================================ */
+      const profileToggle = document.getElementById("profile-menu-toggle");
+
+      const dropdown = document.createElement("div");
+      dropdown.id = "profileDropdown";
+      dropdown.className =
+        "hidden absolute top-16 right-4 w-56 bg-white shadow-lg border border-slate-200 rounded-lg p-4 animate-fade-in z-50";
+
+      dropdown.innerHTML = `
+      <div class="font-semibold text-slate-800">Jane Doe</div>
+      <div class="text-sm text-slate-500 mb-3">jane.doe@example.com</div>
+      <button class="w-full bg-rose-600 text-white py-1.5 rounded-md hover:bg-rose-700 transition">
+        View Profile
+      </button>
+    `;
+
+      document.body.appendChild(dropdown);
+
+      profileToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("hidden");
+        closeAllMobilePanels();
+      });
+
+      document.addEventListener("click", () => {
+        dropdown.classList.add("hidden");
+      });
+
+      /* ============================================================
+      TAB LOGIC (Dashboard → Portfolio / Fraud Ops / Cases)
+      ============================================================ */
+      const tabBtns = document.querySelectorAll(".tab-btn");
+      const tabContents = document.querySelectorAll(".tab-content");
+
+      tabBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          tabBtns.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+
+          tabContents.forEach((content) => content.classList.add("hidden"));
+
+          const targetId = btn.getAttribute("data-target");
+          document.getElementById(targetId).classList.remove("hidden");
+        });
+      });
+
+      /* ============================================================
+      PREMIUM ACTIVATION (Gold Pricing, Badge Update)
+      ============================================================ */
+      const premiumBtn = document.getElementById("premium-btn");
+      const premiumBlock = document.getElementById("premium-block");
+      const goldPrices = document.getElementById("gold-prices");
+      const premiumBadge = document.getElementById("premium-badge");
+      const featuresLink = document.getElementById("link-features");
+
+      if (premiumBtn) {
+        premiumBtn.addEventListener("click", () => {
+          premiumBlock.style.display = "none";
+          goldPrices.classList.remove("hidden");
+          premiumBadge.classList.remove("hidden");
+
+          featuresLink.querySelector("span.font-medium").textContent =
+            "Premium Features (Active)";
+
+          if (
+            !document
+              .getElementById("view-features")
+              .classList.contains("hidden")
+          ) {
+            pageTitleElement.textContent = "Premium Features (Active)";
+          }
+        });
+      }
+
+      /* ============================================================
+      TOAST AUTO-HIDE
+      ============================================================ */
+      setTimeout(() => {
+        const toast = document.getElementById("toast");
+        if (toast) {
+          toast.style.opacity = "0";
+          toast.style.transition = "opacity 0.5s";
+          setTimeout(() => (toast.style.display = "none"), 500);
+        }
+      }, 5000);
+    </script>
+  </body>
+</html>

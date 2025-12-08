@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom Styles -->
+    <style>
+      :root {
+        --primary: #0ea5e9;
+        --secondary: #6366f1;
+        --primary-dark: #0c4a6e;
+        --primary-light: #38bdf8;
+        --secondary-hover: #4f46e5;
+
+        --surface: #ffffff;
+        --muted: #64748b;
+      }
+
+      /* Animated Gradient Background */
+      body {
+        background: linear-gradient(
+          135deg,
+          var(--secondary),
+          var(--primary),
+          var(--primary-dark),
+          var(--primary-light),
+          var(--secondary-hover)
+        );
+        background-size: 1400% 1400%;
+        animation: gradientMove 20s ease infinite;
+        font-family: "Inter", sans-serif;
+      }
+
+      @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Floating Labels */
+      .input-group {
+        position: relative;
+      }
+      .input-group input {
+        transition: 0.2s ease;
+      }
+      .input-group label {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: white;
+        padding: 0 4px;
+        color: var(--muted);
+        pointer-events: none;
+        transition: 0.2s ease;
+      }
+      .input-group input:focus + label,
+      .input-group input:not(:placeholder-shown) + label {
+        top: -8px;
+        font-size: 12px;
+        color: var(--primary-dark);
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -150%);
+        padding: 16px 24px;
+        border-radius: 0 0 10px 10px;
+        font-weight: 600;
+        transition: transform 0.4s ease-in-out;
+        z-index: 9999;
+        visibility: hidden;
+      }
+      .toast.show {
+        transform: translate(-50%, 0);
+        visibility: visible;
+      }
+      .toast.success {
+        background-color: #4ade80;
+        color: white;
+      }
+      .toast.error {
+        background-color: #ef4444;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen flex justify-center items-center p-4">
+
+    <!-- MAIN CONTAINER -->
+    <div class="flex w-full max-w-3xl bg-white rounded-xl shadow-xl overflow-hidden">
+
+      <!-- LEFT PANEL -->
+      <div class="hidden md:flex flex-col justify-center items-center bg-slate-50 flex-1 p-10 text-center">
+        <h2 class="text-3xl font-bold text-slate-800">Welcome Back!</h2>
+        <p class="text-slate-600 mt-2">Login to continue to YourAccount</p>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div class="flex-1 p-8 bg-white">
+        <form id="loginForm" class="space-y-6">
+
+          <!-- Email -->
+          <div class="input-group">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder=" "
+              class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+            <label for="email">Email</label>
+          </div>
+
+          <!-- Password -->
+          <div class="input-group">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder=" "
+              class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+            <label for="password">Password</label>
+          </div>
+
+          <!-- Forgot Password -->
+          <p class="text-right text-sm">
+            <a href="/forgot-password" class="text-blue-600 hover:underline">
+              Forgot Password?
+            </a>
+          </p>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="w-full py-3 rounded-lg text-white font-medium text-lg shadow-md bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500"
+          >
+            Log In
+          </button>
+        </form>
+
+        <!-- Sign Up Link -->
+        <p class="text-center text-sm text-slate-600 mt-4">
+          Don't have an account?
+          <a href="/signup" class="text-blue-600 font-semibold hover:underline">
+            Sign Up
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="notificationToast" class="toast">
+      <span id="notificationMessage"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/notification.js"></script>
+    <script src="/js/login.js"></script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+body {
+  font-family: "Inter", sans-serif;
+}
+
+/* Fade In Animation */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar Active */
+.sidebar-link.active {
+  background-color: #334155;
+  color: white;
+  border-left: 4px solid #06b6d4;
+}
+
+/* Tab Active State */
+.tab-btn.active {
+  color: #2563eb;
+  border-bottom: 2px solid #2563eb;
+}
+
+/* Toggle Button */
+.toggle-checkbox:checked {
+  right: 0;
+  border-color: #10b981;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: #10b981;
+}
+
+/* Remove scrollbar for sidebar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#notificationToast.show {
+  display: block !important;
+  opacity: 1;
+  transform: translateY(0);
+}
+#notificationToast {
+  opacity: 0;
+  transform: translateY(20px);
+}
+#notificationToast.success {
+  background-color: #16a34a; /* green-600 */
+}
+#notificationToast.error {
+  background-color: #dc2626; /* red-600 */
+}
+.portfolio-item {
+  cursor: pointer;
+}

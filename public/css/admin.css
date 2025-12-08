@@ -1,0 +1,31 @@
+:root {
+  --accent: #06b6d4;
+  --muted: #64748b;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* small utility for hidden scrollbar in side panels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.kpi-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+/* subtle card hover */
+.card-hover:hover {
+  transform: translateY(-4px);
+}

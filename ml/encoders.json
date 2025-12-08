@@ -1,0 +1,21 @@
+{
+  "symbol": {
+    "0": "HDFCBANK",
+    "1": "INF",
+    "2": "RELIANCE",
+    "3": "SBIN",
+    "4": "TCS"
+  },
+  "alerts_last_7d": {
+    "0": "0",
+    "1": "1",
+    "2": "2",
+    "3": "3"
+  },
+  "last_alert_severity": {
+    "0": "high",
+    "1": "low",
+    "2": "medium",
+    "3": "none"
+  }
+}

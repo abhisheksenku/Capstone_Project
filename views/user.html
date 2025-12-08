@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinGuard - User Dashboard</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/css/user.css" />
+  </head>
+  <body
+    class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-700"
+  >
+    <!-- ========================================================= -->
+    <!-- HEADER (RESPONSIVE) -->
+    <!-- ========================================================= -->
+
+    <header
+      class="fixed top-0 left-0 w-full h-16 bg-white shadow-sm z-50 flex items-center justify-between px-4 sm:px-6 border-b border-slate-200"
+    >
+      <!-- LEFT SECTION -->
+      <div class="flex items-center gap-3">
+        <!-- MOBILE ONLY: MAIN MENU + MANAGEMENT ICONS -->
+        <div class="flex gap-4 lg:hidden">
+          <button
+            id="mobile-mainmenu-btn"
+            class="text-slate-700 hover:text-blue-600 transition"
+          >
+            <span class="material-icons text-3xl">menu</span>
+          </button>
+
+          <button
+            id="mobile-management-btn"
+            class="text-slate-700 hover:text-blue-600 transition"
+          >
+            <span class="material-icons text-3xl">widgets</span>
+          </button>
+        </div>
+
+        <!-- LOGO -->
+        <div class="flex items-center text-blue-600">
+          <span class="material-icons text-3xl mr-1 hidden sm:block">
+            account_balance
+          </span>
+
+          <span
+            class="text-lg sm:text-xl font-bold tracking-tight text-slate-800"
+          >
+            FinGuard<span class="text-blue-600">Systems</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- RIGHT PROFILE -->
+      <div
+        class="flex items-center gap-4 cursor-pointer group p-1 rounded-full hover:bg-slate-50 transition"
+      >
+        <div class="text-right hidden sm:block">
+          <div
+            class="text-sm font-semibold text-slate-700 group-hover:text-blue-700"
+          >
+            Jane Doe
+          </div>
+          <div class="text-xs text-slate-500">User</div>
+          <span
+            id="premium-badge"
+            class="hidden text-yellow-500 font-bold text-xs sm:text-sm"
+          >
+            Premium User
+          </span>
+        </div>
+
+        <div class="relative">
+          <img
+            src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff"
+            class="w-9 h-9 rounded-full border-2 border-white shadow-sm ring-2 ring-slate-100"
+          />
+          <div
+            class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"
+          ></div>
+        </div>
+
+        <span
+          class="material-icons text-slate-400 group-hover:text-slate-600"
+          id="profile-menu-toggle"
+        >
+          expand_more
+        </span>
+      </div>
+    </header>
+
+    <!-- ========================================================= -->
+    <!-- SIDEBAR (DESKTOP) -->
+    <!-- ========================================================= -->
+
+    <aside
+      id="sidebar"
+      class="hidden lg:block fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-slate-800 text-slate-300 overflow-y-auto no-scrollbar z-40 shadow-xl"
+    >
+      <nav class="py-6 flex flex-col gap-1">
+        <div class="px-6 mb-4 text-xs font-bold text-slate-500 uppercase">
+          Main Menu
+        </div>
+
+        <!-- Overview Collapsible -->
+        <button
+          id="link-overview-toggle"
+          class="w-full text-left flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all border-l-4 border-transparent"
+          aria-expanded="false"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">dashboard</span>
+          <span class="font-medium text-sm">Overview</span>
+          <span class="material-icons ml-auto">expand_more</span>
+        </button>
+
+        <nav id="overview-submenu" class="hidden flex-col pl-12">
+          <a
+            id="link-overview"
+            href="#overview"
+            class="sidebar-link block py-2 text-sm text-slate-300 hover:text-white"
+          >
+            Dashboard
+          </a>
+
+          <a
+            id="link-portfolios"
+            href="#portfolios"
+            class="sidebar-link block py-2 text-sm text-slate-300 hover:text-white"
+          >
+            Portfolios
+          </a>
+        </nav>
+
+        <!-- Market -->
+        <a
+          id="link-market"
+          class="sidebar-link flex items-center gap-2 px-3 py-2 hover:bg-slate-200 rounded"
+        >
+          <span class="material-icons text-slate-600">show_chart</span>
+          <span class="font-medium text-slate-700">Market</span>
+        </a>
+
+        <!-- Watchlist -->
+        <a
+          id="link-watchlist"
+          class="sidebar-link flex items-center gap-2 px-3 py-2 hover:bg-slate-200 rounded"
+        >
+          <span class="material-icons text-slate-600">star</span>
+          <span class="font-medium text-slate-700">Watchlist</span>
+        </a>
+
+        <!-- Trending -->
+        <a
+          id="link-trending"
+          class="sidebar-link flex items-center gap-2 px-3 py-2 hover:bg-slate-200 rounded"
+        >
+          <span class="material-icons text-slate-600">trending_up</span>
+          <span class="font-medium text-slate-700">Trending</span>
+        </a>
+
+        <!-- Fraud Analytics (User Version) -->
+        <a
+          id="link-fraud"
+          href="#fraud"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white border-l-4 border-transparent"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">policy</span>
+          <span class="font-medium text-sm">Fraud Analytics</span>
+        </a>
+
+        <!-- Management -->
+        <div class="px-6 mt-6 mb-4 text-xs font-bold text-slate-500 uppercase">
+          Management
+        </div>
+
+        <!-- Alerts -->
+        <a
+          id="link-alerts"
+          href="#alerts"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80"
+            >notifications_active</span
+          >
+          <span class="font-medium text-sm">Risk Alerts</span>
+        </a>
+
+        <!-- Premium Features -->
+        <a
+          id="link-features"
+          href="#features"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">star</span>
+          <span class="font-medium text-sm">Premium Features</span>
+        </a>
+
+        <!-- Settings -->
+        <a
+          id="link-settings"
+          href="#settings"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">settings</span>
+          <span class="font-medium text-sm">Settings</span>
+        </a>
+      </nav>
+    </aside>
+    <!-- ========================================================= -->
+    <!-- MAIN CONTENT WRAPPER -->
+    <!-- ========================================================= -->
+
+    <main
+      class="lg:ml-64 mt-16 p-4 sm:p-6 min-h-[calc(100vh-4rem)] transition-all duration-300"
+    >
+      <!-- Dynamic Page Header -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 animate-fade-in gap-4"
+      >
+        <div>
+          <h1
+            id="page-title"
+            class="text-lg sm:text-2xl md:text-3xl font-bold text-slate-800"
+          >
+            Portfolio Overview
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Real-time data synchronization active
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-xs text-slate-400 font-mono hidden sm:block">
+            Last Sync: 10:42:05 AM
+          </span>
+
+          <button
+            class="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all focus:ring-2 focus:ring-blue-100"
+          >
+            <span class="material-icons text-sm">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div id="breadcrumb" class="text-sm text-slate-500 mb-4">
+        <span id="breadcrumb-overview" class="cursor-pointer hover:underline">
+          Overview
+        </span>
+        <span id="breadcrumb-divider" class="mx-2 hidden">/</span>
+        <span id="breadcrumb-sub" class="hidden"></span>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 1: DASHBOARD (Overview) -->
+      <!-- ======================================================= -->
+
+      <section id="view-overview" class="view-section animate-fade-in">
+        <!-- Tab Navigation -->
+        <div
+          class="flex flex-wrap border-b border-slate-200 mb-4 sm:mb-6 space-x-3 sm:space-x-6"
+        >
+          <!-- Portfolio Dashboard -->
+          <button
+            class="tab-btn active pb-2 sm:pb-3 text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            data-target="tab-portfolio"
+          >
+            Portfolio Dashboard
+          </button>
+
+          <!-- Fraud Ops Tab Removed (ADMIN ONLY) -->
+
+          <!-- Analyst Case Manager Tab Removed (ADMIN ONLY) -->
+        </div>
+
+        <!-- TAB A: PORTFOLIO DASHBOARD -->
+        <div id="tab-portfolio" class="tab-content">
+          <!-- Top Metrics Grid -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          >
+            <!-- Metric Card 1 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-1"
+              >
+                Total Investment
+              </h4>
+              <div class="text-xl sm:text-2xl font-bold text-slate-800">
+                $150,000.00
+              </div>
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-amber-500 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">remove</span>
+                Inception to Date
+              </div>
+            </div>
+
+            <!-- Metric Card 2 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase mb-1"
+              >
+                Total P/L
+              </h4>
+
+              <div class="text-xl sm:text-2xl font-bold text-emerald-600">
+                +$7,500.00
+              </div>
+
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-emerald-600 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">arrow_upward</span>
+                +5.0% Return
+              </div>
+            </div>
+
+            <!-- Metric Card 3 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase mb-1"
+              >
+                Today’s P/L
+              </h4>
+
+              <div class="text-xl sm:text-2xl font-bold text-rose-500">
+                -$450.50
+              </div>
+
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-rose-500 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">arrow_downward</span>
+                -0.3% Today
+              </div>
+            </div>
+
+            <!-- Metric Card 4 -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <h4
+                class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase mb-1"
+              >
+                Risk (VaR 99%)
+              </h4>
+
+              <div class="text-xl sm:text-2xl font-bold text-slate-700">
+                -$3,100
+              </div>
+
+              <div
+                class="text-[10px] sm:text-xs font-semibold text-rose-500 mt-1 flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">warning</span>
+                Breach Warning
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Area -->
+          <div
+            class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          >
+            <!-- Portfolio Value History -->
+            <div
+              class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+            >
+              <h4 class="text-sm sm:text-base font-bold text-slate-700 mb-3">
+                Portfolio Value History
+              </h4>
+
+              <div
+                class="w-full h-60 sm:h-72 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400"
+              >
+                <span class="material-icons text-4xl mb-2">show_chart</span>
+                <span class="text-sm font-medium"
+                  >Line Chart Visualization</span
+                >
+              </div>
+            </div>
+
+            <!-- Asset Allocation -->
+            <div
+              class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+            >
+              <h4 class="text-sm sm:text-base font-bold text-slate-700 mb-3">
+                Asset Allocation
+              </h4>
+
+              <div
+                class="w-full h-60 sm:h-72 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400"
+              >
+                <span class="material-icons text-4xl mb-2">pie_chart</span>
+                <span class="text-sm font-medium">Pie Chart Visualization</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Holdings Table (User View) -->
+          <div
+            class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+          >
+            <div
+              class="px-4 sm:px-6 py-3 border-b border-slate-100 font-semibold text-slate-700"
+            >
+              Current Holdings
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                  >
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Symbol</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Qty</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Avg Price</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">LTP</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Day Change</th>
+                    <th class="px-4 sm:px-6 py-3 font-semibold">Net P/L</th>
+                  </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100">
+                  <!-- Example Row -->
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
+                      AAPL
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">150</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">$160.00</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
+                      $170.50
+                    </td>
+                    <td
+                      class="px-4 sm:px-6 py-3 text-emerald-600 font-semibold"
+                    >
+                      +1.2%
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
+                      +$1,575.00
+                    </td>
+                  </tr>
+
+                  <!-- Example Row -->
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
+                      TSLA
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">50</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">$220.00</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
+                      $215.30
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-rose-500 font-semibold">
+                      -2.1%
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-rose-500 font-bold">
+                      -$235.00
+                    </td>
+                  </tr>
+
+                  <!-- Example Row -->
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
+                      SPY
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">25</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-600">$420.00</td>
+                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
+                      $425.80
+                    </td>
+                    <td
+                      class="px-4 sm:px-6 py-3 text-emerald-600 font-semibold"
+                    >
+                      +0.5%
+                    </td>
+                    <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
+                      +$145.00
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ======================================================= -->
+      <!-- VIEW 2: PORTFOLIOS -->
+      <!-- ======================================================= -->
+
+      <section id="view-portfolios" class="view-section hidden animate-fade-in">
+        <div class="flex justify-between items-center mb-6">
+          <div id="breadcrumb" class="text-sm text-slate-500"></div>
+
+          <button
+            id="addNewPortfolioBtn"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
+          >
+            + Add New Portfolio
+          </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-slate-800 mb-6">Your Portfolios</h2>
+
+          <div id="portfolio-list" class="space-y-4">
+            <!-- JS Inserts Portfolio Cards Here -->
+          </div>
+        </div>
+
+        <div
+          id="portfolio-pagination"
+          class="flex justify-center items-center gap-4 mt-8"
+        ></div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: CREATE PORTFOLIO -->
+      <!-- ======================================================= -->
+
+      <section id="view-portfolio-create" class="view-section hidden p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-xl font-bold">Create New Portfolio</h1>
+
+          <button
+            id="createPortfolioCancel"
+            class="text-sm text-blue-600 underline"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <form
+          id="portfolioCreateForm"
+          class="space-y-4 bg-white p-4 rounded-lg border border-slate-200"
+        >
+          <div>
+            <label class="text-sm font-medium">Portfolio Name</label>
+            <input
+              type="text"
+              id="portfolioName"
+              class="w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Description</label>
+            <textarea
+              id="portfolioDescription"
+              class="w-full p-2 border rounded-lg"
+            ></textarea>
+          </div>
+
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+            Create Portfolio
+          </button>
+        </form>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: HOLDINGS (User Portfolio Holdings) -->
+      <!-- ======================================================= -->
+
+      <section id="view-holdings" class="view-section hidden p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-xl font-bold" id="holdings-title">Holdings</h1>
+
+          <button
+            id="addNewHoldingBtn"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+          >
+            + Add Holding
+          </button>
+        </div>
+
+        <div class="bg-white rounded-lg border border-slate-200 p-6">
+          <h2 class="text-lg font-semibold mb-4">Portfolio Holdings</h2>
+
+          <div id="holdings-list" class="space-y-4">
+            <!-- JS will insert holding cards here -->
+          </div>
+        </div>
+
+        <div
+          id="holdings-pagination"
+          class="flex justify-center items-center gap-4 mt-6"
+        ></div>
+
+        <button
+          id="backToPortfolios"
+          class="text-sm text-blue-600 underline mt-6"
+        >
+          Back
+        </button>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: ADD HOLDING -->
+      <!-- ======================================================= -->
+
+      <section id="view-holding-create" class="view-section hidden p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-xl font-bold">Add Holding</h1>
+
+          <button
+            id="createHoldingCancel"
+            class="text-sm text-blue-600 underline"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <form
+          id="addHoldingForm"
+          class="space-y-4 bg-white p-4 rounded-lg border border-slate-200"
+        >
+          <div>
+            <label class="text-sm font-medium">Symbol</label>
+            <input
+              type="text"
+              id="holdingSymbol"
+              class="w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Quantity</label>
+            <input
+              type="number"
+              id="holdingQty"
+              class="w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Average Price</label>
+            <input
+              type="number"
+              id="holdingAvgPrice"
+              class="w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+            Save Holding
+          </button>
+        </form>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: HOLDING TRANSACTIONS -->
+      <!-- ======================================================= -->
+
+      <section id="view-holding-transactions" class="view-section hidden p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 id="holding-transactions-title" class="text-xl font-bold">
+            Transactions
+          </h1>
+
+          <button id="backToHoldings" class="text-sm text-blue-600 underline">
+            Back
+          </button>
+        </div>
+
+        <!-- ================= TRANSACTIONS TABLE ================= -->
+        <div
+          id="transactions-table-container"
+          class="bg-white rounded-lg border border-slate-200 p-6"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Transaction History</h2>
+
+            <button
+              id="openAddTransactionBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+            >
+              + Add Transaction
+            </button>
+          </div>
+
+          <div id="transactions-list" class="space-y-4"></div>
+
+          <div
+            id="transactions-pagination"
+            class="flex justify-center items-center gap-4 mt-6"
+          ></div>
+        </div>
+
+        <!-- ================= ADD TRANSACTION FORM ================= -->
+        <div
+          id="transaction-form-container"
+          class="hidden bg-white rounded-lg border border-slate-200 p-6"
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">Add Transaction</h2>
+
+            <button
+              id="cancelTransactionBtn"
+              class="text-sm text-blue-600 underline"
+            >
+              Cancel
+            </button>
+          </div>
+
+          <form id="addTransactionForm" class="space-y-3">
+            <div>
+              <label class="text-sm font-medium">Type</label>
+              <select
+                id="txnType"
+                class="w-full p-2 border rounded-lg"
+                required
+              >
+                <option value="BUY">BUY</option>
+                <option value="SELL">SELL</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Quantity</label>
+              <input
+                type="number"
+                id="txnQty"
+                class="w-full p-2 border rounded-lg"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Price</label>
+              <input
+                type="number"
+                id="txnPrice"
+                class="w-full p-2 border rounded-lg"
+                required
+              />
+            </div>
+
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
+              Add Transaction
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: MARKET -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-market"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <h2 class="text-xl font-bold mb-4">Market</h2>
+
+        <div class="relative mb-4">
+          <div class="flex gap-2">
+            <input
+              id="marketSearch"
+              class="p-2 border border-slate-300 rounded-lg flex-grow"
+              placeholder="Search symbol: TCS.NS, RELIANCE.NS"
+            />
+
+            <button
+              id="marketSearchBtn"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg"
+            >
+              Search
+            </button>
+          </div>
+
+          <!-- AUTOCOMPLETE DROPDOWN GOES EXACTLY HERE -->
+          <ul
+            id="marketAutoComplete"
+            class="absolute left-0 right-0 bg-white border border-slate-300 rounded-md shadow-md mt-1 hidden z-30"
+          ></ul>
+        </div>
+
+        <div
+          id="marketResult"
+          class="hidden p-4 border rounded-lg shadow-sm bg-white"
+        ></div>
+
+        <!-- ======================================================= -->
+        <!-- PRICE HEATMAP -->
+        <!-- ======================================================= -->
+
+        <div class="mt-8">
+          <h2 class="text-lg font-bold text-slate-800 mb-3">Price Heatmap</h2>
+
+          <div id="heatmap-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            <!-- JS will fill tiles dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- FULL MARKET PANEL (SLIDE-IN) -->
+      <!-- ======================================================= -->
+
+      <div
+        id="market-panel"
+        class="hidden fixed top-0 right-0 w-full sm:w-[420px] h-full bg-white shadow-xl border-l border-slate-300 z-50 p-4 overflow-y-auto animate-slide-in"
+      >
+        <button
+          id="closeMarketPanel"
+          class="absolute top-3 right-3 text-slate-500 hover:text-slate-700 text-xl"
+        >
+          ✕
+        </button>
+
+        <h2
+          id="market-title"
+          class="text-xl font-bold text-slate-800 mb-2"
+        ></h2>
+
+        <div
+          id="market-live-price"
+          class="text-3xl font-semibold text-slate-900 mb-4"
+        >
+          Loading...
+        </div>
+
+        <div id="market-extra" class="space-y-2 text-slate-700 text-sm">
+          <!-- Filled dynamically -->
+        </div>
+
+        <div class="mt-4">
+          <button
+            id="addToWatchlistBtn"
+            class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+          >
+            Add to Watchlist
+          </button>
+        </div>
+
+        <div class="mt-6">
+          <canvas id="market-mini-chart" height="200"></canvas>
+        </div>
+      </div>
+      <!-- ======================================================= -->
+      <!-- VIEW: WATCHLIST -->
+      <!-- ======================================================= -->
+
+      <section id="view-watchlist" class="view-section hidden p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-xl font-bold">My Watchlist</h1>
+
+          <button
+            id="refreshWatchlistBtn"
+            class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <div class="bg-white rounded-lg border border-slate-200 p-6">
+          <h2 class="text-lg font-semibold mb-4">Tracked Symbols</h2>
+
+          <div
+            id="watchlist-empty"
+            class="hidden text-slate-500 text-center py-6"
+          >
+            Your watchlist is empty.
+          </div>
+
+          <div id="watchlist-items" class="space-y-4">
+            <!-- JS will insert watchlist cards dynamically -->
+          </div>
+        </div>
+
+        <div
+          id="watchlist-pagination"
+          class="flex justify-center items-center gap-4 mt-6"
+        ></div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: TRENDING -->
+      <!-- ======================================================= -->
+
+      <section id="view-trending" class="view-section hidden p-4">
+        <h1 class="text-xl font-bold mb-4">Trending Stocks</h1>
+
+        <div id="trending-list" class="grid sm:grid-cols-2 gap-4">
+          <!-- JS will populate this -->
+        </div>
+
+        <button
+          id="refreshTrendingBtn"
+          class="mt-6 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm"
+        >
+          Refresh
+        </button>
+      </section>
+      <!-- ======================================================= -->
+      <!-- VIEW: FRAUD ANALYTICS (USER VERSION) -->
+      <!-- ======================================================= -->
+
+      <section id="view-fraud" class="view-section hidden animate-fade-in mt-4">
+        <!-- ===================== KPIs ===================== -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <!-- Detection Rate -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              Detection Rate
+            </h4>
+            <div
+              id="fraud-kpi-detection"
+              class="text-xl sm:text-2xl font-bold text-slate-800 mt-2"
+            >
+              —
+            </div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-1">
+              of total volume
+            </div>
+          </div>
+
+          <!-- False Positives -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              False Positives
+            </h4>
+            <div
+              id="fraud-kpi-fp"
+              class="text-xl sm:text-2xl font-bold text-emerald-600 mt-2"
+            >
+              —
+            </div>
+            <div class="text-xs sm:text-sm text-emerald-600 mt-1 font-semibold">
+              Below Threshold
+            </div>
+          </div>
+
+          <!-- Total Analyzed -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              Total Analyzed
+            </h4>
+            <div
+              id="fraud-kpi-total"
+              class="text-xl sm:text-2xl font-bold text-slate-800 mt-2"
+            >
+              —
+            </div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-1">
+              Transactions
+            </div>
+          </div>
+
+          <!-- High Risk Users -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              High Risk Users
+            </h4>
+            <div
+              id="fraud-kpi-highrisk"
+              class="text-xl sm:text-2xl font-bold text-rose-600 mt-2"
+            >
+              —
+            </div>
+            <div class="text-xs sm:text-sm text-rose-500 mt-1 font-semibold">
+              Active Watchlist
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== MAP + DISTRIBUTION ===================== -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <!-- Geo Heatmap -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm h-64 sm:h-80"
+          >
+            <h4 class="font-bold text-slate-700 mb-3">
+              Geographic Risk Heatmap
+            </h4>
+            <div
+              class="w-full h-52 sm:h-64 bg-white rounded border border-slate-200 p-2"
+            >
+              <canvas id="geoRiskMap" width="400" height="200"></canvas>
+            </div>
+          </div>
+
+          <!-- Fraud Score Distribution -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm h-64 sm:h-80"
+          >
+            <h4 class="font-bold text-slate-700 mb-3">
+              Fraud Score Distribution
+            </h4>
+            <div
+              class="w-full h-52 sm:h-64 bg-white rounded border border-slate-200 p-2"
+            >
+              <canvas id="fraudScoreChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+        <!-- ===================== ML MODEL OUTPUT HISTORY ===================== -->
+        <div class="mt-10">
+          <div class="text-xl font-bold text-slate-800 mb-4">
+            ML Model Fraud Analysis History
+          </div>
+
+          <div
+            id="fraud-history-empty"
+            class="hidden text-slate-500 text-center py-6"
+          >
+            No ML fraud records available.
+          </div>
+
+          <table
+            class="w-full border-collapse border border-slate-200 text-sm mb-6"
+          >
+            <thead class="bg-slate-100 text-slate-700">
+              <tr>
+                <th class="border p-2">Transaction ID</th>
+                <th class="border p-2">Probability</th>
+                <th class="border p-2">Label</th>
+                <th class="border p-2">Model Version</th>
+                <th class="border p-2">Date</th>
+              </tr>
+            </thead>
+            <tbody id="fraud-history-body"></tbody>
+          </table>
+        </div>
+
+        <!-- ===================== USER FRAUD CASE HISTORY ===================== -->
+        <div class="mt-10">
+          <!-- ================= FRAUD SCORE TEST BUTTON ================= -->
+          <div class="mb-4">
+            <button
+              id="testFraudBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              Test Fraud Score
+            </button>
+          </div>
+
+          <!-- ================= FRAUD MODAL ================= -->
+          <div
+            id="fraudModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]"
+          >
+            <div class="bg-white w-80 sm:w-96 p-6 rounded-xl shadow-lg">
+              <h3 class="text-lg font-bold mb-3 text-slate-800">
+                Fraud Score Result
+              </h3>
+
+              <div
+                id="fraudModalContent"
+                class="space-y-2 text-sm text-slate-700"
+              ></div>
+
+              <div class="mt-4 flex justify-end">
+                <button
+                  id="fraudModalClose"
+                  class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xl font-bold text-slate-800 mb-4">
+            My Fraud Case History
+          </div>
+
+          <div
+            id="fraud-cases-empty"
+            class="hidden text-slate-500 text-center py-6"
+          >
+            No fraud cases detected for your account.
+          </div>
+
+          <table class="w-full border-collapse border border-slate-200 text-sm">
+            <thead class="bg-slate-100 text-slate-700">
+              <tr>
+                <th class="border p-2">Case ID</th>
+                <th class="border p-2">Score</th>
+                <th class="border p-2">Reason</th>
+                <th class="border p-2">Date</th>
+              </tr>
+            </thead>
+            <tbody id="fraud-cases-body"></tbody>
+          </table>
+
+          <div
+            class="flex justify-center gap-4 mt-4"
+            id="fraud-cases-pagination"
+          ></div>
+        </div>
+        <!-- ========================================================= -->
+        <!-- FRAUD DETAIL MODAL -->
+        <!-- ========================================================= -->
+        <div
+          id="fraud-detail-modal"
+          class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center"
+        >
+          <div class="bg-white w-96 p-6 rounded shadow relative">
+            <button
+              id="close-fraud-detail"
+              class="absolute right-3 top-3 text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
+
+            <h2 class="text-xl font-semibold mb-4">Fraud Analysis Detail</h2>
+
+            <div class="space-y-2">
+              <p><strong>Transaction:</strong> <span id="detail-txn"></span></p>
+              <p><strong>Score:</strong> <span id="detail-score"></span></p>
+              <p><strong>Label:</strong> <span id="detail-label"></span></p>
+              <p><strong>Model:</strong> <span id="detail-model"></span></p>
+              <p><strong>Reasons:</strong></p>
+              <ul id="detail-reasons" class="list-disc ml-6 text-sm"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ======================================================= -->
+      <!-- VIEW: ALERTS -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-alerts"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <div
+          class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-100 flex flex-wrap gap-3 items-center mb-4"
+        >
+          <select
+            class="p-2 border border-slate-300 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-blue-500"
+          >
+            <option>All Severities</option>
+            <option>High</option>
+            <option>Medium</option>
+          </select>
+
+          <select
+            class="p-2 border border-slate-300 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-blue-500"
+          >
+            <option>All Sources</option>
+            <option>Risk Engine</option>
+            <option>Fraud Model</option>
+          </select>
+
+          <button
+            class="ml-auto text-sm text-slate-500 hover:text-blue-600 font-medium"
+          >
+            Mark All as Read
+          </button>
+        </div>
+
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+        >
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+              <tr>
+                <th class="px-4 sm:px-6 py-3">Timestamp</th>
+                <th class="px-4 sm:px-6 py-3">Severity</th>
+                <th class="px-4 sm:px-6 py-3">Source</th>
+                <th class="px-4 sm:px-6 py-3">Alert Message</th>
+                <th class="px-4 sm:px-6 py-3">Action</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-100 text-sm">
+              <!-- Example row (static placeholder) -->
+              <tr class="bg-rose-50/50">
+                <td class="px-4 sm:px-6 py-3 text-slate-500">10:45:00 AM</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >High</span
+                  >
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  Risk Engine
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800">
+                  <strong>VaR Breach:</strong> Your portfolio VaR exceeded
+                  $3,000.
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <button
+                    class="text-blue-600 font-medium text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50"
+                  >
+                    Acknowledge
+                  </button>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="px-4 sm:px-6 py-3 text-slate-500">09:30:00 AM</td>
+                <td class="px-4 sm:px-6 py-3">
+                  <span
+                    class="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-bold"
+                    >Medium</span
+                  >
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-700 font-medium">
+                  Fraud Engine
+                </td>
+                <td class="px-4 sm:px-6 py-3 text-slate-800">
+                  Suspicious login attempt detected.
+                </td>
+                <td class="px-4 sm:px-6 py-3">
+                  <button
+                    class="text-blue-600 font-medium text-xs border border-blue-200 px-2 py-1 rounded hover:bg-blue-50"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!-- ======================================================= -->
+      <!-- VIEW: SETTINGS -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-settings"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <!-- PROFILE SECTION -->
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6"
+        >
+          <h2 class="text-xl font-bold text-slate-800 mb-4">My Profile</h2>
+
+          <div class="flex items-center mb-6">
+            <div
+              class="w-16 h-16 bg-slate-700 text-white rounded-full flex items-center justify-center text-2xl font-bold"
+              id="profileAvatar"
+            >
+              J
+            </div>
+          </div>
+
+          <form id="profileForm" class="space-y-5">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
+                value="John Doe"
+                disabled
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
+                value="john.doe@example.com"
+                disabled
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                Phone
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
+                value="+91 9876543210"
+                disabled
+              />
+            </div>
+
+            <div class="flex gap-3">
+              <button
+                type="button"
+                id="editBtn"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+              >
+                Edit
+              </button>
+
+              <button
+                type="submit"
+                id="saveBtn"
+                class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm font-medium hover:bg-slate-700 hidden"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- PASSWORD RESET -->
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6"
+        >
+          <h2 class="text-xl font-bold text-slate-800 mb-4">Password Reset</h2>
+
+          <form id="passwordForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                Current Password
+              </label>
+              <input
+                type="password"
+                id="currentPassword"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                New Password
+              </label>
+              <input
+                type="password"
+                id="newPassword"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                class="w-full border border-slate-300 rounded-lg p-2 text-sm"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium"
+            >
+              Update Password
+            </button>
+          </form>
+        </div>
+
+        <!-- DANGER ZONE -->
+        <div class="bg-white rounded-xl border border-rose-200 shadow-sm p-6">
+          <h2 class="text-xl font-bold text-rose-600 mb-2">Danger Zone</h2>
+
+          <p class="text-slate-600 text-sm mb-4">
+            Deleting your account is permanent and cannot be undone.
+          </p>
+
+          <button
+            id="showDeleteModalBtn"
+            class="w-full bg-rose-600 hover:bg-rose-700 text-white py-2 rounded-lg text-sm font-bold"
+          >
+            Delete My Account
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: PREMIUM FEATURES -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-features"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <!-- Locked Premium Block -->
+        <div
+          id="premium-block"
+          class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+        >
+          <h2 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">
+            Unlock Premium Features
+          </h2>
+
+          <p class="text-sm sm:text-base text-slate-600 mb-3 leading-relaxed">
+            Upgrade to access exclusive financial tools:
+            <br />• Daily gold price updates <br />• Forecast pricing for
+            tomorrow <br />• Priority market risk alerts <br />• Enhanced fraud
+            protection layer
+          </p>
+
+          <button
+            id="premium-btn"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-blue-700 transition"
+          >
+            Upgrade Now
+          </button>
+        </div>
+
+        <!-- Unlocked Premium Content -->
+        <div id="gold-prices" class="hidden mt-4 space-y-4">
+          <span
+            id="premium-badge"
+            class="hidden bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold"
+          >
+            Premium Active
+          </span>
+
+          <!-- Live Gold Summary -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-2">
+              Live Gold Market Summary
+            </h3>
+
+            <p class="text-xs sm:text-sm text-slate-500 mb-3">
+              Updated daily at 10:00 AM IST
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+              <!-- Yesterday -->
+              <div
+                class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200"
+              >
+                <div class="text-slate-500 text-xs mb-1">Yesterday</div>
+                <div
+                  id="gold-yesterday-price"
+                  class="font-bold text-slate-800 text-lg sm:text-xl"
+                >
+                  --
+                </div>
+                <div
+                  id="gold-yesterday-change"
+                  class="text-rose-500 font-semibold text-xs sm:text-sm"
+                >
+                  --
+                </div>
+              </div>
+
+              <!-- Today -->
+              <div
+                class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200"
+              >
+                <div class="text-slate-500 text-xs mb-1">Today</div>
+                <div
+                  id="gold-today-price"
+                  class="font-bold text-emerald-600 text-lg sm:text-xl"
+                >
+                  --
+                </div>
+                <div
+                  id="gold-today-change"
+                  class="text-emerald-600 font-semibold text-xs sm:text-sm"
+                >
+                  --
+                </div>
+              </div>
+
+              <!-- Forecast -->
+              <div
+                class="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200"
+              >
+                <div class="text-slate-500 text-xs mb-1">
+                  Tomorrow (Forecast)
+                </div>
+                <div
+                  id="gold-forecast-price"
+                  class="font-bold text-blue-600 text-lg sm:text-xl"
+                >
+                  --
+                </div>
+                <div
+                  id="gold-forecast-change"
+                  class="text-blue-600 font-semibold text-xs sm:text-sm"
+                >
+                  --
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gold Trend Chart -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <h3 class="font-bold text-slate-800 mb-3">
+              Gold Price Trend (Last 7 Days)
+            </h3>
+
+            <canvas id="gold-7day-chart" class="w-full h-44 sm:h-56"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="premium-section" class="hidden p-4">
+        <h1 class="text-xl font-bold mb-4">Premium Dashboard</h1>
+
+        <div class="bg-white border rounded-lg p-6 shadow">
+          <p class="text-slate-700">
+            You now have access to premium analytics, advanced charts, risk
+            forecasts, and exclusive market tools.
+          </p>
+        </div>
+      </section>
+    </main>
+    <!-- ============================================================
+     GLOBAL NOTIFICATION TOAST (WebSockets + API events)
+ ============================================================ -->
+    <div
+      id="notificationToast"
+      class="fixed bottom-6 right-6 hidden px-4 py-3 rounded-lg shadow-lg text-white text-sm transition-all duration-300 z-[9999]"
+    >
+      <span id="notificationMessage">Notification</span>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- GLOBAL SCRIPTS -->
+    <!-- ========================================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/world-atlas/countries-110m.json"></script>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/notification.js"></script>
+    <script src="/js/user.js"></script>
+    <script>
+      // Load the TopoJSON file first
+      fetch("https://unpkg.com/world-atlas@2/countries-110m.json")
+        .then((res) => res.json())
+        .then((countries110m) => {
+          window.worldGeoJSON = ChartGeo.topojson.feature(
+            countries110m,
+            countries110m.objects.countries
+          );
+
+          // Now safely render chart or map (call your map init here)
+          initGeoMap();
+        });
+
+      function initGeoMap() {
+        console.log("GeoJSON ready:", window.worldGeoJSON);
+        // your chart code here
+      }
+    </script>
+  </body>
+</html>
