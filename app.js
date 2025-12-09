@@ -17,7 +17,7 @@ const { initializeSocket } = require("./socket/index");
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
-const adminRoutes = require('./routes/adminRoutes');
+// const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const premiumRoutes = require('./routes/premiumRoutes');
 const fraudRoutes = require("./routes/fraudRoutes");
@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // API routes
 app.use("/api/auth", authRoutes);
-app.use('/api/admin',adminRoutes);
+// app.use('/api/admin',adminRoutes);
 app.use('/api/user',userRoutes);
 app.use('/api/premium', premiumRoutes);
 app.use("/api/fraud", fraudRoutes);
@@ -61,7 +61,12 @@ app.get("/admin", (req, res) => {
 app.get("/user", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "user.html"));
 });
-
+app.get('/forgot-password',(req,res)=>{
+    res.sendFile(path.join(__dirname,"views","forgotPassword.html"))
+});
+app.get('/reset-password/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'reset-password.html'));
+});
 const PORT = process.env.PORT || 3000;
 
 // ==========================================================

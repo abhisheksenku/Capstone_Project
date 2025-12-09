@@ -924,134 +924,130 @@
       <!-- ======================================================= -->
       <!-- VIEW: FRAUD ANALYTICS (USER VERSION) -->
       <!-- ======================================================= -->
+
       <section id="view-fraud" class="view-section hidden animate-fade-in mt-4">
-        <!-- ========================= BREADCRUMB ========================= -->
-        <div class="text-sm text-slate-500 mb-4 flex items-center gap-2">
-          <span id="bc-overview" class="cursor-pointer hover:underline"
-            >Overview</span
-          >
-          <span>/</span>
-          <span id="bc-fraud" class="cursor-pointer hover:underline"
-            >Fraud Analytics</span
-          >
-
-          <!-- ONLY SHOW WHEN HISTORY OR CASES IS OPEN -->
-          <span id="bc-divider-3" class="hidden">/</span>
-          <span id="bc-sub" class="hidden"></span>
-        </div>
-
-        <!-- ========================================================= -->
-        <!-- SECTION 0: FRAUD OVERVIEW (DEFAULT)                       -->
-        <!-- ========================================================= -->
-        <div id="fraud-overview-section">
-          <!-- ===================== KPIs ===================== -->
+        <!-- ===================== KPIs ===================== -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <!-- Detection Rate -->
           <div
-            class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
           >
-            <div class="bg-white p-4 sm:p-6 rounded-xl border shadow-sm">
-              <h4 class="text-xs font-bold text-slate-400 uppercase">
-                Detection Rate
-              </h4>
-              <div
-                id="fraud-kpi-detection"
-                class="text-2xl font-bold text-slate-800 mt-2"
-              >
-                —
-              </div>
-              <div class="text-sm text-slate-500 mt-1">of total volume</div>
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              Detection Rate
+            </h4>
+            <div
+              id="fraud-kpi-detection"
+              class="text-xl sm:text-2xl font-bold text-slate-800 mt-2"
+            >
+              —
             </div>
-
-            <div class="bg-white p-4 sm:p-6 rounded-xl border shadow-sm">
-              <h4 class="text-xs font-bold text-slate-400 uppercase">
-                False Positives
-              </h4>
-              <div
-                id="fraud-kpi-fp"
-                class="text-2xl font-bold text-emerald-600 mt-2"
-              >
-                —
-              </div>
-              <div class="text-sm text-emerald-600 mt-1 font-semibold">
-                Below Threshold
-              </div>
-            </div>
-
-            <div class="bg-white p-4 sm:p-6 rounded-xl border shadow-sm">
-              <h4 class="text-xs font-bold text-slate-400 uppercase">
-                Total Analyzed
-              </h4>
-              <div
-                id="fraud-kpi-total"
-                class="text-2xl font-bold text-slate-800 mt-2"
-              >
-                —
-              </div>
-              <div class="text-sm text-slate-500 mt-1">Transactions</div>
-            </div>
-
-            <div class="bg-white p-4 sm:p-6 rounded-xl border shadow-sm">
-              <h4 class="text-xs font-bold text-slate-400 uppercase">
-                High Risk Users
-              </h4>
-              <div
-                id="fraud-kpi-highrisk"
-                class="text-2xl font-bold text-rose-600 mt-2"
-              >
-                —
-              </div>
-              <div class="text-sm text-rose-500 mt-1 font-semibold">
-                Active Watchlist
-              </div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-1">
+              of total volume
             </div>
           </div>
 
-          <!-- ===================== MAP + DISTRIBUTION ===================== -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl border shadow-sm h-80">
-              <h4 class="font-bold text-slate-700 mb-3">
-                Geographic Risk Heatmap
-              </h4>
-              <div class="w-full h-64 bg-white border p-2 rounded">
-                <canvas id="geoRiskMap"></canvas>
-              </div>
+          <!-- False Positives -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
+            >
+              False Positives
+            </h4>
+            <div
+              id="fraud-kpi-fp"
+              class="text-xl sm:text-2xl font-bold text-emerald-600 mt-2"
+            >
+              —
             </div>
-
-            <div class="bg-white p-4 rounded-xl border shadow-sm h-80">
-              <h4 class="font-bold text-slate-700 mb-3">
-                Fraud Score Distribution
-              </h4>
-              <div class="w-full h-64 bg-white border p-2 rounded">
-                <canvas id="fraudScoreChart"></canvas>
-              </div>
+            <div class="text-xs sm:text-sm text-emerald-600 mt-1 font-semibold">
+              Below Threshold
             </div>
           </div>
 
-          <!-- ===================== BUTTONS ===================== -->
-          <div class="flex gap-4 mt-6">
-            <button
-              id="btnViewFraudAnalysis"
-              class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+          <!-- Total Analyzed -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
             >
-              View Fraud Analysis History
-            </button>
+              Total Analyzed
+            </h4>
+            <div
+              id="fraud-kpi-total"
+              class="text-xl sm:text-2xl font-bold text-slate-800 mt-2"
+            >
+              —
+            </div>
+            <div class="text-xs sm:text-sm text-slate-500 mt-1">
+              Transactions
+            </div>
+          </div>
 
-            <button
-              id="btnViewFraudCases"
-              class="bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-rose-700"
+          <!-- High Risk Users -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm"
+          >
+            <h4
+              class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase"
             >
-              View Fraud Case History
-            </button>
+              High Risk Users
+            </h4>
+            <div
+              id="fraud-kpi-highrisk"
+              class="text-xl sm:text-2xl font-bold text-rose-600 mt-2"
+            >
+              —
+            </div>
+            <div class="text-xs sm:text-sm text-rose-500 mt-1 font-semibold">
+              Active Watchlist
+            </div>
           </div>
         </div>
-        <!-- END OVERVIEW -->
 
-        <!-- ========================================================= -->
-        <!-- SECTION 1: FRAUD ANALYSIS HISTORY (ML MODEL OUTPUT)       -->
-        <!-- ========================================================= -->
-        <div id="fraud-analysis-section" class="hidden mt-8">
-          <h3 class="text-xl font-bold text-slate-800 mb-4">
+        <!-- ===================== MAP + DISTRIBUTION ===================== -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8"
+        >
+          <!-- Geo Heatmap -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm h-64 sm:h-80"
+          >
+            <h4 class="font-bold text-slate-700 mb-3">
+              Geographic Risk Heatmap
+            </h4>
+            <div
+              class="w-full h-52 sm:h-64 bg-white rounded border border-slate-200 p-2"
+            >
+              <canvas id="geoRiskMap" width="400" height="200"></canvas>
+            </div>
+          </div>
+
+          <!-- Fraud Score Distribution -->
+          <div
+            class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm h-64 sm:h-80"
+          >
+            <h4 class="font-bold text-slate-700 mb-3">
+              Fraud Score Distribution
+            </h4>
+            <div
+              class="w-full h-52 sm:h-64 bg-white rounded border border-slate-200 p-2"
+            >
+              <canvas id="fraudScoreChart" width="400" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+        <!-- ===================== ML MODEL OUTPUT HISTORY ===================== -->
+        <div class="mt-10">
+          <div class="text-xl font-bold text-slate-800 mb-4">
             ML Model Fraud Analysis History
-          </h3>
+          </div>
 
           <div
             id="fraud-history-empty"
@@ -1060,7 +1056,9 @@
             No ML fraud records available.
           </div>
 
-          <table class="w-full border-collapse border text-sm mb-6">
+          <table
+            class="w-full border-collapse border border-slate-200 text-sm mb-6"
+          >
             <thead class="bg-slate-100 text-slate-700">
               <tr>
                 <th class="border p-2">Transaction ID</th>
@@ -1074,13 +1072,9 @@
           </table>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- SECTION 2: FRAUD CASE HISTORY (MYSQL)                     -->
-        <!-- ========================================================= -->
-        <div id="fraud-cases-section" class="hidden mt-8">
-          <h3 class="text-xl font-bold text-slate-800 mb-4">
-            My Fraud Case History
-          </h3>
+        <!-- ===================== USER FRAUD CASE HISTORY ===================== -->
+        <div class="mt-10">
+          <!-- ================= FRAUD SCORE TEST BUTTON ================= -->
           <div class="mb-4">
             <button
               id="testFraudBtn"
@@ -1090,6 +1084,36 @@
             </button>
           </div>
 
+          <!-- ================= FRAUD MODAL ================= -->
+          <div
+            id="fraudModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]"
+          >
+            <div class="bg-white w-80 sm:w-96 p-6 rounded-xl shadow-lg">
+              <h3 class="text-lg font-bold mb-3 text-slate-800">
+                Fraud Score Result
+              </h3>
+
+              <div
+                id="fraudModalContent"
+                class="space-y-2 text-sm text-slate-700"
+              ></div>
+
+              <div class="mt-4 flex justify-end">
+                <button
+                  id="fraudModalClose"
+                  class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xl font-bold text-slate-800 mb-4">
+            My Fraud Case History
+          </div>
+
           <div
             id="fraud-cases-empty"
             class="hidden text-slate-500 text-center py-6"
@@ -1097,7 +1121,7 @@
             No fraud cases detected for your account.
           </div>
 
-          <table class="w-full border-collapse border text-sm mb-4">
+          <table class="w-full border-collapse border border-slate-200 text-sm">
             <thead class="bg-slate-100 text-slate-700">
               <tr>
                 <th class="border p-2">Case ID</th>
@@ -1115,13 +1139,13 @@
           ></div>
         </div>
         <!-- ========================================================= -->
-        <!-- FRAUD DETAIL MODAL (NEEDED FOR CASE DETAILS) -->
+        <!-- FRAUD DETAIL MODAL -->
         <!-- ========================================================= -->
         <div
           id="fraud-detail-modal"
-          class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-[9999]"
+          class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center"
         >
-          <div class="bg-white w-96 p-6 rounded-xl shadow relative">
+          <div class="bg-white w-96 p-6 rounded shadow relative">
             <button
               id="close-fraud-detail"
               class="absolute right-3 top-3 text-gray-500 hover:text-black"
@@ -1141,33 +1165,7 @@
             </div>
           </div>
         </div>
-        <!-- ======================= FRAUD TEST MODAL ======================== -->
-        <div
-          id="fraudModal"
-          class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-[9999]"
-        >
-          <div class="bg-white w-80 sm:w-96 p-6 rounded-xl shadow-lg">
-            <h3 class="text-lg font-bold mb-3 text-slate-800">
-              Fraud Score Result
-            </h3>
-
-            <div
-              id="fraudModalContent"
-              class="space-y-2 text-sm text-slate-700"
-            ></div>
-
-            <div class="mt-4 flex justify-end">
-              <button
-                id="fraudModalClose"
-                class="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 text-sm"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
       </section>
-
       <!-- ======================================================= -->
       <!-- VIEW: ALERTS -->
       <!-- ======================================================= -->
@@ -1581,7 +1579,6 @@
     <script src="/js/user.js"></script>
     <script>
       // Load the TopoJSON file first
-      // Load TopoJSON first
       fetch("https://unpkg.com/world-atlas@2/countries-110m.json")
         .then((res) => res.json())
         .then((countries110m) => {
@@ -1590,13 +1587,14 @@
             countries110m.objects.countries
           );
 
-          // Ensure function exists
-          if (window.ui_renderGeoHeatmap) {
-            window.ui_renderGeoHeatmap();
-          } else {
-            console.error("ui_renderGeoHeatmap not ready");
-          }
+          // Now safely render chart or map (call your map init here)
+          initGeoMap();
         });
+
+      function initGeoMap() {
+        console.log("GeoJSON ready:", window.worldGeoJSON);
+        // your chart code here
+      }
     </script>
   </body>
 </html>

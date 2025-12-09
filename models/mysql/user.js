@@ -33,7 +33,7 @@ const User = sequelize.define(
     },
 
     role: {
-      type: DataTypes.ENUM("user","admin"),
+      type: DataTypes.ENUM("user", "admin"),
       defaultValue: "user",
       allowNull: false,
     },
@@ -49,6 +49,15 @@ const User = sequelize.define(
     },
 
     last_login: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    resetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    resetTokenExpiry: {
       type: DataTypes.DATE,
       allowNull: true,
     },

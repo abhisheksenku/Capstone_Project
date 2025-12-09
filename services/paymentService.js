@@ -23,9 +23,10 @@ const createPremiumOrder = async (
         customer_phone: phone,
       },
       order_meta: {
-        return_url: `${process.env.BASE_URL}/api/premium/payment-status/${orderId}`,
+        return_url: `${process.env.BASE_URL}/api/premium/payment-status?order_id=${orderId}`,
         payment_methods: "cc,dc,upi",
       },
+
       order_expiry_time: expiry,
     };
 

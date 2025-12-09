@@ -200,20 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ui_renderFraudStats();
         ui_renderFraudDistribution();
         ui_renderGeoHeatmap();
-
-        // Show only the overview section
-        document
-          .getElementById("fraud-overview-section")
-          .classList.remove("hidden");
-        document
-          .getElementById("fraud-analysis-section")
-          .classList.add("hidden");
-        document.getElementById("fraud-cases-section").classList.add("hidden");
-
-        // Reset Fraud breadcrumb
-        bcDivider3.classList.add("hidden");
-        bcSub.classList.add("hidden");
-        bcSub.textContent = "";
+        ui_renderFraudRules();
+        ui_renderFraudCases(1);
+        ui_renderFraudHistory();
+        updateBreadcrumb("Overview", "Fraud Analytics");
       } else {
         updateBreadcrumb(null);
       }
@@ -329,20 +319,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ui_renderFraudStats();
         ui_renderFraudDistribution();
         ui_renderGeoHeatmap();
-
-        // Show only overview section
-        document
-          .getElementById("fraud-overview-section")
-          .classList.remove("hidden");
-        document
-          .getElementById("fraud-analysis-section")
-          .classList.add("hidden");
-        document.getElementById("fraud-cases-section").classList.add("hidden");
-
-        // Reset Fraud breadcrumb
-        bcDivider3.classList.add("hidden");
-        bcSub.classList.add("hidden");
-        bcSub.textContent = "";
+        ui_renderFraudRules();
+        ui_renderFraudCases(1);
+        ui_renderFraudHistory();
+        updateBreadcrumb("Overview", "Fraud Analytics");
       } else {
         updateBreadcrumb(null);
       }
@@ -557,9 +537,6 @@ document.addEventListener("DOMContentLoaded", () => {
       throw err;
     }
   }
-  async function api_deletePortfolio(id) {
-    return axios.delete(`/api/user/delete/portfolio/${id}`, authHeaders);
-  }
 
   /* --------------------------------------------------------------------------
      HOLDINGS
@@ -591,9 +568,6 @@ document.addEventListener("DOMContentLoaded", () => {
       throw err;
     }
   }
-  async function api_deleteHolding(id) {
-    return axios.delete(`/api/user/delete/holding/${id}`, authHeaders);
-  }
 
   /* --------------------------------------------------------------------------
      TRANSACTIONS
@@ -624,9 +598,6 @@ document.addEventListener("DOMContentLoaded", () => {
       apiError(err);
       throw err;
     }
-  }
-  async function api_deleteTransaction(id) {
-    return axios.delete(`/api/user/delete/transaction/${id}`, authHeaders);
   }
 
   /* --------------------------------------------------------------------------
@@ -775,7 +746,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function api_getFraudDetail(txnId) {
     try {
       const res = await axios.get(
-        `${BASE_URL}/api/fraud/history/${txnId}`,
+        `${BASE_URL}/api/user/fraud/history/${txnId}`,
         authHeaders
       );
       return res.data.detail;
@@ -801,7 +772,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function api_getGeoRisk() {
     try {
       const res = await axios.get(
-        `${BASE_URL}/api/fraud/geo-risk`,
+        `${BASE_URL}/api/user/fraud/geo-risk`,
         authHeaders
       );
       return res.data;
@@ -811,10 +782,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  async function api_getFraudRules() {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/api/user/fraud/rules`,
+        authHeaders
+      );
+      return res.data.rules || [];
+    } catch (err) {
+      apiError(err);
+      return [];
+    }
+  }
+
   async function api_getFraudCases(page = 1) {
     try {
       const res = await axios.get(
-        `${BASE_URL}/api/fraud/cases?page=${page}&limit=10`,
+        `${BASE_URL}/api/user/fraud/cases?page=${page}&limit=10`,
         authHeaders
       );
       return res.data;
@@ -826,7 +810,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==================== FRAUD HISTORY API ====================
   async function api_getFraudHistory() {
     try {
-      const res = await axios.get(`${BASE_URL}/api/fraud/history`, authHeaders);
+      const res = await axios.get(
+        `${BASE_URL}/api/user/fraud/history`,
+        authHeaders
+      );
       return res.data.items || [];
     } catch (err) {
       apiError(err);
@@ -921,112 +908,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!portfolios.length) {
       list.innerHTML = `
-      <div class="text-center py-6 text-slate-500">
-        No portfolios found. Create one to get started.
-      </div>
-    `;
+        <div class="text-center py-6 text-slate-500">
+          No portfolios found. Create one to get started.
+        </div>
+      `;
       return;
     }
 
-    /* ================================
-     RENDER PORTFOLIO CARDS
-  ================================= */
     portfolios.forEach((p) => {
       list.innerHTML += `
-      <div class="portfolio-card border border-slate-200 rounded-lg p-4 cursor-pointer hover:bg-slate-50 transition"
-           data-id="${p.id}"
-           data-name="${escapeHtml(p.name)}">
-
-        <div class="flex justify-between items-center">
-
-          <div>
-            <div class="font-bold text-slate-800">${escapeHtml(p.name)}</div>
-            <div class="text-sm text-slate-500 mt-1">
-              ${escapeHtml(p.description || "No description")}
+        <div class="portfolio-card border border-slate-200 rounded-lg p-4 cursor-pointer hover:bg-slate-50 transition"
+             data-id="${p.id}"
+             data-name="${escapeHtml(p.name)}">
+          <div class="flex justify-between items-center">
+            <div>
+              <div class="font-bold text-slate-800">${escapeHtml(p.name)}</div>
+              <div class="text-sm text-slate-500 mt-1">
+                ${escapeHtml(p.description || "No description")}
+              </div>
             </div>
-          </div>
 
-          <div class="flex items-center gap-3">
             <button class="text-blue-600 underline text-sm">
               View Holdings
             </button>
-
-            <button class="delete-portfolio-btn text-red-600 text-sm"
-                    data-id="${p.id}">
-              Delete
-            </button>
           </div>
         </div>
-      </div>
-    `;
+      `;
     });
 
-    /* ================================
-     OPEN HOLDINGS ON CARD CLICK
-  ================================= */
+    // Click → open holdings of portfolio
     document.querySelectorAll(".portfolio-card").forEach((card) => {
       card.addEventListener("click", () => {
         const id = card.dataset.id;
         const name = card.dataset.name;
-
         sessionStorage.setItem("fg_current_portfolio_id", id);
         sessionStorage.setItem("fg_current_portfolio_name", name);
-
         ui_renderHoldings(id, name, 1);
       });
     });
 
-    /* ================================
-     DELETE PORTFOLIO HANDLER
-  ================================= */
-    document.querySelectorAll(".delete-portfolio-btn").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        e.stopPropagation(); // prevent card click event
+    /* pagination */
 
-        const id = btn.dataset.id;
-        if (!confirm("Delete this portfolio? Only if no holdings exist."))
-          return;
-
-        try {
-          await api_deletePortfolio(id);
-
-          showNotification("Portfolio deleted successfully!");
-
-          const saved =
-            Number(sessionStorage.getItem(STORE_PORTFOLIO_PAGE)) || 1;
-          ui_renderPortfolioList(saved);
-        } catch (err) {
-          if (err.response && err.response.status === 400) {
-            showNotification("Please delete holdings first.", true);
-          } else {
-            apiError(err);
-          }
-        }
-      });
-    });
-
-    /* ================================
-     PAGINATION
-  ================================= */
     const prev = pagination.prev || null;
     const next = pagination.next || null;
     const totalPages = pagination.totalPages || 1;
 
     pag.innerHTML = `
-    <button data-page="${prev || ""}"
-      class="px-4 py-2 border rounded text-sm ${
-        !prev ? "opacity-40 cursor-not-allowed" : "hover:bg-slate-50"
-      }">← Prev</button>
+      <button data-page="${prev || ""}"
+        class="px-4 py-2 border rounded text-sm ${
+          !prev ? "opacity-40 cursor-not-allowed" : "hover:bg-slate-50"
+        }">← Prev</button>
 
-    <span class="px-4 py-2 text-sm font-medium">
-      Page ${currentPage} of ${totalPages}
-    </span>
+      <span class="px-4 py-2 text-sm font-medium">
+        Page ${currentPage} of ${totalPages}
+      </span>
 
-    <button data-page="${next || ""}"
-      class="px-4 py-2 border rounded text-sm ${
-        !next ? "opacity-40 cursor-not-allowed" : "hover:bg-slate-50"
-      }">Next →</button>
-  `;
+      <button data-page="${next || ""}"
+        class="px-4 py-2 border rounded text-sm ${
+          !next ? "opacity-40 cursor-not-allowed" : "hover:bg-slate-50"
+        }">Next →</button>
+    `;
 
     pag.querySelectorAll("button[data-page]").forEach((btn) => {
       const p = btn.dataset.page;
@@ -1034,7 +975,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => ui_renderPortfolioList(Number(p)));
     });
   }
-
   /* --------------------------------------------------------------------------
    CREATE PORTFOLIO UI + FORM SUBMISSION
 --------------------------------------------------------------------------- */
@@ -1145,41 +1085,9 @@ document.addEventListener("DOMContentLoaded", () => {
                       data-symbol="${h.symbol}">
                 ★
               </button>
-              <button class="delete-holding-btn text-red-600 text-sm ml-3"
-                      data-id="${h.id}">
-                Delete
-              </button>
-
             </div>
           </div>
         `;
-      });
-      document.querySelectorAll(".delete-holding-btn").forEach((btn) => {
-        btn.addEventListener("click", async (e) => {
-          e.stopPropagation(); // Prevent opening transactions
-
-          const id = btn.dataset.id;
-
-          if (!confirm("Delete this holding? Only if no transactions exist."))
-            return;
-
-          try {
-            const pid = sessionStorage.getItem("fg_current_portfolio_id");
-            const pname = sessionStorage.getItem("fg_current_portfolio_name");
-
-            await api_deleteHolding(id);
-
-            showNotification("Holding deleted!");
-
-            ui_renderHoldings(pid, pname, 1);
-          } catch (err) {
-            if (err.response && err.response.status === 400) {
-              showNotification("Please delete transactions first.", true);
-            } else {
-              apiError(err);
-            }
-          }
-        });
       });
 
       // Add to watchlist
@@ -1290,7 +1198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         await api_addHolding({
-          portfolio_id: portfolioId,
+          portfolioId,
           symbol,
           quantity,
           avg_price,
@@ -1371,50 +1279,23 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       transactions.forEach((t) => {
         list.innerHTML += `
-    <div class="border border-slate-200 rounded p-3">
-      <div class="flex justify-between items-center">
-        <div>
-          <div class="font-bold text-slate-800">${t.txn_type}</div>
-          <div class="text-sm text-slate-600">
-            Qty: ${t.qty} @ ₹${t.price}
-          </div>
-        </div>
+          <div class="border border-slate-200 rounded p-3">
+            <div class="flex justify-between">
+              <div>
+                <div class="font-bold text-slate-800">${t.txn_type}</div>
+                <div class="text-sm text-slate-600">
+                  Qty: ${t.qty} @ ₹${t.price}
+                </div>
+              </div>
 
-        <div class="flex items-center gap-3">
-          <div class="text-sm text-slate-500">
-            ${new Date(t.createdAt).toLocaleString()}
+              <div class="text-sm text-slate-500">
+                ${new Date(t.createdAt).toLocaleString()}
+              </div>
+            </div>
           </div>
-
-          <button class="delete-transaction-btn text-red-600 text-sm"
-                  data-id="${t.id}">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
+        `;
       });
     }
-    document.querySelectorAll(".delete-transaction-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
-
-        if (!confirm("Delete this transaction?")) return;
-
-        try {
-          const hid = sessionStorage.getItem("fg_current_holding_id");
-          const symbol = sessionStorage.getItem("fg_current_holding_symbol");
-
-          await api_deleteTransaction(id);
-
-          showNotification("Transaction deleted!");
-
-          ui_renderHoldingTransactions(hid, symbol, 1);
-        } catch (err) {
-          apiError(err);
-        }
-      });
-    });
 
     const prev = pagination.prev || null;
     const next = pagination.next || null;
@@ -2135,18 +2016,6 @@ document.addEventListener("DOMContentLoaded", () => {
   -------------------------------------------------------------------------- */
 
   let geoRiskMapInstance = null;
-  // Convert ISO-A2 → ISO-A3 for map matching
-  function countryCodeToA3(a2) {
-    const map = {
-      IN: "IND",
-      US: "USA",
-      UK: "GBR",
-      SG: "SGP",
-      CA: "CAN",
-      AU: "AUS",
-    };
-    return map[a2] || null;
-  }
 
   async function ui_renderGeoHeatmap() {
     const geoData = await api_getGeoRisk();
@@ -2168,7 +2037,7 @@ document.addEventListener("DOMContentLoaded", () => {
             label: "Fraud Risk Levels",
             data: labels.map((countryCode, i) => ({
               feature: window.worldGeoJSON.features.find(
-                (f) => f.properties.iso_a3 === countryCodeToA3(countryCode)
+                (f) => f.properties.iso_a2 === countryCode
               ),
               value: values[i],
             })),
@@ -2192,6 +2061,63 @@ document.addEventListener("DOMContentLoaded", () => {
   /* --------------------------------------------------------------------------
      RULE ENGINE TABLE
   -------------------------------------------------------------------------- */
+
+  async function ui_renderFraudRules(rulesOverride = null) {
+    const tbody = document.getElementById("fraud-rules-body");
+    if (!tbody) return;
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center py-6 text-slate-500">
+          Loading rule engine...
+        </td>
+      </tr>
+    `;
+
+    const rules = rulesOverride || (await api_getFraudRules());
+
+    if (!rules.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="text-center py-6 text-slate-500">
+            No rules found.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    rules.forEach((r) => {
+      const precisionColor =
+        r.precision >= 90
+          ? "text-emerald-700"
+          : r.precision >= 70
+          ? "text-amber-700"
+          : "text-rose-600";
+
+      const statusBadge =
+        r.status === "Active"
+          ? "bg-emerald-100 text-emerald-700"
+          : r.status === "Monitoring"
+          ? "bg-amber-100 text-amber-700"
+          : "bg-slate-200 text-slate-700";
+
+      tbody.innerHTML += `
+        <tr>
+          <td class="px-4 py-3 font-medium text-slate-700">${r.rule_name}</td>
+          <td class="px-4 py-3 text-slate-600">${r.trigger_count}</td>
+          <td class="px-4 py-3 ${precisionColor} font-bold">${r.precision}%</td>
+          <td class="px-4 py-3">
+            <span class="${statusBadge} px-2 py-1 rounded-full text-xs font-bold">
+              ${r.status}
+            </span>
+          </td>
+        </tr>
+      `;
+    });
+  }
 
   /* --------------------------------------------------------------------------
      FRAUD CASES TABLE + PAGINATION
@@ -2334,85 +2260,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     });
   }
-  // ======================================================
-  // FRAUD ANALYTICS SECTION SWITCH BUTTONS
-  // ======================================================
-
-  const btnViewFraudAnalysis = document.getElementById("btnViewFraudAnalysis");
-  const btnViewFraudCases = document.getElementById("btnViewFraudCases");
-  const breadcrumb = document.getElementById("breadcrumb");
-  // ======================================================
-  // FRAUD BREADCRUMB CLICK HANDLERS
-  // ======================================================
-
-  const bcOverview = document.getElementById("bc-overview");
-  const bcFraud = document.getElementById("bc-fraud");
-  const bcDivider3 = document.getElementById("bc-divider-3");
-  const bcSub = document.getElementById("bc-sub");
-
-  // Click → go back to Fraud Analytics Overview
-  if (bcFraud) {
-    bcFraud.addEventListener("click", () => {
-      // Show ONLY overview section
-      document
-        .getElementById("fraud-overview-section")
-        .classList.remove("hidden");
-      document.getElementById("fraud-analysis-section").classList.add("hidden");
-      document.getElementById("fraud-cases-section").classList.add("hidden");
-
-      // Reset breadcrumb
-      bcDivider3.classList.add("hidden");
-      bcSub.classList.add("hidden");
-
-      bcSub.textContent = "";
-    });
-  }
-
-  // =============================
-  // Fraud Analysis History Button
-  // =============================
-  if (btnViewFraudAnalysis) {
-    btnViewFraudAnalysis.addEventListener("click", () => {
-      // Hide others
-      document.getElementById("fraud-overview-section").classList.add("hidden");
-      document.getElementById("fraud-cases-section").classList.add("hidden");
-
-      // Show analysis section
-      document
-        .getElementById("fraud-analysis-section")
-        .classList.remove("hidden");
-
-      // Breadcrumb update
-      bcDivider3.classList.remove("hidden");
-      bcSub.classList.remove("hidden");
-      bcSub.textContent = "Fraud Analysis History";
-
-      // Load table
-      ui_renderFraudHistory();
-    });
-  }
-
-  // =============================
-  // Fraud Case History Button
-  // =============================
-  if (btnViewFraudCases) {
-    btnViewFraudCases.addEventListener("click", () => {
-      // Hide others
-      document.getElementById("fraud-overview-section").classList.add("hidden");
-      document.getElementById("fraud-analysis-section").classList.add("hidden");
-
-      // Show cases section
-      document.getElementById("fraud-cases-section").classList.remove("hidden");
-
-      // Breadcrumb update
-      bcDivider3.classList.remove("hidden");
-      bcSub.classList.remove("hidden");
-      bcSub.textContent = "Fraud Case History";
-
-      // Load cases
-      ui_renderFraudCases(1);
-    });
-  }
 
   /* ==========================================================================
      23. PREMIUM FEATURES (ACTIVATION SIMULATION)
@@ -2446,8 +2293,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const verify = await axios.get(
-        `${BASE_URL}/api/premium/payment-status?order_id=${res.order_id}`,
-        authHeaders
+        `${BASE_URL}/api/premium/payment-status/${res.orderId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (verify.data.success) {
@@ -2460,30 +2307,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function checkPremiumUI() {
-    const profile = await api_getProfile();
-    if (!profile) return;
+    const status = await api_getPremiumStatus();
 
-    const isPremium = profile.isPremium;
-
-    if (isPremium) {
+    if (status.isPremium) {
       premiumBadge?.classList.remove("hidden");
       goldPrices?.classList.remove("hidden");
       premiumBlock?.classList.add("hidden");
-
+      loadGoldMarketData();
       const link = document.getElementById("link-features");
       if (link) {
         link.querySelector("span.font-medium").textContent =
           "Premium Features (Active)";
       }
-
-      loadGoldMarketData();
     } else {
+      // Locked view
       premiumBadge?.classList.add("hidden");
       goldPrices?.classList.add("hidden");
       premiumBlock?.classList.remove("hidden");
     }
   }
-
   /* --------------------------------------------------------------------------
    GOLD MARKET UI RENDER
 -------------------------------------------------------------------------- */
@@ -2842,7 +2684,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showNotification(`Fraud Alert — Score: ${data.fraud_score}`);
       ui_renderFraudStats();
       ui_renderFraudDistribution();
-      //ui_renderGeoHeatmap();
+      ui_renderGeoHeatmap();
       ui_renderFraudCases(1);
     });
   }
@@ -2872,20 +2714,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ui_renderHeatmap();
         breadcrumb_update("Overview", "Market");
       } else if (storedLinkId === "link-fraud") {
-        // Load Overview only
         ui_renderFraudStats();
         ui_renderFraudDistribution();
         ui_renderGeoHeatmap();
-
-        // Show Overview Section
-        document
-          .getElementById("fraud-overview-section")
-          .classList.remove("hidden");
-        document
-          .getElementById("fraud-analysis-section")
-          .classList.add("hidden");
-        document.getElementById("fraud-cases-section").classList.add("hidden");
-
+        ui_renderFraudRules();
+        ui_renderFraudCases(1);
         breadcrumb_update("Overview", "Fraud Analytics");
       }
     } else {
@@ -2916,8 +2749,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (fraudBtn) {
     fraudBtn.addEventListener("click", async () => {
       try {
+        // Build a fresh random test transaction
         const payload = {
-          transactionId: "TXN-" + Date.now(),
+          transactionId: "TXN-" + Date.now(), // UNIQUE EVERY TIME
           amount: Math.floor(Math.random() * 5000) + 100,
           merchant: "TestVendor",
           purpose: "Test Purchase",
@@ -2925,6 +2759,7 @@ document.addEventListener("DOMContentLoaded", () => {
           deviceInfo: { ip: "127.0.0.1" },
         };
 
+        // Call backend ML scoring
         const result = await api_testFraud(payload);
 
         if (!result) {
@@ -2944,7 +2779,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div><strong>Reasons:</strong></div>
           <ul class="list-disc ml-4">
             ${
-              (result.reasons || []).length
+              result.reasons.length
                 ? result.reasons.map((r) => `<li>${r}</li>`).join("")
                 : "<li>None</li>"
             }
@@ -2952,9 +2787,13 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         }
 
+        // Open modal
         fraudModal.classList.remove("hidden");
 
+        // ⭐ NEW: Refresh ML history table immediately
         await ui_renderFraudHistory();
+
+        // ⭐ OPTIONAL: refresh stats + distribution charts too
         ui_renderFraudStats();
         ui_renderFraudDistribution();
       } catch (err) {
@@ -3015,6 +2854,4 @@ document.addEventListener("DOMContentLoaded", () => {
       openFraudDetailModal();
     }
   });
-  window.api_getGeoRisk = api_getGeoRisk;
-  window.ui_renderGeoHeatmap = ui_renderGeoHeatmap;
 });

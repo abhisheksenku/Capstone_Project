@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinGuard - User Dashboard</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/css/user.css" />
+  </head>
+  <body
+    class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-700"
+  >
+    <!-- ========================================================= -->
+    <!-- HEADER (RESPONSIVE) -->
+    <!-- ========================================================= -->
+
+    <header
+      class="fixed top-0 left-0 w-full h-16 bg-white shadow-sm z-50 flex items-center justify-between px-4 sm:px-6 border-b border-slate-200"
+    >
+      <!-- LEFT SECTION -->
+      <div class="flex items-center gap-3">
+        <!-- MOBILE ONLY: MAIN MENU + MANAGEMENT ICONS -->
+        <div class="flex gap-4 lg:hidden">
+          <button
+            id="mobile-mainmenu-btn"
+            class="text-slate-700 hover:text-blue-600 transition"
+          >
+            <span class="material-icons text-3xl">menu</span>
+          </button>
+
+          <button
+            id="mobile-management-btn"
+            class="text-slate-700 hover:text-blue-600 transition"
+          >
+            <span class="material-icons text-3xl">widgets</span>
+          </button>
+        </div>
+
+        <!-- LOGO -->
+        <div class="flex items-center text-blue-600">
+          <span class="material-icons text-3xl mr-1 hidden sm:block">
+            account_balance
+          </span>
+
+          <span
+            class="text-lg sm:text-xl font-bold tracking-tight text-slate-800"
+          >
+            FinGuard<span class="text-blue-600">Systems</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- RIGHT PROFILE -->
+      <div
+        class="flex items-center gap-4 cursor-pointer group p-1 rounded-full hover:bg-slate-50 transition"
+      >
+        <div class="text-right hidden sm:block">
+          <div
+            class="text-sm font-semibold text-slate-700 group-hover:text-blue-700"
+          >
+            Jane Doe
+          </div>
+          <div class="text-xs text-slate-500">User</div>
+          <span
+            id="premium-badge"
+            class="hidden text-yellow-500 font-bold text-xs sm:text-sm"
+          >
+            Premium User
+          </span>
+        </div>
+
+        <div class="relative">
+          <img
+            src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff"
+            class="w-9 h-9 rounded-full border-2 border-white shadow-sm ring-2 ring-slate-100"
+          />
+          <div
+            class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"
+          ></div>
+        </div>
+
+        <span
+          class="material-icons text-slate-400 group-hover:text-slate-600"
+          id="profile-menu-toggle"
+        >
+          expand_more
+        </span>
+      </div>
+    </header>
+
+    <!-- ========================================================= -->
+    <!-- SIDEBAR (DESKTOP) -->
+    <!-- ========================================================= -->
+
+    <aside
+      id="sidebar"
+      class="hidden lg:block fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-slate-800 text-slate-300 overflow-y-auto no-scrollbar z-40 shadow-xl"
+    >
+      <nav class="py-6 flex flex-col gap-1">
+        <div class="px-6 mb-4 text-xs font-bold text-slate-500 uppercase">
+          Main Menu
+        </div>
+
+        <!-- Overview Collapsible -->
+        <button
+          id="link-overview-toggle"
+          class="w-full text-left flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white transition-all border-l-4 border-transparent"
+          aria-expanded="false"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">dashboard</span>
+          <span class="font-medium text-sm">Overview</span>
+          <span class="material-icons ml-auto">expand_more</span>
+        </button>
+
+        <nav id="overview-submenu" class="hidden flex-col pl-12">
+          <a
+            id="link-overview"
+            href="#overview"
+            class="sidebar-link block py-2 text-sm text-slate-300 hover:text-white"
+          >
+            Dashboard
+          </a>
+
+          <a
+            id="link-portfolios"
+            href="#portfolios"
+            class="sidebar-link block py-2 text-sm text-slate-300 hover:text-white"
+          >
+            Portfolios
+          </a>
+        </nav>
+
+        <!-- Market -->
+        <a
+          id="link-market"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">show_chart</span>
+          <span class="font-medium text-sm">Market</span>
+        </a>
+
+        <!-- Watchlist -->
+        <a
+          id="link-watchlist"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">star</span>
+          <span class="font-medium text-sm">Watchlist</span>
+        </a>
+
+        <!-- Trending -->
+        <a
+          id="link-trending"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80"
+            >trending_up</span
+          >
+          <span class="font-medium text-sm">Trending</span>
+        </a>
+
+        <!-- Fraud Analytics (User Version) -->
+        <a
+          id="link-fraud"
+          href="#fraud"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">policy</span>
+          <span class="font-medium text-sm">Fraud Analytics</span>
+        </a>
+
+        <!-- Management -->
+        <div class="px-6 mt-6 mb-4 text-xs font-bold text-slate-500 uppercase">
+          Management
+        </div>
+
+        <!-- Alerts -->
+        <a
+          id="link-alerts"
+          href="#alerts"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80"
+            >notifications_active</span
+          >
+          <span class="font-medium text-sm">Risk Alerts</span>
+        </a>
+
+        <!-- Premium Features -->
+        <a
+          id="link-features"
+          href="#features"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">star</span>
+          <span class="font-medium text-sm">Premium Features</span>
+        </a>
+
+        <!-- Settings -->
+        <a
+          id="link-settings"
+          href="#settings"
+          class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+        >
+          <span class="material-icons text-xl mr-3 opacity-80">settings</span>
+          <span class="font-medium text-sm">Settings</span>
+        </a>
+      </nav>
+    </aside>
+    <!-- ========================================================= -->
+    <!-- MAIN CONTENT WRAPPER -->
+    <!-- ========================================================= -->
+
+    <main
+      class="lg:ml-64 mt-16 p-4 sm:p-6 min-h-[calc(100vh-4rem)] transition-all duration-300"
+    >
+      <!-- Dynamic Page Header -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 animate-fade-in gap-4"
+      >
+        <div>
+          <h1
+            id="page-title"
+            class="text-lg sm:text-2xl md:text-3xl font-bold text-slate-800"
+          >
+            Portfolio Overview
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Real-time data synchronization active
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <span class="text-xs text-slate-400 font-mono hidden sm:block">
+            Last Sync: 10:42:05 AM
+          </span>
+
+          <button
+            class="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium shadow-sm transition-all focus:ring-2 focus:ring-blue-100"
+          >
+            <span class="material-icons text-sm">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div id="breadcrumb" class="text-sm text-slate-500 mb-4">
+        <span id="breadcrumb-overview" class="cursor-pointer hover:underline">
+          Overview
+        </span>
+        <span id="breadcrumb-divider" class="mx-2 hidden">/</span>
+        <span id="breadcrumb-sub" class="hidden"></span>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- VIEW 1: DASHBOARD (Overview) -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-overview"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <!-- Tab Navigation -->
+
+        <!-- TAB A: PORTFOLIO DASHBOARD -->
+      </section>
+      <!-- ======================================================= -->
+      <!-- VIEW 2: PORTFOLIOS -->
+      <!-- ======================================================= -->
+
+      <section id="view-portfolios" class="view-section hidden animate-fade-in">
+        <div class="flex justify-between items-center mb-6">
+          <!-- LEFT COLUMN -->
+          <p class="text-base text-slate-700">
+            Portfolios store all your holdings and transactions, giving you a
+            clear overview of your investments and their current performance.
+          </p>
+
+          <!-- RIGHT COLUMN -->
+          <button
+            id="addNewPortfolioBtn"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
+          >
+            + Add New Portfolio
+          </button>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <div id="portfolio-list" class="space-y-4">
+            <!-- JS Inserts Portfolio Cards Here -->
+          </div>
+        </div>
+        <div
+          id="portfolio-pagination"
+          class="flex justify-center items-center gap-4 mt-8"
+        ></div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: CREATE PORTFOLIO -->
+      <!-- ======================================================= -->
+
+      <section id="view-portfolio-create" class="view-section hidden p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-xl font-bold">Create New Portfolio</h1>
+
+          <button
+            id="createPortfolioCancel"
+            class="text-sm text-blue-600 underline"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <form
+          id="portfolioCreateForm"
+          class="space-y-4 bg-white p-4 rounded-lg border border-slate-200"
+        >
+          <div>
+            <label class="text-sm font-medium">Portfolio Name</label>
+            <input
+              type="text"
+              id="portfolioName"
+              class="w-full p-2 border rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="text-sm font-medium">Description</label>
+            <textarea
+              id="portfolioDescription"
+              class="w-full p-2 border rounded-lg"
+            ></textarea>
+          </div>
+
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+            Create Portfolio
+          </button>
+        </form>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: HOLDINGS (User Portfolio Holdings) -->
+      <!-- ======================================================= -->
+
+      <section id="view-holdings" class="view-section hidden p-4"></section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: ADD HOLDING -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-holding-create"
+        class="view-section hidden p-4"
+      ></section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: HOLDING TRANSACTIONS -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-holding-transactions"
+        class="view-section hidden p-4"
+      ></section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: MARKET -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-market"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <h2 class="text-xl font-bold mb-4">Market</h2>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- FULL MARKET PANEL (SLIDE-IN) -->
+      <!-- ======================================================= -->
+
+      <!-- ======================================================= -->
+      <!-- VIEW: WATCHLIST -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-watchlist"
+        class="view-section hidden animate-fade-in mt-4"
+      ></section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: TRENDING -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-trending"
+        class="view-section hidden animate-fade-in mt-4"
+      >
+        <h1 class="text-xl font-bold mb-4">Trending Stocks</h1>
+      </section>
+      <!-- ======================================================= -->
+      <!-- VIEW: FRAUD ANALYTICS (USER VERSION) -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-fraud"
+        class="view-section hidden animate-fade-in mt-4"
+      ></section>
+      <!-- ======================================================= -->
+      <!-- VIEW: ALERTS -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-alerts"
+        class="view-section hidden animate-fade-in mt-4"
+      ></section>
+      <!-- ======================================================= -->
+      <!-- VIEW: SETTINGS -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-settings"
+        class="view-section hidden animate-fade-in mt-4"
+      ></section>
+
+      <!-- ======================================================= -->
+      <!-- VIEW: PREMIUM FEATURES -->
+      <!-- ======================================================= -->
+
+      <section
+        id="view-features"
+        class="view-section hidden animate-fade-in mt-4"
+      ></section>
+
+      <section id="premium-section" class="hidden p-4">
+        <h1 class="text-xl font-bold mb-4">Premium Dashboard</h1>
+      </section>
+    </main>
+    <!-- ============================================================
+     GLOBAL NOTIFICATION TOAST (WebSockets + API events)
+ ============================================================ -->
+    <div
+      id="notificationToast"
+      class="fixed bottom-6 right-6 hidden px-4 py-3 rounded-lg shadow-lg text-white text-sm transition-all duration-300 z-[9999]"
+    >
+      <span id="notificationMessage">Notification</span>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- GLOBAL SCRIPTS -->
+    <!-- ========================================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/world-atlas/countries-110m.json"></script>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/notification.js"></script>
+    <script src="/js/user.js"></script>
+    <script>
+      // Load the TopoJSON file first
+      fetch("https://unpkg.com/world-atlas@2/countries-110m.json")
+        .then((res) => res.json())
+        .then((countries110m) => {
+          window.worldGeoJSON = ChartGeo.topojson.feature(
+            countries110m,
+            countries110m.objects.countries
+          );
+
+          // Now safely render chart or map (call your map init here)
+          initGeoMap();
+        });
+
+      function initGeoMap() {
+        console.log("GeoJSON ready:", window.worldGeoJSON);
+        // your chart code here
+      }
+    </script>
+  </body>
+</html>
