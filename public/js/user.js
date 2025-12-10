@@ -738,10 +738,10 @@ document.addEventListener("DOMContentLoaded", () => {
         `${BASE_URL}/api/user/market/news/${symbol}`,
         authHeaders
       );
-      return res.data.headlines || [];
+      return { headlines: res.data.headlines || [] };
     } catch (err) {
       apiError(err);
-      return [];
+      return { headlines: [] };
     }
   }
 
@@ -1626,6 +1626,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let marketChart = null;
 
   async function openMarketPanel(symbol) {
+    // HARD FIX: Prevent corrupted symbols like [object Object]
+    if (
+      !symbol ||
+      typeof symbol !== "string" ||
+      symbol.includes("[object Object]")
+    ) {
+      console.warn("Invalid symbol passed to openMarketPanel:", symbol);
+      return; // stop before calling backend
+    }
     const panel = document.getElementById("market-panel");
     const title = document.getElementById("market-title");
     const priceEl = document.getElementById("market-live-price");
@@ -1635,6 +1644,7 @@ document.addEventListener("DOMContentLoaded", () => {
     title.textContent = symbol;
     updateWatchlistToggleButton(symbol);
     const q = await api_getMarketQuote(symbol);
+    console.log("OPEN PANEL SYMBOL =", symbol, typeof symbol);
 
     if (!q) {
       priceEl.textContent = "Unavailable";
@@ -1811,13 +1821,12 @@ document.addEventListener("DOMContentLoaded", () => {
       autoList.classList.add("hidden");
       return;
     }
-
     autoList.innerHTML = matches
       .map(
         (m) => `
       <li class="px-3 py-2 cursor-pointer hover:bg-slate-100"
-          data-symbol="${m}">
-        ${m}
+          data-symbol="${m.symbol}">
+        ${m.symbol} — ${m.name}
       </li>`
       )
       .join("");
@@ -2130,69 +2139,98 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* --------------------------------------------------------------------------
-     GEO-RISK CHOROPLETH MAP
-  -------------------------------------------------------------------------- */
-
-  let geoRiskMapInstance = null;
-  // Convert ISO-A2 → ISO-A3 for map matching
-  function countryCodeToA3(a2) {
-    const map = {
-      IN: "IND",
-      US: "USA",
-      UK: "GBR",
-      SG: "SGP",
-      CA: "CAN",
-      AU: "AUS",
-    };
-    return map[a2] || null;
-  }
-
+  /* ============================================
+   FRAUD GEO HEATMAP (Leaflet + GeoJSON)
+   ============================================ */
   async function ui_renderGeoHeatmap() {
     const geoData = await api_getGeoRisk();
-    if (!geoData || !geoData.countries) return;
+    const counts = geoData?.countries || {};
 
-    const ctx = document.getElementById("geoRiskMap");
+    // Remove old map instance
+    if (window.geoMap) window.geoMap.remove();
 
-    if (geoRiskMapInstance) geoRiskMapInstance.destroy();
+    // Init map
+    window.geoMap = L.map("geoRiskMap").setView([20, 0], 2);
 
-    const labels = Object.keys(geoData.countries);
-    const values = Object.values(geoData.countries);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 5,
+    }).addTo(window.geoMap);
 
-    geoRiskMapInstance = new Chart(ctx, {
-      type: "choropleth",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Fraud Risk Levels",
-            data: labels.map((countryCode, i) => ({
-              feature: window.worldGeoJSON.features.find(
-                (f) => f.properties.iso_a3 === countryCodeToA3(countryCode)
-              ),
-              value: values[i],
-            })),
-            borderWidth: 1,
-            borderColor: "#999",
-          },
-        ],
+    // Load world GeoJSON
+    const world = await fetch(
+      "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
+    ).then((res) => res.json());
+
+    // Color scale
+    function getColor(value) {
+      if (!value) return "#E2E8F0"; // no data = light gray
+      if (value < 3) return "#FBBF24"; // yellow
+      if (value < 7) return "#F87171"; // light red
+      return "#DC2626"; // dark red
+    }
+
+    // Draw country shapes + POPUP
+    L.geoJSON(world, {
+      style: (feature) => {
+        const isoA2 = feature.properties["ISO3166-1-Alpha-2"];
+        const count = counts[isoA2] || 0;
+
+        return {
+          fillColor: getColor(count),
+          color: "#555",
+          weight: 1,
+          fillOpacity: 0.8,
+        };
       },
-      options: {
-        showOutline: true,
-        scales: {
-          xy: { projection: "equalEarth" },
-        },
-        plugins: {
-          legend: { display: false },
-        },
+
+      onEachFeature: (feature, layer) => {
+        const isoA2 = feature.properties["ISO3166-1-Alpha-2"];
+        const name = feature.properties.name;
+        const count = counts[isoA2] || 0;
+
+        // Popup on click
+        layer.bindPopup(`
+        <b>${name}</b><br>
+        Fraud Transactions: <b>${count}</b>
+      `);
       },
+    }).addTo(window.geoMap);
+
+    // ================================
+    // ADD LABELS (numbers on the map)
+    // ================================
+    Object.keys(counts).forEach((isoA2) => {
+      const count = counts[isoA2];
+
+      // Find matching feature
+      const match = world.features.find(
+        (f) => f.properties["ISO3166-1-Alpha-2"] === isoA2
+      );
+
+      if (match) {
+        const center = L.geoJSON(match).getBounds().getCenter();
+
+        L.marker(center, {
+          icon: L.divIcon({
+            className: "fraud-label",
+            html: `
+            <div style="
+              background: rgba(0,0,0,0.7);
+              color: white;
+              padding: 2px 6px;
+              border-radius: 4px;
+              font-size: 12px;
+              text-align:center;
+            ">
+              ${count}
+            </div>
+          `,
+            iconSize: [30, 20],
+          }),
+        }).addTo(window.geoMap);
+      }
     });
   }
-
-  /* --------------------------------------------------------------------------
-     RULE ENGINE TABLE
-  -------------------------------------------------------------------------- */
-
   /* --------------------------------------------------------------------------
      FRAUD CASES TABLE + PAGINATION
   -------------------------------------------------------------------------- */
@@ -2872,18 +2910,19 @@ document.addEventListener("DOMContentLoaded", () => {
         ui_renderHeatmap();
         breadcrumb_update("Overview", "Market");
       } else if (storedLinkId === "link-fraud") {
-        // Load Overview only
         ui_renderFraudStats();
         ui_renderFraudDistribution();
+
         ui_renderGeoHeatmap();
 
-        // Show Overview Section
         document
           .getElementById("fraud-overview-section")
           .classList.remove("hidden");
+
         document
           .getElementById("fraud-analysis-section")
           .classList.add("hidden");
+
         document.getElementById("fraud-cases-section").classList.add("hidden");
 
         breadcrumb_update("Overview", "Fraud Analytics");
@@ -3015,6 +3054,4 @@ document.addEventListener("DOMContentLoaded", () => {
       openFraudDetailModal();
     }
   });
-  window.api_getGeoRisk = api_getGeoRisk;
-  window.ui_renderGeoHeatmap = ui_renderGeoHeatmap;
 });

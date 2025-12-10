@@ -14,8 +14,9 @@ router.get(
   premiumController.verifyPayment
 );
 
-
 // Dashboard calls → check if user is premium
 router.get("/status", userAuthenticate.authenticate, premiumController.getPremiumStatus);
 
+router.get("/gold", userAuthenticate.authenticate, premiumController.getGoldSummary);
+router.get("/gold/history", userAuthenticate.authenticate, premiumController.getGoldHistory);
 module.exports = router;

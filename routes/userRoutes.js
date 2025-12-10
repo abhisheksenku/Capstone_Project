@@ -22,4 +22,17 @@ router.delete("/delete/portfolio/:id",userAuthenticate.authenticate,portfolioCon
 router.delete("/delete/holding/:id",userAuthenticate.authenticate,holdingController.deleteHolding);
 router.delete("/delete/transaction/:id",userAuthenticate.authenticate,tradeTransactionController.deleteTransaction);
 
+const marketController = require('../controllers/marketController');
+router.get('/market/quote/:symbol',userAuthenticate.authenticate,marketController.getMarketQuote);
+router.get('/market/history/:symbol',userAuthenticate.authenticate,marketController.getMarketHistory);
+router.get('/market/search/:query',userAuthenticate.authenticate,marketController.searchSymbols);
+router.get('/market/heatmap',userAuthenticate.authenticate,marketController.getHeatmap);
+router.get('/market/trending',userAuthenticate.authenticate,marketController.getTrending);
+router.get('/market/news/:symbol',userAuthenticate.authenticate,marketController.getMarketNews);
+
+const watchlistController = require('../controllers/watchlistController');
+router.post('/watchlist/add',userAuthenticate.authenticate,watchlistController.addToWatchlist);
+router.get('/watchlist/list', userAuthenticate.authenticate, watchlistController.getWatchlist);
+router.delete('/watchlist/remove/:symbol',userAuthenticate.authenticate,watchlistController.removeFromWatchlist);
+
 module.exports = router;

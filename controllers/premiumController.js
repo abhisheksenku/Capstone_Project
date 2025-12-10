@@ -7,6 +7,10 @@ const {
 } = require("../services/paymentService");
 const { v4: uuidv4 } = require("uuid");
 
+const YahooFinance = require("yahoo-finance2").default;
+const yf = new YahooFinance();
+
+
 // ============================================================
 // 1. CREATE ORDER (USER CLICKS UPGRADE BUTTON)
 // ============================================================
@@ -143,8 +147,67 @@ const getPremiumStatus = async (req, res) => {
       .json({ success: false, message: "Failed to fetch premium status" });
   }
 };
+
+/* ============================================================
+   GET /api/premium/gold
+   Returns today's price, yesterday's, change %, forecast
+============================================================ */
+const getGoldSummary = async (req, res) => {
+  try {
+    const symbol = "GOLD=X"; // spot gold
+
+    const quote = await yf.quote(symbol);
+    const hist = await yf.historical(symbol, { period1: "2d" });
+
+    if (!quote || hist.length < 2)
+      return res.status(500).json({ error: "Gold data unavailable" });
+
+    const today = hist[1].close;
+    const yesterday = hist[0].close;
+
+    const change = today - yesterday;
+    const percent = (change / yesterday) * 100;
+
+    // simple forecast model: linear projection using yesterday→today slope
+    const forecast = today + change * 0.5;
+
+    return res.json({
+      todayPrice: today,
+      yesterdayPrice: yesterday,
+      change,
+      percent,
+      forecastPrice: forecast,
+      timestamp: new Date(),
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to fetch gold data" });
+  }
+};
+/* ============================================================
+   GET /api/premium/gold/history
+   Returns last 7-day gold closing prices
+============================================================ */
+const getGoldHistory = async (req, res) => {
+  try {
+    const symbol = "GOLD=X";
+
+    const data = await yf.historical(symbol, { period1: "7d" });
+
+    const mapped = data.map((x) => ({
+      date: x.date,
+      price: x.close,
+    }));
+
+    return res.json(mapped.reverse());
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to fetch gold history" });
+  }
+};
+
 module.exports = {
   createOrder,
   verifyPayment,
   getPremiumStatus,
+  getGoldSummary,
+  getGoldHistory,
 };
