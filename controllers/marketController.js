@@ -1,7 +1,6 @@
 // controllers/marketController.js
 const YahooFinance = require("yahoo-finance2").default;
 const yf = new YahooFinance();
-
 /* ============================================================
    GET /api/user/market/quote/:symbol
    SAFE VERSION: auto append .NS for NSE stocks
@@ -31,7 +30,6 @@ const getMarketQuote = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch quote" });
   }
 };
-
 /* ============================================================
    GET /api/user/market/history/:symbol
    Returns last 30 days OHLC history
@@ -64,8 +62,6 @@ const getMarketHistory = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch history" });
   }
 };
-
-
 /* ============================================================
    GET /api/user/market/search/:query
    SAFE VERSION: manually match NSE stocks
@@ -96,7 +92,6 @@ const searchSymbols = async (req, res) => {
     return res.status(500).json({ error: "Failed to search symbols" });
   }
 };
-
 /* ============================================================
    GET /api/user/market/heatmap
    SAFE VERSION: Fetch quotes one-by-one (works on all versions)
@@ -167,7 +162,6 @@ const getHeatmap = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch heatmap" });
   }
 };
-
 /* ============================================================
    GET /api/user/market/trending
    SAFE VERSION: Indian + US stocks, fetched individually
@@ -235,7 +229,6 @@ const getTrending = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch trending" });
   }
 };
-
 /* ============================================================
    GET /api/user/market/news/:symbol
    Returns headlines for a stock
@@ -269,8 +262,6 @@ const getMarketNews = async (req, res) => {
     return res.json({ headlines: [] }); // return empty instead of 500
   }
 };
-
-
 module.exports = {
   getMarketQuote,
   getMarketHistory,

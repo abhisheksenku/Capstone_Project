@@ -214,6 +214,9 @@ document.addEventListener("DOMContentLoaded", () => {
         bcDivider3.classList.add("hidden");
         bcSub.classList.add("hidden");
         bcSub.textContent = "";
+      } else if (linkId === "link-alerts") {
+        ui_renderAlerts(); // you will implement this function
+        updateBreadcrumb("Overview", "Alerts");
       } else {
         updateBreadcrumb(null);
       }
@@ -343,6 +346,9 @@ document.addEventListener("DOMContentLoaded", () => {
         bcDivider3.classList.add("hidden");
         bcSub.classList.add("hidden");
         bcSub.textContent = "";
+      } else if (linkId === "link-alerts") {
+        ui_renderAlerts(); // you will implement this function
+        updateBreadcrumb("Overview", "Alerts");
       } else {
         updateBreadcrumb(null);
       }
@@ -742,6 +748,43 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       apiError(err);
       return { headlines: [] };
+    }
+  }
+  /* --------------------------------------------------------------------------
+   RISK ALERTS API
+-------------------------------------------------------------------------- */
+
+  async function api_getAlerts() {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/user/alerts`, authHeaders);
+      return res.data.alerts || [];
+    } catch (err) {
+      apiError(err);
+      return [];
+    }
+  }
+
+  async function api_resolveAlert(id) {
+    try {
+      await axios.patch(
+        `${BASE_URL}/api/user/alerts/${id}/resolve`,
+        {},
+        authHeaders
+      );
+      return true;
+    } catch (err) {
+      apiError(err);
+      return false;
+    }
+  }
+
+  async function api_resolveAllAlerts() {
+    try {
+      await axios.patch(`${BASE_URL}/api/user/alerts/resolve-all`, {}, authHeaders);
+      return true;
+    } catch (err) {
+      apiError(err);
+      return false;
     }
   }
 
@@ -2054,6 +2097,89 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+  /* ==========================================================================
+   22. RISK ALERTS UI (User Dashboard)
+   ========================================================================== */
+
+  async function ui_renderAlerts() {
+    ui_showView("view-alerts");
+    ui_setActive("link-alerts");
+
+    const list = document.getElementById("alerts-list");
+    const empty = document.getElementById("alerts-empty");
+
+    list.innerHTML = "";
+
+    const alerts = await api_getAlerts();
+
+    if (!alerts.length) {
+      empty.classList.remove("hidden");
+      return;
+    }
+
+    empty.classList.add("hidden");
+
+    alerts.forEach((a) => {
+      const resolved = a.resolved_at ? "resolved" : "pending";
+      const color =
+        a.severity === "critical"
+          ? "text-red-600"
+          : a.severity === "high"
+          ? "text-orange-600"
+          : a.severity === "medium"
+          ? "text-yellow-600"
+          : "text-slate-500";
+
+      list.innerHTML += `
+      <div class="alert-card border p-4 rounded mb-3">
+        <div class="flex justify-between items-center">
+          
+          <div>
+            <div class="font-semibold ${color}">
+              ${a.severity.toUpperCase()} — ${escapeHtml(a.alert_type)}
+            </div>
+            <div class="text-sm text-slate-600 mt-1">
+              ${escapeHtml(a.message)}
+            </div>
+            <div class="text-xs text-slate-400 mt-1">
+              ${new Date(a.triggered_at).toLocaleString()}
+            </div>
+          </div>
+
+          <div>
+            ${
+              !a.resolved_at
+                ? `<button class="resolve-alert-btn bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                    data-id="${a.id}">
+                    Mark Read
+                  </button>`
+                : `<span class="text-green-600 text-sm font-medium">Resolved</span>`
+            }
+          </div>
+
+        </div>
+      </div>
+    `;
+    });
+
+    // Attach single resolve event
+    document.querySelectorAll(".resolve-alert-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        await api_resolveAlert(id);
+        ui_renderAlerts();
+      });
+    });
+
+    // Attach resolve-all
+    const resolveAllBtn = document.getElementById("resolveAllAlertsBtn");
+    if (resolveAllBtn) {
+      resolveAllBtn.onclick = async () => {
+        await api_resolveAllAlerts();
+        ui_renderAlerts();
+      };
+    }
+  }
 
   /* ==========================================================================
      21. FRAUD ANALYTICS — KPIs, HISTOGRAM, MAP, RULE ENGINE, CASES
@@ -2081,6 +2207,89 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("fraud-kpi-highrisk").textContent =
       stats.high_risk_users;
+  }
+  /* ==========================================================================
+   22. RISK ALERTS UI (User Dashboard)
+   ========================================================================== */
+
+  async function ui_renderAlerts() {
+    ui_showView("view-alerts");
+    ui_setActive("link-alerts");
+
+    const list = document.getElementById("alerts-list");
+    const empty = document.getElementById("alerts-empty");
+
+    list.innerHTML = "";
+
+    const alerts = await api_getAlerts();
+
+    if (!alerts.length) {
+      empty.classList.remove("hidden");
+      return;
+    }
+
+    empty.classList.add("hidden");
+
+    alerts.forEach((a) => {
+      const resolved = a.resolved_at ? "resolved" : "pending";
+      const color =
+        a.severity === "critical"
+          ? "text-red-600"
+          : a.severity === "high"
+          ? "text-orange-600"
+          : a.severity === "medium"
+          ? "text-yellow-600"
+          : "text-slate-500";
+
+      list.innerHTML += `
+      <div class="alert-card border p-4 rounded mb-3">
+        <div class="flex justify-between items-center">
+          
+          <div>
+            <div class="font-semibold ${color}">
+              ${a.severity.toUpperCase()} — ${escapeHtml(a.alert_type)}
+            </div>
+            <div class="text-sm text-slate-600 mt-1">
+              ${escapeHtml(a.message)}
+            </div>
+            <div class="text-xs text-slate-400 mt-1">
+              ${new Date(a.triggered_at).toLocaleString()}
+            </div>
+          </div>
+
+          <div>
+            ${
+              !a.resolved_at
+                ? `<button class="resolve-alert-btn bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                    data-id="${a.id}">
+                    Mark Read
+                  </button>`
+                : `<span class="text-green-600 text-sm font-medium">Resolved</span>`
+            }
+          </div>
+
+        </div>
+      </div>
+    `;
+    });
+
+    // Attach single resolve event
+    document.querySelectorAll(".resolve-alert-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        await api_resolveAlert(id);
+        ui_renderAlerts();
+      });
+    });
+
+    // Attach resolve-all
+    const resolveAllBtn = document.getElementById("resolveAllAlertsBtn");
+    if (resolveAllBtn) {
+      resolveAllBtn.onclick = async () => {
+        await api_resolveAllAlerts();
+        ui_renderAlerts();
+      };
+    }
   }
 
   /* --------------------------------------------------------------------------

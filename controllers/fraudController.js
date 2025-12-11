@@ -4,6 +4,8 @@ const FraudModelOutput = require("../models/mongodb/fraudModelOutputSchema");
 const { Sequelize } = require("sequelize");
 const { scoreFraud } = require("../services/mlService");
 const { v4: uuidv4 } = require("uuid");
+const RiskAlert = require("../models/mysql/riskAlert");
+
 const getFraudStats = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -129,13 +131,30 @@ const testFraud = async (req, res) => {
       reason: score.reasons?.join(", ") || "None",
       country: payload.geo?.country || "IN",
     });
+    // 3️⃣ Generate Risk Alert when fraud score is high
+    // 3️⃣ Generate Risk Alert when fraud score is high
+    if (score.fraud_probability > 0.1) {
+      await RiskAlert.create({
+        user_id: userId,
+        portfolio_id: null, // <----- FIXED
+        severity: score.fraud_probability > 0.9 ? "critical" : "high",
+        alert_type: "Fraud Detection",
+        message: `Fraud probability: ${(score.fraud_probability * 100).toFixed(
+          2
+        )}%`,
+        metadata: {
+          transactionId: payload.transactionId,
+          reasons: score.reasons || [],
+        },
+        triggered_at: new Date(),
+      });
+    }
 
     res.json({
       ...score,
       saved_case: savedCase.id,
       saved_to_history: true,
     });
-
   } catch (err) {
     console.error("Fraud score error:", err);
     res.status(500).json({ error: "Scoring failed" });

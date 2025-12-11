@@ -7,7 +7,7 @@ const connectMongo = async () => {
     console.log("MongoDB connected successfully");
     // await mongoose.connection.dropDatabase();   // IMPORTANT LINE
     // console.log("Database dropped successfully");
-    //process.exit(0);
+    // process.exit(0);
   } catch (err) {
     console.error("MongoDB connection failed:", err.message);
     process.exit(1);

@@ -35,4 +35,9 @@ router.post('/watchlist/add',userAuthenticate.authenticate,watchlistController.a
 router.get('/watchlist/list', userAuthenticate.authenticate, watchlistController.getWatchlist);
 router.delete('/watchlist/remove/:symbol',userAuthenticate.authenticate,watchlistController.removeFromWatchlist);
 
+const riskAlertController = require('../controllers/riskAlertController');
+router.get('/alerts', userAuthenticate.authenticate, riskAlertController.getAlerts);
+router.patch('/alerts/:id/resolve', userAuthenticate.authenticate, riskAlertController.resolveAlert);
+router.patch('/alerts/resolve-all', userAuthenticate.authenticate, riskAlertController.resolveAllAlerts);
+
 module.exports = router;

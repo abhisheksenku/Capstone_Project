@@ -43,7 +43,6 @@ const signupUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -130,7 +129,6 @@ const requestPasswordReset = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 // --- Reset password using token ---
 const updatenewPassword = async (req, res) => {
   const { token } = req.params;
@@ -185,7 +183,6 @@ const updatenewPassword = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   signupUser,
   loginUser,

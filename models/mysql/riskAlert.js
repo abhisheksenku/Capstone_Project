@@ -17,7 +17,7 @@ const RiskAlert = sequelize.define(
 
     portfolio_id: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
     },
 
     alert_type: {
