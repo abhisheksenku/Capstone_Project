@@ -270,23 +270,17 @@
       <!-- ======================================================= -->
       <!-- VIEW 1: DASHBOARD (Overview) -->
       <!-- ======================================================= -->
-
       <section id="view-overview" class="view-section animate-fade-in">
         <!-- Tab Navigation -->
         <div
           class="flex flex-wrap border-b border-slate-200 mb-4 sm:mb-6 space-x-3 sm:space-x-6"
         >
-          <!-- Portfolio Dashboard -->
           <button
             class="tab-btn active pb-2 sm:pb-3 text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
             data-target="tab-portfolio"
           >
             Portfolio Dashboard
           </button>
-
-          <!-- Fraud Ops Tab Removed (ADMIN ONLY) -->
-
-          <!-- Analyst Case Manager Tab Removed (ADMIN ONLY) -->
         </div>
 
         <!-- TAB A: PORTFOLIO DASHBOARD -->
@@ -295,7 +289,7 @@
           <div
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
           >
-            <!-- Metric Card 1 -->
+            <!-- Total Investment -->
             <div
               class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
             >
@@ -304,8 +298,11 @@
               >
                 Total Investment
               </h4>
-              <div class="text-xl sm:text-2xl font-bold text-slate-800">
-                $150,000.00
+              <div
+                id="metric-total-investment"
+                class="text-xl sm:text-2xl font-bold text-slate-800"
+              >
+                --
               </div>
               <div
                 class="text-[10px] sm:text-xs font-semibold text-amber-500 mt-1 flex items-center"
@@ -315,7 +312,7 @@
               </div>
             </div>
 
-            <!-- Metric Card 2 -->
+            <!-- Total P/L -->
             <div
               class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
             >
@@ -324,20 +321,21 @@
               >
                 Total P/L
               </h4>
-
-              <div class="text-xl sm:text-2xl font-bold text-emerald-600">
-                +$7,500.00
+              <div
+                id="metric-total-pl"
+                class="text-xl sm:text-2xl font-bold text-emerald-600"
+              >
+                --
               </div>
-
               <div
                 class="text-[10px] sm:text-xs font-semibold text-emerald-600 mt-1 flex items-center"
               >
                 <span class="material-icons text-sm mr-1">arrow_upward</span>
-                +5.0% Return
+                Overall Return
               </div>
             </div>
 
-            <!-- Metric Card 3 -->
+            <!-- Today's P/L -->
             <div
               class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
             >
@@ -346,20 +344,21 @@
               >
                 Today’s P/L
               </h4>
-
-              <div class="text-xl sm:text-2xl font-bold text-rose-500">
-                -$450.50
+              <div
+                id="metric-today-pl"
+                class="text-xl sm:text-2xl font-bold text-rose-500"
+              >
+                --
               </div>
-
               <div
                 class="text-[10px] sm:text-xs font-semibold text-rose-500 mt-1 flex items-center"
               >
                 <span class="material-icons text-sm mr-1">arrow_downward</span>
-                -0.3% Today
+                Today
               </div>
             </div>
 
-            <!-- Metric Card 4 -->
+            <!-- Risk VaR -->
             <div
               class="bg-white p-4 sm:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
             >
@@ -368,16 +367,17 @@
               >
                 Risk (VaR 99%)
               </h4>
-
-              <div class="text-xl sm:text-2xl font-bold text-slate-700">
-                -$3,100
+              <div
+                id="metric-risk"
+                class="text-xl sm:text-2xl font-bold text-slate-700"
+              >
+                --
               </div>
-
               <div
                 class="text-[10px] sm:text-xs font-semibold text-rose-500 mt-1 flex items-center"
               >
                 <span class="material-icons text-sm mr-1">warning</span>
-                Breach Warning
+                Risk Estimate
               </div>
             </div>
           </div>
@@ -394,14 +394,10 @@
                 Portfolio Value History
               </h4>
 
-              <div
-                class="w-full h-60 sm:h-72 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400"
-              >
-                <span class="material-icons text-4xl mb-2">show_chart</span>
-                <span class="text-sm font-medium"
-                  >Line Chart Visualization</span
-                >
-              </div>
+              <canvas
+                id="portfolio-history-chart"
+                class="w-full h-60 sm:h-72"
+              ></canvas>
             </div>
 
             <!-- Asset Allocation -->
@@ -412,16 +408,14 @@
                 Asset Allocation
               </h4>
 
-              <div
-                class="w-full h-60 sm:h-72 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400"
-              >
-                <span class="material-icons text-4xl mb-2">pie_chart</span>
-                <span class="text-sm font-medium">Pie Chart Visualization</span>
-              </div>
+              <canvas
+                id="portfolio-allocation-chart"
+                class="w-full h-60 sm:h-72"
+              ></canvas>
             </div>
           </div>
 
-          <!-- Holdings Table (User View) -->
+          <!-- Holdings Table -->
           <div
             class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
           >
@@ -446,70 +440,18 @@
                   </tr>
                 </thead>
 
-                <tbody class="divide-y divide-slate-100">
-                  <!-- Example Row -->
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
-                      AAPL
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-600">150</td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-600">$160.00</td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
-                      $170.50
-                    </td>
-                    <td
-                      class="px-4 sm:px-6 py-3 text-emerald-600 font-semibold"
-                    >
-                      +1.2%
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
-                      +$1,575.00
-                    </td>
-                  </tr>
-
-                  <!-- Example Row -->
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
-                      TSLA
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-600">50</td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-600">$220.00</td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
-                      $215.30
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-rose-500 font-semibold">
-                      -2.1%
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-rose-500 font-bold">
-                      -$235.00
-                    </td>
-                  </tr>
-
-                  <!-- Example Row -->
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">
-                      SPY
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-600">25</td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-600">$420.00</td>
-                    <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">
-                      $425.80
-                    </td>
-                    <td
-                      class="px-4 sm:px-6 py-3 text-emerald-600 font-semibold"
-                    >
-                      +0.5%
-                    </td>
-                    <td class="px-4 sm:px-6 py-3 text-emerald-600 font-bold">
-                      +$145.00
-                    </td>
-                  </tr>
+                <tbody
+                  id="dashboard-holdings-body"
+                  class="divide-y divide-slate-100"
+                >
+                  <!-- Populated by JS -->
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </section>
+
       <!-- ======================================================= -->
       <!-- VIEW 2: PORTFOLIOS -->
       <!-- ======================================================= -->

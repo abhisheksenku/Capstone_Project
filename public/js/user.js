@@ -82,7 +82,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
     return n;
   }
-
+  function formatMoney(value, currency = "₹") {
+    if (value === null || value === undefined || isNaN(value)) return "—";
+    const num = Number(value);
+    const abs = Math.abs(num);
+    if (abs >= 1_00_00_000)
+      return `${currency}${(num / 1_00_00_000).toFixed(2)}Cr`;
+    if (abs >= 1_00_000) return `${currency}${(num / 1_00_000).toFixed(2)}L`;
+    if (abs >= 1_000) return `${currency}${(num / 1_000).toFixed(2)}K`;
+    return `${currency}${num.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }
   /* ==========================================================================
      03. VIEW SYSTEM (Show/Hide + Active Sidebar)
      ========================================================================== */
@@ -751,6 +763,67 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   /* --------------------------------------------------------------------------
+   DASHBOARD SUMMARY API
+-------------------------------------------------------------------------- */
+
+  async function api_getDashboardMetrics() {
+    try {
+      const r = await axios.get(
+        `${BASE_URL}/api/user/dashboard/metrics`,
+        authHeaders
+      );
+      return r.data;
+    } catch (err) {
+      apiError(err);
+      return null;
+    }
+  }
+
+  async function api_getDashboardHoldings() {
+    try {
+      const r = await axios.get(
+        `${BASE_URL}/api/user/dashboard/holdings`,
+        authHeaders
+      );
+      console.log("Raw dashboard holdings from backend:", r.data); // ← THIS WILL TELL YOU THE TRUTH
+      return r.data.items || r.data || [];
+    } catch (err) {
+      console.error(
+        "Failed to load dashboard holdings:",
+        err.response?.data || err
+      );
+      apiError(err);
+      return [];
+    }
+  }
+
+  async function api_getDashboardValueHistory() {
+    try {
+      const r = await axios.get(
+        `${BASE_URL}/api/user/dashboard/value-history`,
+        authHeaders
+      );
+      return r.data || [];
+    } catch (err) {
+      apiError(err);
+      return [];
+    }
+  }
+
+  async function api_getDashboardAllocation() {
+    try {
+      const r = await axios.get(
+        `${BASE_URL}/api/user/dashboard/allocation`,
+        authHeaders
+      );
+      return r.data.items || [];
+    } catch (err) {
+      apiError(err);
+      return [];
+    }
+  }
+
+  /* --------------------------------------------------------------------------
    RISK ALERTS API
 -------------------------------------------------------------------------- */
 
@@ -780,7 +853,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function api_resolveAllAlerts() {
     try {
-      await axios.patch(`${BASE_URL}/api/user/alerts/resolve-all`, {}, authHeaders);
+      await axios.patch(
+        `${BASE_URL}/api/user/alerts/resolve-all`,
+        {},
+        authHeaders
+      );
       return true;
     } catch (err) {
       apiError(err);
@@ -1139,6 +1216,151 @@ document.addEventListener("DOMContentLoaded", () => {
       pageTitle.textContent = "My Portfolios";
       const saved = Number(sessionStorage.getItem(STORE_PORTFOLIO_PAGE)) || 1;
       ui_renderPortfolioList(saved);
+    });
+  }
+  /* --------------------------------------------------------------------------
+   DASHBOARD UI RENDERERS
+-------------------------------------------------------------------------- */
+
+  function ui_renderDashboardMetrics(m) {
+    document.getElementById("metric-total-investment").innerText = formatMoney(
+      m.totalInvestment
+    );
+
+    document.getElementById("metric-total-pl").innerText = formatMoney(
+      m.totalPL
+    );
+
+    document.getElementById("metric-today-pl").innerText = formatMoney(
+      m.todaysPL
+    );
+
+    document.getElementById("metric-risk").innerText = formatMoney(m.riskValue);
+  }
+
+  function ui_renderDashboardHoldings(items) {
+    console.log("Dashboard holdings data received:", items); // ← DEBUG THIS
+
+    const tbody = document.getElementById("dashboard-holdings-body");
+    if (!tbody) {
+      console.error("dashboard-holdings-body not found in DOM");
+      return;
+    }
+
+    tbody.innerHTML = ""; // clear
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center py-10 text-slate-500">
+          No holdings found. Add stocks to your portfolio.
+        </td>
+      </tr>
+    `;
+      return;
+    }
+
+    items.forEach((h, i) => {
+      // Normalize field names — support both snake_case and camelCase
+      const symbol = h.symbol || h.Symbol || "—";
+      const qty = h.qty || h.quantity || h.Quantity || 0;
+      const avgPrice = h.avg_price || h.avgPrice || h.avg_price_bought || 0;
+      const ltp = h.ltp || h.price || h.current_price || h.last_price || 0;
+      const dayChange = h.dayChange || h.day_change || h.change_percent || 0;
+      const netPL =
+        h.netPL || h.net_profit_loss || h.net_pl || h.profit_loss || 0;
+
+      const row = `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="px-4 sm:px-6 py-3 font-medium text-slate-900">${symbol}</td>
+        <td class="px-4 sm:px-6 py-3 text-slate-600">${qty}</td>
+        <td class="px-4 sm:px-6 py-3 text-slate-600">${formatMoney(
+          avgPrice
+        )}</td>
+        <td class="px-4 sm:px-6 py-3 text-slate-800 font-bold">${formatMoney(
+          ltp
+        )}</td>
+        <td class="px-4 sm:px-6 py-3 ${
+          dayChange >= 0 ? "text-emerald-600" : "text-rose-500"
+        } font-semibold">
+          ${Number(dayChange).toFixed(2)}%
+        </td>
+        <td class="px-4 sm:px-6 py-3 ${
+          netPL >= 0 ? "text-emerald-600" : "text-rose-500"
+        } font-bold">
+          ${formatMoney(netPL)}
+        </td>
+      </tr>
+    `;
+
+      tbody.innerHTML += row;
+    });
+
+    console.log(`Successfully rendered ${items.length} holdings`);
+  }
+  // ------------------------------------------------------------
+  // PORTFOLIO CHARTS (LINE + PIE)
+  // ------------------------------------------------------------
+
+  let portfolioHistoryChart = null;
+
+  function renderPortfolioHistoryChart(data) {
+    const ctx = document.getElementById("portfolio-history-chart");
+    if (!ctx) return;
+    if (portfolioHistoryChart) portfolioHistoryChart.destroy();
+
+    const labels = data.map((d) => d.date);
+    const values = data.map((d) => d.value);
+
+    portfolioHistoryChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Portfolio Value",
+            data: values,
+            borderWidth: 2,
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            ticks: {
+              callback: (v) => `₹${v}`,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  let portfolioAllocationChart = null;
+
+  function renderPortfolioAllocationChart(data) {
+    const ctx = document.getElementById("portfolio-allocation-chart");
+    if (!ctx) return;
+    if (portfolioAllocationChart) portfolioAllocationChart.destroy();
+
+    const labels = data.map((d) => d.asset);
+    const values = data.map((d) => d.percentage);
+
+    portfolioAllocationChart = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels,
+        datasets: [{ data: values }],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: "bottom" },
+        },
+      },
     });
   }
 
@@ -3093,6 +3315,36 @@ document.addEventListener("DOMContentLoaded", () => {
       ui_renderFraudCases(1);
     });
   }
+  /* --------------------------------------------------------------------------
+   LOAD ALL DASHBOARD DATA (Portfolio Overview)
+-------------------------------------------------------------------------- */
+  async function loadDashboardData() {
+    console.log("loadDashboardData() triggered – fetching dashboard data...");
+
+    try {
+      // 1. Metrics
+      const metrics = await api_getDashboardMetrics();
+      console.log("Metrics response:", metrics);
+      if (metrics) ui_renderDashboardMetrics(metrics);
+
+      // 2. Holdings – THIS IS THE IMPORTANT ONE
+      const holdings = await api_getDashboardHoldings();
+      console.log("Holdings response:", holdings);
+      ui_renderDashboardHoldings(holdings || []);
+
+      // 3. History + Allocation
+      const historyData = await api_getDashboardValueHistory();
+      const allocationData = await api_getDashboardAllocation();
+      renderPortfolioHistoryChart(historyData);
+      renderPortfolioAllocationChart(allocationData);
+
+      console.log("Dashboard data loaded successfully");
+    } catch (err) {
+      console.error("loadDashboardData() FAILED:", err);
+      console.error("Error response:", err.response?.data);
+      showNotification("Failed to load dashboard data", true);
+    }
+  }
 
   /* ==========================================================================
      31. MAIN INITIALIZER — FINAL
@@ -3140,6 +3392,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Default = Overview
       ui_setActive("link-overview");
       ui_showView("view-overview");
+      await loadDashboardData();
       pageTitle.textContent = "Portfolio Overview";
       breadcrumb_update(null);
       sessionStorage.setItem(STORE_CURRENT_VIEW, "link-overview");

@@ -40,4 +40,10 @@ router.get('/alerts', userAuthenticate.authenticate, riskAlertController.getAler
 router.patch('/alerts/:id/resolve', userAuthenticate.authenticate, riskAlertController.resolveAlert);
 router.patch('/alerts/resolve-all', userAuthenticate.authenticate, riskAlertController.resolveAllAlerts);
 
+const dashboardController = require('../controllers/dashboardController');
+router.get('/dashboard/metrics', userAuthenticate.authenticate, dashboardController.getDashboardMetrics);
+router.get('/dashboard/holdings', userAuthenticate.authenticate, dashboardController.getDashboardHoldings);
+router.get('/dashboard/value-history', userAuthenticate.authenticate, dashboardController.getValueHistory);
+router.get('/dashboard/allocation', userAuthenticate.authenticate, dashboardController.getAllocation);
+
 module.exports = router;
