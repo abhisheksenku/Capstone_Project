@@ -19,18 +19,20 @@ const authenticate = async (req, res, next) => {
     // Verify JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded JWT:", decoded);
+    const user = await User.findByPk(decoded.user.id, {
+      attributes: ["id", "role", "isPremium"],
+    });
 
-    // Extract userId from token
-    // const userId = decoded.user.id;
-    // const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    // if (!user) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, message: "User not found" });
-    // }
+    req.user = {
+      id: user.id,
+      role: user.role,
+      isPremium: user.isPremium,
+    };
 
-    req.user = decoded.user; // attach user to request object
     next();
   } catch (error) {
     console.error("Authentication error:", error.message);

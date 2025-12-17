@@ -149,7 +149,6 @@ const testFraud = async (req, res) => {
         triggered_at: new Date(),
       });
     }
-
     res.json({
       ...score,
       saved_case: savedCase.id,

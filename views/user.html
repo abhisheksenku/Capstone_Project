@@ -74,11 +74,11 @@
           <div
             class="text-sm font-semibold text-slate-700 group-hover:text-blue-700"
           >
-            Jane Doe
+            --
           </div>
-          <div class="text-xs text-slate-500">User</div>
+          <div class="text-xs text-slate-500">--</div>
           <span
-            id="premium-badge"
+            id="header-premium-badge"
             class="hidden text-yellow-500 font-bold text-xs sm:text-sm"
           >
             Premium User
@@ -87,9 +87,11 @@
 
         <div class="relative">
           <img
-            src="https://ui-avatars.com/api/?name=Jane+Doe&background=0D8ABC&color=fff"
+            id="headerAvatar"
+            src=""
             class="w-9 h-9 rounded-full border-2 border-white shadow-sm ring-2 ring-slate-100"
           />
+
           <div
             class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"
           ></div>
@@ -101,6 +103,25 @@
         >
           expand_more
         </span>
+      </div>
+      <!-- PROFILE DROPDOWN MENU -->
+      <div
+        id="profileMenu"
+        class="hidden absolute right-4 top-16 w-48 bg-white border border-slate-200 rounded-lg shadow-lg z-50"
+      >
+        <button
+          id="viewProfileBtn"
+          class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-100"
+        >
+          View Profile
+        </button>
+
+        <button
+          id="logoutBtn"
+          class="block w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-slate-100"
+        >
+          Logout
+        </button>
       </div>
     </header>
 
@@ -133,6 +154,7 @@
             id="link-overview"
             href="#overview"
             class="sidebar-link block py-2 text-sm text-slate-300 hover:text-white"
+            data-view="overview"
           >
             Dashboard
           </a>
@@ -141,6 +163,7 @@
             id="link-portfolios"
             href="#portfolios"
             class="sidebar-link block py-2 text-sm text-slate-300 hover:text-white"
+            data-view="portfolios"
           >
             Portfolios
           </a>
@@ -150,6 +173,7 @@
         <a
           id="link-market"
           class="sidebar-link flex items-center gap-2 px-3 py-2 hover:bg-slate-200 rounded"
+          data-view="market"
         >
           <span class="material-icons text-slate-600">show_chart</span>
           <span class="font-medium text-slate-700">Market</span>
@@ -159,6 +183,7 @@
         <a
           id="link-watchlist"
           class="sidebar-link flex items-center gap-2 px-3 py-2 hover:bg-slate-200 rounded"
+          data-view="watchlist"
         >
           <span class="material-icons text-slate-600">star</span>
           <span class="font-medium text-slate-700">Watchlist</span>
@@ -168,6 +193,7 @@
         <a
           id="link-trending"
           class="sidebar-link flex items-center gap-2 px-3 py-2 hover:bg-slate-200 rounded"
+          data-view="trending"
         >
           <span class="material-icons text-slate-600">trending_up</span>
           <span class="font-medium text-slate-700">Trending</span>
@@ -178,6 +204,7 @@
           id="link-fraud"
           href="#fraud"
           class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white border-l-4 border-transparent"
+          data-view="fraud"
         >
           <span class="material-icons text-xl mr-3 opacity-80">policy</span>
           <span class="font-medium text-sm">Fraud Analytics</span>
@@ -193,6 +220,7 @@
           id="link-alerts"
           href="#alerts"
           class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+          data-view="alerts"
         >
           <span class="material-icons text-xl mr-3 opacity-80"
             >notifications_active</span
@@ -205,6 +233,7 @@
           id="link-features"
           href="#features"
           class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+          data-view="features"
         >
           <span class="material-icons text-xl mr-3 opacity-80">star</span>
           <span class="font-medium text-sm">Premium Features</span>
@@ -215,6 +244,7 @@
           id="link-settings"
           href="#settings"
           class="sidebar-link flex items-center px-6 py-3.5 hover:bg-slate-700 hover:text-white"
+          data-view="settings"
         >
           <span class="material-icons text-xl mr-3 opacity-80">settings</span>
           <span class="font-medium text-sm">Settings</span>
@@ -757,7 +787,16 @@
         <!-- ======================================================= -->
 
         <div class="mt-8">
-          <h2 class="text-lg font-bold text-slate-800 mb-3">Price Heatmap</h2>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-slate-800">Price Heatmap</h2>
+
+            <button
+              id="refreshHeatmapBtn"
+              class="text-sm text-blue-600 hover:underline"
+            >
+              Refresh
+            </button>
+          </div>
 
           <div id="heatmap-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
             <!-- JS will fill tiles dynamically -->
@@ -1171,7 +1210,7 @@
                 type="text"
                 id="name"
                 class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
-                value="John Doe"
+                value=""
                 disabled
               />
             </div>
@@ -1184,7 +1223,7 @@
                 type="email"
                 id="email"
                 class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
-                value="john.doe@example.com"
+                value=""
                 disabled
               />
             </div>
@@ -1197,7 +1236,7 @@
                 type="tel"
                 id="phone"
                 class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-slate-100"
-                value="+91 9876543210"
+                value=""
                 disabled
               />
             </div>
@@ -1323,7 +1362,7 @@
         <!-- Unlocked Premium Content -->
         <div id="gold-prices" class="hidden mt-4 space-y-4">
           <span
-            id="premium-badge"
+            id="feature-premium-badge"
             class="hidden bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold"
           >
             Premium Active
@@ -1411,7 +1450,9 @@
               Gold Price Trend (Last 7 Days)
             </h3>
 
-            <canvas id="gold-7day-chart" class="w-full h-44 sm:h-56"></canvas>
+            <div class="h-56 sm:h-64">
+              <canvas id="gold-7day-chart"></canvas>
+            </div>
           </div>
         </div>
       </section>
@@ -1447,7 +1488,7 @@
     <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="/js/config.js"></script>
-    <script src="/js/notification.js"></script>
-    <script src="/js/user.js"></script>
+    <!-- <script src="/js/notification.js"></script> -->
+    <script type="module" src="/js/user.js"></script>
   </body>
 </html>

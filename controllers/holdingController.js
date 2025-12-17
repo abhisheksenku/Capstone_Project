@@ -1,6 +1,6 @@
 const Holding = require("../models/mysql/holding");
 const Portfolio = require("../models/mysql/portfolio");
-const TradeTransaction = require('../models/mysql/tradeTransaction');
+const TradeTransaction = require("../models/mysql/tradeTransaction");
 
 const getHoldings = async (req, res) => {
   try {
@@ -13,7 +13,7 @@ const getHoldings = async (req, res) => {
 
     // Verify ownership
     const portfolio = await Portfolio.findOne({
-      where: { id: portfolioId, user_id: userId }
+      where: { id: portfolioId, user_id: userId },
     });
 
     if (!portfolio) {
@@ -24,7 +24,7 @@ const getHoldings = async (req, res) => {
       where: { portfolio_id: portfolioId },
       offset,
       limit,
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
 
     const totalPages = Math.ceil(count / limit);
@@ -37,8 +37,8 @@ const getHoldings = async (req, res) => {
         totalItems: count,
         totalPages,
         hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
-      }
+        hasPrevPage: page > 1,
+      },
     });
   } catch (err) {
     console.error(err);
@@ -56,7 +56,7 @@ const createHolding = async (req, res) => {
 
     // Validate portfolio ownership
     const portfolio = await Portfolio.findOne({
-      where: { id: portfolio_id, user_id: userId }
+      where: { id: portfolio_id, user_id: userId },
     });
 
     if (!portfolio) {
@@ -67,7 +67,7 @@ const createHolding = async (req, res) => {
       portfolio_id,
       symbol,
       quantity,
-      avg_price
+      avg_price,
     });
 
     return res.json({ holding });
@@ -95,7 +95,7 @@ const deleteHolding = async (req, res) => {
   }
 };
 module.exports = {
-    getHoldings,
-    createHolding,
-    deleteHolding
-}
+  getHoldings,
+  createHolding,
+  deleteHolding,
+};

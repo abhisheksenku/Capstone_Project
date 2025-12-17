@@ -10,7 +10,6 @@ const { v4: uuidv4 } = require("uuid");
 const YahooFinance = require("yahoo-finance2").default;
 const yf = new YahooFinance();
 
-
 // ============================================================
 // 1. CREATE ORDER (USER CLICKS UPGRADE BUTTON)
 // ============================================================
@@ -58,6 +57,7 @@ const createOrder = async (req, res) => {
 // 2. PAYMENT STATUS CALLBACK (Cashfree Redirect URL)
 // ============================================================
 const verifyPayment = async (req, res) => {
+  console.log("VERIFY PAYMENT HIT");
   try {
     const orderId = req.query.order_id;
     console.log("ORDER ID RECEIVED:", orderId);
@@ -93,6 +93,7 @@ const verifyPayment = async (req, res) => {
 
       // update user premium flag
       await User.update({ isPremium: true }, { where: { id: sub.user_id } });
+      
 
       return res.status(200).json({
         success: true,
@@ -150,57 +151,94 @@ const getPremiumStatus = async (req, res) => {
 
 /* ============================================================
    GET /api/premium/gold
-   Returns today's price, yesterday's, change %, forecast
+   Stable gold summary (today vs yesterday)
 ============================================================ */
 const getGoldSummary = async (req, res) => {
   try {
-    const symbol = "GOLD=X"; // spot gold
+    const symbol = "GC=F"; // ✅ more reliable than GOLD=X
 
-    const quote = await yf.quote(symbol);
-    const hist = await yf.historical(symbol, { period1: "2d" });
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 5); // buffer for weekends
 
-    if (!quote || hist.length < 2)
-      return res.status(500).json({ error: "Gold data unavailable" });
+    const hist = await yf.historical(symbol, {
+      period1: start,
+      period2: end,
+      interval: "1d",
+    });
 
-    const today = hist[1].close;
-    const yesterday = hist[0].close;
+    if (!Array.isArray(hist) || hist.length < 2) {
+      return res.status(500).json({
+        success: false,
+        message: "Insufficient gold price data",
+      });
+    }
+
+    const valid = hist.filter((h) => h.close);
+    const yesterday = valid[valid.length - 2].close;
+    const today = valid[valid.length - 1].close;
 
     const change = today - yesterday;
     const percent = (change / yesterday) * 100;
 
-    // simple forecast model: linear projection using yesterday→today slope
-    const forecast = today + change * 0.5;
-
     return res.json({
-      todayPrice: today,
-      yesterdayPrice: yesterday,
-      change,
-      percent,
-      forecastPrice: forecast,
+      success: true,
+      today: { price: today, percent },
+      yesterday: { price: yesterday },
       timestamp: new Date(),
     });
   } catch (err) {
-    return res.status(500).json({ error: "Failed to fetch gold data" });
+    console.error("Gold summary error:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch gold summary",
+    });
   }
 };
+
 /* ============================================================
    GET /api/premium/gold/history
-   Returns last 7-day gold closing prices
+   Last 7 trading days gold prices
 ============================================================ */
 const getGoldHistory = async (req, res) => {
   try {
-    const symbol = "GOLD=X";
+    const symbol = "GC=F";
 
-    const data = await yf.historical(symbol, { period1: "7d" });
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 15); // buffer for weekends
 
-    const mapped = data.map((x) => ({
-      date: x.date,
-      price: x.close,
-    }));
+    const hist = await yf.historical(symbol, {
+      period1: start,
+      period2: end,
+      interval: "1d",
+    });
 
-    return res.json(mapped.reverse());
+    if (!Array.isArray(hist) || hist.length === 0) {
+      return res.status(500).json({
+        success: false,
+        message: "Gold history unavailable",
+      });
+    }
+
+    const mapped = hist
+      .filter((h) => h.close)
+      .slice(-7)
+      .map((h) => ({
+        date: h.date,
+        price: h.close,
+      }));
+
+    return res.json({
+      success: true,
+      history: mapped,
+    });
   } catch (err) {
-    return res.status(500).json({ error: "Failed to fetch gold history" });
+    console.error("Gold history error:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch gold history",
+    });
   }
 };
 

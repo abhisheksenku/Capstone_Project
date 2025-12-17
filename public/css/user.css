@@ -1,8 +1,15 @@
+/* ======================================================================
+   FIN-GUARD GLOBAL STYLES (FINAL – NO CONFLICTS)
+   Compatible with Tailwind + helpers.js showToast()
+====================================================================== */
+
+/* Base font */
 body {
   font-family: "Inter", sans-serif;
 }
 
-/* Fade In Animation */
+/* ===================== ANIMATIONS ===================== */
+
 .animate-fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -18,30 +25,34 @@ body {
   }
 }
 
-/* Sidebar Active */
+/* ===================== SIDEBAR ===================== */
+
 .sidebar-link.active {
-  background-color: #334155;
-  color: white;
-  border-left: 4px solid #06b6d4;
+  background-color: #334155; /* slate-700 */
+  color: #ffffff;
+  border-left: 4px solid #06b6d4; /* cyan-500 */
 }
 
-/* Tab Active State */
+/* ===================== TABS ===================== */
+
 .tab-btn.active {
-  color: #2563eb;
+  color: #2563eb; /* blue-600 */
   border-bottom: 2px solid #2563eb;
 }
 
-/* Toggle Button */
+/* ===================== TOGGLE SWITCH ===================== */
+
 .toggle-checkbox:checked {
   right: 0;
-  border-color: #10b981;
+  border-color: #10b981; /* emerald-500 */
 }
 
 .toggle-checkbox:checked + .toggle-label {
   background-color: #10b981;
 }
 
-/* Remove scrollbar for sidebar */
+/* ===================== SCROLLBAR ===================== */
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -50,21 +61,49 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-#notificationToast.show {
-  display: block !important;
-  opacity: 1;
+
+/* ===================== GLOBAL TOAST (TAILWIND-COMPATIBLE) ===================== */
+/*
+  Controlled ONLY by helpers.js showToast():
+  - Visibility: Tailwind `hidden`
+  - Colors: Tailwind bg-*
+*/
+
+#notificationToast {
+  transition: opacity 0.3s ease, transform 0.3s ease;
   transform: translateY(0);
 }
-#notificationToast {
-  opacity: 0;
-  transform: translateY(20px);
-}
-#notificationToast.success {
-  background-color: #16a34a; /* green-600 */
-}
-#notificationToast.error {
-  background-color: #dc2626; /* red-600 */
-}
+
+/* ===================== PORTFOLIO ===================== */
+
 .portfolio-item {
   cursor: pointer;
+}
+
+/* ===================== FLASH EFFECTS ===================== */
+
+.flash-green {
+  animation: flashGreen 0.8s ease;
+}
+
+.flash-red {
+  animation: flashRed 0.8s ease;
+}
+
+@keyframes flashGreen {
+  from {
+    background-color: #d1fae5; /* emerald-100 */
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes flashRed {
+  from {
+    background-color: #fee2e2; /* red-100 */
+  }
+  to {
+    background-color: transparent;
+  }
 }

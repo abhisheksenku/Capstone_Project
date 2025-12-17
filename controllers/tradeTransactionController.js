@@ -137,7 +137,7 @@ const addTransaction = async (req, res) => {
       quantity: newQty,
       avg_price: newAvg,
     });
-
+    
     return res.status(201).json({
       message: "Transaction added",
       transaction: txn,
@@ -222,5 +222,5 @@ async function recalcHolding(holdingId) {
 module.exports = {
   getHoldingTransactions,
   addTransaction,
-  deleteTransaction
+  deleteTransaction,
 };

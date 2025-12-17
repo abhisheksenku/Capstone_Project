@@ -9,12 +9,21 @@ const getMarketQuote = async (req, res) => {
   try {
     let { symbol } = req.params;
 
-    // auto-fix NSE symbols
-    if (!symbol.endsWith(".NS")) symbol = symbol.toUpperCase() + ".NS";
+    symbol = symbol.toUpperCase();
+
+    // If symbol already has exchange suffix → keep it
+    if (!symbol.includes(".")) {
+      // Heuristic: Indian stocks are usually longer names
+      // Frontend already sends .NS for NSE stocks
+      // US stocks like AAPL, AVGO, MSFT must remain untouched
+      // So DO NOTHING here
+    }
 
     const data = await yf.quote(symbol);
 
-    if (!data) return res.status(404).json({ error: "Symbol not found" });
+    if (!data || !data.regularMarketPrice) {
+      return res.status(404).json({ error: "Symbol not found" });
+    }
 
     return res.json({
       symbol: data.symbol,
@@ -25,11 +34,15 @@ const getMarketQuote = async (req, res) => {
       low: data.regularMarketDayLow,
       open: data.regularMarketOpen,
       prevClose: data.regularMarketPreviousClose,
+      currency: data.currency,
+      exchange: data.fullExchangeName,
     });
   } catch (err) {
+    console.error("[MARKET QUOTE ERROR]", err.message);
     return res.status(500).json({ error: "Failed to fetch quote" });
   }
 };
+
 /* ============================================================
    GET /api/user/market/history/:symbol
    Returns last 30 days OHLC history

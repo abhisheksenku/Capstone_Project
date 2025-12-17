@@ -10,7 +10,6 @@ const generateAccessToken = (loggeduser) => {
     user: {
       id: loggeduser.id,
       role: loggeduser.role,
-      isPremium: loggeduser.isPremium,
     },
   };
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });

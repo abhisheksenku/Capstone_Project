@@ -1,6 +1,7 @@
 // controllers/riskAlert.controller.js
 const RiskAlert = require("../models/mysql/riskAlert");
 const Portfolio = require("../models/mysql/portfolio");
+
 // ======================================================
 // GET /api/alerts
 // ======================================================
@@ -32,7 +33,9 @@ const resolveAlert = async (req, res) => {
     });
 
     if (!alert)
-      return res.status(404).json({ success: false, message: "Alert not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Alert not found" });
 
     alert.resolved_at = new Date();
     await alert.save();
@@ -55,14 +58,17 @@ const resolveAllAlerts = async (req, res) => {
       { where: { user_id: userId, resolved_at: null } }
     );
 
-    return res.json({ success: true, message: "All alerts marked as resolved" });
+    return res.json({
+      success: true,
+      message: "All alerts marked as resolved",
+    });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
 
 module.exports = {
-    getAlerts,
-    resolveAlert,
-    resolveAllAlerts
-}
+  getAlerts,
+  resolveAlert,
+  resolveAllAlerts,
+};

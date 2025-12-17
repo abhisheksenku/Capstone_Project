@@ -81,7 +81,7 @@ const removeFromWatchlist = async (req, res) => {
   }
 };
 module.exports = {
-    addToWatchlist,
-    getWatchlist,
-    removeFromWatchlist,
-}
+  addToWatchlist,
+  getWatchlist,
+  removeFromWatchlist,
+};

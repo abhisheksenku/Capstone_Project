@@ -1,5 +1,5 @@
-const  Portfolio  = require("../models/mysql/portfolio");
-const Holding = require('../models/mysql/holding');
+const Portfolio = require("../models/mysql/portfolio");
+const Holding = require("../models/mysql/holding");
 const { Op } = require("sequelize");
 
 /* ============================================================
@@ -36,10 +36,11 @@ const getPortfolios = async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching portfolios:", err);
-    return res.status(500).json({ message: "Server error fetching portfolios." });
+    return res
+      .status(500)
+      .json({ message: "Server error fetching portfolios." });
   }
 };
-
 
 /* ============================================================
    POST /api/user/portfolio/create
@@ -64,7 +65,9 @@ const createPortfolio = async (req, res) => {
     return res.status(201).json(portfolio);
   } catch (err) {
     console.error("Error creating portfolio:", err);
-    return res.status(500).json({ message: "Server error creating portfolio." });
+    return res
+      .status(500)
+      .json({ message: "Server error creating portfolio." });
   }
 };
 const deletePortfolio = async (req, res) => {
@@ -85,8 +88,8 @@ const deletePortfolio = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
- module.exports = {
-    getPortfolios,
-    createPortfolio,
-    deletePortfolio
- }
+module.exports = {
+  getPortfolios,
+  createPortfolio,
+  deletePortfolio,
+};
