@@ -1,6 +1,6 @@
 /* ============================================================================
    FIN-GUARD FRAUD HISTORY (ML OUTPUT)
-   Renders ML model fraud analysis history table
+   Handles Fraud Analysis History sub-view
 ============================================================================ */
 
 import { api_getFraudHistory } from "../core/api.js";
@@ -8,27 +8,34 @@ import { showToast, escapeHtml } from "../core/helpers.js";
 
 /* ===================== DOM REFERENCES ===================== */
 
-const fraudHistorySection = document.getElementById(
-  "fraud-analysis-section"
-);
-const fraudHistoryBody = document.getElementById(
-  "fraud-history-body"
-);
-const fraudHistoryEmpty = document.getElementById(
-  "fraud-history-empty"
-);
+const sectionOverview = document.getElementById("fraud-overview-section");
+const sectionAnalysis = document.getElementById("fraud-analysis-section");
+const sectionCases = document.getElementById("fraud-cases-section");
+
+const fraudHistoryBody = document.getElementById("fraud-history-body");
+const fraudHistoryEmpty = document.getElementById("fraud-history-empty");
 
 /* ============================================================================
    INIT
 ============================================================================ */
 
 function initFraudHistory() {
-  // Load ML fraud history when fraud view opens
   document.addEventListener("view:change", (e) => {
-    if (e.detail?.viewId === "view-fraud") {
+    if (e.detail?.viewId === "view-fraud-analysis") {
+      showAnalysisSection();
       loadFraudHistory();
     }
   });
+}
+
+/* ============================================================================
+   SECTION VISIBILITY
+============================================================================ */
+
+function showAnalysisSection() {
+  sectionOverview?.classList.add("hidden");
+  sectionCases?.classList.add("hidden");
+  sectionAnalysis?.classList.remove("hidden");
 }
 
 /* ============================================================================
@@ -39,31 +46,30 @@ async function loadFraudHistory() {
   try {
     if (!fraudHistoryBody) return;
 
-    const data = await api_getFraudHistory();
-
     fraudHistoryBody.innerHTML = "";
 
-    if (!Array.isArray(data) || !data.length) {
+    const data = await api_getFraudHistory();
+
+    if (!Array.isArray(data) || data.length === 0) {
       renderEmpty();
       return;
     }
 
-    if (fraudHistoryEmpty) {
-      fraudHistoryEmpty.classList.add("hidden");
-    }
-
-    if (fraudHistorySection) {
-      fraudHistorySection.classList.remove("hidden");
-    }
+    fraudHistoryEmpty?.classList.add("hidden");
 
     data.forEach((item) => {
-      const row = document.createElement("tr");
+      const probability = Number(
+        item.probability ??
+        item.fraudScore ??
+        item.fraud_score ??
+        0
+      ).toFixed(4);
 
-      const probability = Number(item.probability || 0).toFixed(4);
-      const labelClass =
-        item.label === "FRAUD"
-          ? "text-rose-600 font-semibold"
-          : "text-emerald-600 font-semibold";
+      const isFraud =
+        item.label === "FRAUD" || item.label === 1 || item.label === true;
+
+      const row = document.createElement("tr");
+      row.className = "hover:bg-slate-50 cursor-pointer";
 
       row.innerHTML = `
         <td class="border p-2">
@@ -72,14 +78,22 @@ async function loadFraudHistory() {
         <td class="border p-2">
           ${probability}
         </td>
-        <td class="border p-2 ${labelClass}">
-          ${escapeHtml(item.label || "--")}
+        <td class="border p-2 ${
+          isFraud
+            ? "text-rose-600 font-semibold"
+            : "text-emerald-600 font-semibold"
+        }">
+          ${isFraud ? "FRAUD" : "NORMAL"}
         </td>
         <td class="border p-2">
-          ${escapeHtml(item.modelVersion || "--")}
+          ${escapeHtml(item.modelVersion || item.model_version || "--")}
         </td>
         <td class="border p-2">
-          ${new Date(item.createdAt).toLocaleDateString("en-IN")}
+          ${
+            item.createdAt
+              ? new Date(item.createdAt).toLocaleDateString("en-IN")
+              : "--"
+          }
         </td>
       `;
 
@@ -96,12 +110,8 @@ async function loadFraudHistory() {
 ============================================================================ */
 
 function renderEmpty() {
-  if (fraudHistoryEmpty) {
-    fraudHistoryEmpty.classList.remove("hidden");
-  }
-  if (fraudHistorySection) {
-    fraudHistorySection.classList.remove("hidden");
-  }
+  fraudHistoryBody.innerHTML = "";
+  fraudHistoryEmpty?.classList.remove("hidden");
 }
 
 /* ============================================================================

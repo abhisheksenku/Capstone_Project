@@ -1,33 +1,21 @@
 /* ============================================================================
    FIN-GUARD FRAUD CASES (USER)
-   Renders user fraud case history (MySQL-backed)
+   Handles Fraud Case History sub-view + Test Fraud Score action
 ============================================================================ */
 
- import {
-  api_getFraudCases,
-  api_testFraudScore,
-} from "../core/api.js";
+import { api_getFraudCases, api_testFraudScore } from "../core/api.js";
 
-import {
-  showToast,
-  escapeHtml,
-  buildPagination,
-} from "../core/helpers.js";
+import { showToast, escapeHtml, buildPagination } from "../core/helpers.js";
 
 /* ===================== DOM REFERENCES ===================== */
 
-const fraudCasesSection = document.getElementById(
-  "fraud-cases-section"
-);
-const fraudCasesBody = document.getElementById(
-  "fraud-cases-body"
-);
-const fraudCasesEmpty = document.getElementById(
-  "fraud-cases-empty"
-);
-const fraudCasesPagination = document.getElementById(
-  "fraud-cases-pagination"
-);
+const sectionOverview = document.getElementById("fraud-overview-section");
+const sectionAnalysis = document.getElementById("fraud-analysis-section");
+const sectionCases = document.getElementById("fraud-cases-section");
+
+const fraudCasesBody = document.getElementById("fraud-cases-body");
+const fraudCasesEmpty = document.getElementById("fraud-cases-empty");
+const fraudCasesPagination = document.getElementById("fraud-cases-pagination");
 
 const testFraudBtn = document.getElementById("testFraudBtn");
 
@@ -36,16 +24,26 @@ const testFraudBtn = document.getElementById("testFraudBtn");
 ============================================================================ */
 
 function initFraudCases() {
-  // Load fraud cases when fraud view opens
+  // View switch
   document.addEventListener("view:change", (e) => {
-    if (e.detail?.viewId === "view-fraud") {
-      loadFraudCases();
+    if (e.detail?.viewId === "view-fraud-cases") {
+      showCasesSection();
+      loadFraudCases(1);
     }
   });
 
-  if (testFraudBtn) {
-    testFraudBtn.addEventListener("click", handleTestFraud);
-  }
+  // Test fraud score button
+  testFraudBtn?.addEventListener("click", handleTestFraud);
+}
+
+/* ============================================================================
+   SECTION VISIBILITY
+============================================================================ */
+
+function showCasesSection() {
+  sectionOverview?.classList.add("hidden");
+  sectionAnalysis?.classList.add("hidden");
+  sectionCases?.classList.remove("hidden");
 }
 
 /* ============================================================================
@@ -56,38 +54,45 @@ async function loadFraudCases(page = 1) {
   try {
     if (!fraudCasesBody) return;
 
+    fraudCasesBody.innerHTML = "";
+    fraudCasesPagination.innerHTML = "";
+
     const res = await api_getFraudCases(page);
 
-    const cases = res?.items || res?.data || [];
-    const totalPages = res?.totalPages || 1;
-
-    fraudCasesBody.innerHTML = "";
+    const cases = res?.cases || [];
+    const pagination = res?.pagination || {};
 
     if (!cases.length) {
       renderEmpty();
       return;
     }
 
-    if (fraudCasesEmpty) {
-      fraudCasesEmpty.classList.add("hidden");
-    }
-
-    if (fraudCasesSection) {
-      fraudCasesSection.classList.remove("hidden");
-    }
+    fraudCasesEmpty?.classList.add("hidden");
 
     cases.forEach((c) => {
+      const score = Number(c.fraud_score ?? 0);
+      const isHighRisk = score >= 0.7;
+
       const row = document.createElement("tr");
+      row.className = "hover:bg-slate-50";
 
       row.innerHTML = `
         <td class="border p-2">
-          ${escapeHtml(c.caseId || c.id || "--")}
+          ${escapeHtml(c.case_id || "--")}
+        </td>
+        <td class="border p-2 font-semibold ${
+          isHighRisk ? "text-rose-600" : "text-amber-600"
+        }">
+          ${(score * 100).toFixed(2)}%
         </td>
         <td class="border p-2">
-          ${c.score ?? "--"}
-        </td>
-        <td class="border p-2">
-          ${escapeHtml(c.reason || "--")}
+          ${escapeHtml(
+            c.reason ||
+              (c.fraud_score >= 0.7
+                ? "High anomaly score detected"
+                : "Transaction within normal behavior")
+          )}
+
         </td>
         <td class="border p-2">
           ${new Date(c.createdAt).toLocaleDateString("en-IN")}
@@ -97,11 +102,11 @@ async function loadFraudCases(page = 1) {
       fraudCasesBody.appendChild(row);
     });
 
-    if (fraudCasesPagination) {
+    if (pagination.totalPages > 1) {
       buildPagination(
         fraudCasesPagination,
-        page,
-        totalPages,
+        pagination.page || page,
+        pagination.totalPages,
         loadFraudCases
       );
     }
@@ -112,23 +117,29 @@ async function loadFraudCases(page = 1) {
 }
 
 /* ============================================================================
-   TEST FRAUD SCORE
+   TEST FRAUD SCORE (FIXED)
 ============================================================================ */
 
 async function handleTestFraud() {
   try {
     const payload = {
+      transactionId: "TXN-" + Date.now(),
       amount: 9999,
-      location: "IN",
       device: "web",
+      geo: { country: "IN" },
     };
 
-    const res = await api_testFraudScore(payload);
+    const result = await api_testFraudScore(payload);
 
-    showToast(
-      `Fraud score: ${res.score} (${res.label})`,
-      res.label === "FRAUD" ? "error" : "success"
+    // 🔥 This event opens the modal
+    document.dispatchEvent(
+      new CustomEvent("fraud:testResult", {
+        detail: result,
+      })
     );
+
+    // Optional auto-refresh
+    loadFraudCases(1);
   } catch (err) {
     console.error("Fraud test failed:", err);
     showToast("Fraud test failed", "error");
@@ -140,17 +151,13 @@ async function handleTestFraud() {
 ============================================================================ */
 
 function renderEmpty() {
-  if (fraudCasesBody) fraudCasesBody.innerHTML = "";
-  if (fraudCasesEmpty) fraudCasesEmpty.classList.remove("hidden");
-  if (fraudCasesPagination)
-    fraudCasesPagination.innerHTML = "";
+  fraudCasesBody.innerHTML = "";
+  fraudCasesEmpty?.classList.remove("hidden");
+  fraudCasesPagination.innerHTML = "";
 }
 
 /* ============================================================================
    EXPORTS
 ============================================================================ */
 
-export {
-  initFraudCases,
-  loadFraudCases,
-};
+export { initFraudCases, loadFraudCases };

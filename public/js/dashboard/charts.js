@@ -12,13 +12,23 @@ const allocationCanvas = document.getElementById(
   "portfolio-allocation-chart"
 );
 
+/* ===================== GLOBAL CHART INSTANCES ===================== */
+
+let portfolioHistoryChart = null;
+let portfolioAllocationChart = null;
+
 /* ============================================================================
-   CHART INITIALIZERS
+   INIT (CALLED ON DASHBOARD LOAD)
 ============================================================================ */
 
 function initDashboardCharts() {
-  initPortfolioHistoryChart();
-  initAllocationChart();
+  if (!portfolioHistoryChart) {
+    initPortfolioHistoryChart();
+  }
+
+  if (!portfolioAllocationChart) {
+    initAllocationChart();
+  }
 }
 
 /* ===================== PORTFOLIO HISTORY ===================== */
@@ -26,22 +36,14 @@ function initDashboardCharts() {
 function initPortfolioHistoryChart() {
   if (!historyCanvas || !window.Chart) return;
 
-  // Destroy existing instance if any
-  if (window.portfolioHistoryChart) {
-    window.portfolioHistoryChart.destroy();
-  }
-
-  const labels = [];
-  const values = [];
-
-  window.portfolioHistoryChart = new Chart(historyCanvas, {
+  portfolioHistoryChart = new Chart(historyCanvas, {
     type: "line",
     data: {
-      labels,
+      labels: [],
       datasets: [
         {
           label: "Portfolio Value",
-          data: values,
+          data: [],
           fill: true,
           tension: 0.3,
           borderWidth: 2,
@@ -78,20 +80,13 @@ function initPortfolioHistoryChart() {
 function initAllocationChart() {
   if (!allocationCanvas || !window.Chart) return;
 
-  if (window.portfolioAllocationChart) {
-    window.portfolioAllocationChart.destroy();
-  }
-
-  const labels = [];
-  const values = [];
-
-  window.portfolioAllocationChart = new Chart(allocationCanvas, {
+  portfolioAllocationChart = new Chart(allocationCanvas, {
     type: "doughnut",
     data: {
-      labels,
+      labels: [],
       datasets: [
         {
-          data: values,
+          data: [],
           borderWidth: 1,
         },
       ],
@@ -115,23 +110,23 @@ function initAllocationChart() {
 }
 
 /* ============================================================================
-   UPDATE HELPERS (CALLED FROM OTHER MODULES)
+   UPDATE HELPERS (CALLED FROM dashboard.js)
 ============================================================================ */
 
-function updatePortfolioHistory(labels, values) {
-  if (!window.portfolioHistoryChart) return;
+function updatePortfolioHistory(labels = [], values = []) {
+  if (!portfolioHistoryChart) return;
 
-  window.portfolioHistoryChart.data.labels = labels;
-  window.portfolioHistoryChart.data.datasets[0].data = values;
-  window.portfolioHistoryChart.update();
+  portfolioHistoryChart.data.labels = labels;
+  portfolioHistoryChart.data.datasets[0].data = values;
+  portfolioHistoryChart.update();
 }
 
-function updateAllocation(labels, values) {
-  if (!window.portfolioAllocationChart) return;
+function updateAllocation(labels = [], values = []) {
+  if (!portfolioAllocationChart) return;
 
-  window.portfolioAllocationChart.data.labels = labels;
-  window.portfolioAllocationChart.data.datasets[0].data = values;
-  window.portfolioAllocationChart.update();
+  portfolioAllocationChart.data.labels = labels;
+  portfolioAllocationChart.data.datasets[0].data = values;
+  portfolioAllocationChart.update();
 }
 
 /* ============================================================================

@@ -60,6 +60,12 @@ function api_getDashboardSummary() {
 function api_getDashboardHoldings() {
   return api.get("/api/user/dashboard/holdings");
 }
+function api_getDashboardHistory() {
+  return api.get("/api/user/dashboard/history");
+}
+function api_getDashboardAllocation() {
+  return api.get("/api/user/dashboard/allocation");
+}
 
 /* ============================================================================
    PORTFOLIOS
@@ -167,6 +173,13 @@ function api_getFraudCases(page = 1) {
 function api_testFraudScore(payload) {
   return api.post("/api/fraud/score", payload);
 }
+/* ============================================================================
+   FRAUD GEO RISK
+============================================================================ */
+
+function api_getGeoRisk() {
+  return api.get("/api/fraud/geo-risk");
+}
 
 /* ============================================================================
    ALERTS
@@ -209,6 +222,8 @@ export {
   // Dashboard
   api_getDashboardSummary,
   api_getDashboardHoldings,
+  api_getDashboardHistory,
+  api_getDashboardAllocation,
 
   // Portfolios
   api_getPortfolios,
@@ -241,6 +256,7 @@ export {
   api_getFraudHistory,
   api_getFraudCases,
   api_testFraudScore,
+  api_getGeoRisk,
 
   // Alerts
   api_getAlerts,

@@ -19,15 +19,13 @@ import {
   api_deletePortfolio,
 } from "../core/api.js";
 
-import {
-  STORE_PORTFOLIO_PAGE,
-  getSocket,
-} from "../core/state.js";
+import { STORE_PORTFOLIO_PAGE, getSocket } from "../core/state.js";
 
 import {
   escapeHtml,
   buildPagination,
   showToast,
+  showConfirm,
 } from "../core/helpers.js";
 
 import { showView } from "../layout/navigation.js";
@@ -136,12 +134,7 @@ async function loadPortfolios(page = 1) {
     attachPortfolioActions();
 
     if (paginationContainer) {
-      buildPagination(
-        paginationContainer,
-        page,
-        totalPages,
-        loadPortfolios
-      );
+      buildPagination(paginationContainer, page, totalPages, loadPortfolios);
     }
   } catch (err) {
     console.error("[PORTFOLIO] Load failed:", err);
@@ -158,8 +151,9 @@ async function handleCreatePortfolio(e) {
 
   try {
     const name = document.getElementById("portfolioName")?.value.trim();
-    const description =
-      document.getElementById("portfolioDescription")?.value.trim();
+    const description = document
+      .getElementById("portfolioDescription")
+      ?.value.trim();
 
     if (!name) {
       showToast("Portfolio name is required", "error");
@@ -182,7 +176,6 @@ async function handleCreatePortfolio(e) {
     portfolioCreateForm.reset();
     showView("view-portfolios");
     loadPortfolios(1);
-
   } catch (err) {
     console.error("[PORTFOLIO] Create failed:", err);
     showToast("Failed to create portfolio", "error");
@@ -199,7 +192,11 @@ function attachPortfolioActions() {
       const id = btn.dataset.id;
       if (!id) return;
 
-      if (!confirm("Are you sure you want to delete this portfolio?")) return;
+      const confirmed = await showConfirm(
+        "Are you sure you want to delete this portfolio?"
+      );
+
+      if (!confirmed) return;
 
       try {
         await api_deletePortfolio(id);
@@ -209,8 +206,7 @@ function attachPortfolioActions() {
           socket.emit("portfolio_deleted", { id });
         }
 
-        const page =
-          Number(sessionStorage.getItem(STORE_PORTFOLIO_PAGE)) || 1;
+        const page = Number(sessionStorage.getItem(STORE_PORTFOLIO_PAGE)) || 1;
         loadPortfolios(page);
       } catch (err) {
         console.error("[PORTFOLIO] Delete failed:", err);

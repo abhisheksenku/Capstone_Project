@@ -103,6 +103,45 @@ function showToast(message, type = "info", duration = 3000) {
     toast.classList.add("hidden");
   }, duration);
 }
+/* ===================== CONFIRMATION MODAL ===================== */
+
+/**
+ * Shows global confirmation modal and resolves user choice
+ * @param {string} message
+ * @returns {Promise<boolean>}
+ */
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirmationModal");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const messageEl = document.getElementById("confirmMessage");
+
+    if (!modal || !confirmBtn || !cancelBtn || !messageEl) {
+      console.error("Confirmation modal not found");
+      resolve(false);
+      return;
+    }
+
+    messageEl.textContent = message;
+
+    // Show modal (Tailwind-compatible)
+    modal.classList.remove("hidden");
+
+    const cleanup = (result) => {
+      modal.classList.add("hidden");
+      confirmBtn.removeEventListener("click", onConfirm);
+      cancelBtn.removeEventListener("click", onCancel);
+      resolve(result);
+    };
+
+    const onConfirm = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+
+    confirmBtn.addEventListener("click", onConfirm);
+    cancelBtn.addEventListener("click", onCancel);
+  });
+}
 
 /* ===================== UI HELPERS ===================== */
 
@@ -175,7 +214,7 @@ export {
 
   // Toast
   showToast,
-
+  showConfirm,
   // UI helpers
   toggleHidden,
   setText,

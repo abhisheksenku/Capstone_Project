@@ -45,5 +45,9 @@ router.get('/dashboard/metrics', userAuthenticate.authenticate, dashboardControl
 router.get('/dashboard/holdings', userAuthenticate.authenticate, dashboardController.getDashboardHoldings);
 router.get('/dashboard/value-history', userAuthenticate.authenticate, dashboardController.getValueHistory);
 router.get('/dashboard/allocation', userAuthenticate.authenticate, dashboardController.getAllocation);
-
+router.get(
+  "/dashboard/history",
+  userAuthenticate.authenticate,
+  dashboardController.getValueHistory
+);
 module.exports = router;

@@ -24,6 +24,7 @@ import {
   showToast,
   escapeHtml,
   buildPagination,
+  showConfirm,
 } from "../core/helpers.js";
 
 import { showView } from "../layout/navigation.js";
@@ -148,11 +149,8 @@ async function loadHoldings(portfolioId, page = 1) {
     attachHoldingActions(portfolioId);
 
     if (holdingsPagination) {
-      buildPagination(
-        holdingsPagination,
-        page,
-        totalPages,
-        (p) => loadHoldings(portfolioId, p)
+      buildPagination(holdingsPagination, page, totalPages, (p) =>
+        loadHoldings(portfolioId, p)
       );
     }
   } catch (err) {
@@ -174,9 +172,7 @@ async function handleCreateHolding(e) {
 
     const symbol = document.getElementById("holdingSymbol")?.value.trim();
     const quantity = Number(document.getElementById("holdingQty")?.value);
-    const avg_price = Number(
-      document.getElementById("holdingAvgPrice")?.value
-    );
+    const avg_price = Number(document.getElementById("holdingAvgPrice")?.value);
 
     if (!symbol || quantity <= 0 || avg_price <= 0) {
       showToast("Invalid holding details", "error");
@@ -218,7 +214,11 @@ function attachHoldingActions(portfolioId) {
       const id = btn.dataset.id;
       if (!id) return;
 
-      if (!confirm("Are you sure you want to delete this holding?")) return;
+      const confirmed = await showConfirm(
+        "Are you sure you want to delete this holding?"
+      );
+
+      if (!confirmed) return;
 
       try {
         await api_deleteHolding(id);
@@ -231,8 +231,7 @@ function attachHoldingActions(portfolioId) {
 
         showToast("Holding deleted", "success");
 
-        const page =
-          Number(sessionStorage.getItem(STORE_HOLDINGS_PAGE)) || 1;
+        const page = Number(sessionStorage.getItem(STORE_HOLDINGS_PAGE)) || 1;
         loadHoldings(portfolioId, page);
       } catch (err) {
         console.error("[HOLDINGS] Delete failed:", err);

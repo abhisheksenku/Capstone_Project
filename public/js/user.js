@@ -41,7 +41,7 @@ import { initHeatmap } from "./market/heatmap.js";
 import { initWatchlist } from "./market/watchlist.js";
 import { initTrending } from "./market/trending.js";
 
-/* ===================== FRAUD ===================== */
+/* ===================== FRAUD (ES MODULES) ===================== */
 
 import { initFraudKPIs } from "./fraud/fraud-kpi.js";
 import { initFraudHistory } from "./fraud/fraud-history.js";
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* ---------------- SOCKET ---------------- */
     initSocket();
 
-    /* ---------------- PROFILE (HEADER) ---------------- */
+    /* ---------------- PROFILE ---------------- */
     await loadUserProfile();
     initProfileMenu();
 
@@ -78,8 +78,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     initBreadcrumb();
     initTabs();
 
-    /* ---------------- REGISTER ALL VIEW LISTENERS ---------------- */
-    initPortfolios();     // registers view:change → loadPortfolios
+    /* ---------------- REGISTER VIEW LISTENERS ---------------- */
+    initPortfolios();
     initHoldings();
     initTransactions();
 
@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initWatchlist();
     initTrending();
 
+    /* ---------------- FRAUD MODULES ---------------- */
     initFraudKPIs();
     initFraudHistory();
     initFraudCases();
@@ -97,19 +98,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     initAlerts();
     initPremium();
 
-    /* ---------------- DASHBOARD VIEW HANDLER ---------------- */
+    /* ---------------- DASHBOARD ---------------- */
     document.addEventListener("view:change", async (e) => {
-      if (e.detail?.viewId === "view-dashboard") {
-        await loadDashboard();
+      if (e.detail?.viewId === "view-overview") {
         initDashboardCharts();
+        await loadDashboard();        
       }
     });
 
-    /* ---------------- RESTORE VIEW (LAST STEP) ---------------- */
-    const restored = restoreLastView();
+    /* ===================== FRAUD SUB-VIEW BUTTONS ===================== */
 
+    const btnViewFraudAnalysis =
+      document.getElementById("btnViewFraudAnalysis");
+    const btnViewFraudCases =
+      document.getElementById("btnViewFraudCases");
+
+    if (btnViewFraudAnalysis) {
+      btnViewFraudAnalysis.addEventListener("click", () => {
+        document.dispatchEvent(
+          new CustomEvent("view:change", {
+            detail: { viewId: "view-fraud-analysis" },
+          })
+        );
+      });
+    }
+
+    if (btnViewFraudCases) {
+      btnViewFraudCases.addEventListener("click", () => {
+        document.dispatchEvent(
+          new CustomEvent("view:change", {
+            detail: { viewId: "view-fraud-cases" },
+          })
+        );
+      });
+    }
+
+    /* ---------------- RESTORE VIEW ---------------- */
+    const restored = restoreLastView();
     if (!restored) {
-      showView("view-dashboard");
+      showView("view-overview");
     }
 
     console.info("Fin-Guard User Dashboard initialized successfully");

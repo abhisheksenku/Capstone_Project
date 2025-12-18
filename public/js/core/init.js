@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!requireAuth()) return;
 
     /* =====================================================
-       2. USER PROFILE
+       2. USER PROFILE (HEADER)
     ===================================================== */
     await loadUserProfile();
     initProfileMenu();
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     /* =====================================================
        5. MODULE INITIALIZATION
-       (REGISTER ALL view:change LISTENERS FIRST)
+       (REGISTER ALL view:change LISTENERS)
     ===================================================== */
     initPortfolios();
     initHoldings();
@@ -113,17 +113,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     /* =====================================================
        6. DASHBOARD VIEW HANDLER
+       ⚠️ Charts FIRST, data SECOND
     ===================================================== */
     document.addEventListener("view:change", async (e) => {
       if (e.detail?.viewId === "view-dashboard") {
-        await loadDashboard();
-        initDashboardCharts();
+        initDashboardCharts();   // ✅ init once per view
+        await loadDashboard();   // ✅ then load data
       }
     });
 
     /* =====================================================
        7. RESTORE LAST VIEW (MUST BE LAST)
-       → Triggers view:change → GET requests
+       → triggers view:change
     ===================================================== */
     const restored = restoreLastView();
 

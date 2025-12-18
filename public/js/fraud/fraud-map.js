@@ -1,9 +1,9 @@
 /* ============================================================================
    FIN-GUARD FRAUD GEO MAP
-   Renders geographic fraud risk heatmap using Leaflet
+   Handles Fraud Overview Geographic Risk Map (Leaflet)
 ============================================================================ */
 
-import { api_getFraudKPIs } from "../core/api.js"; // backend provides geo data
+import { api_getGeoRisk } from "../core/api.js";
 import { showToast } from "../core/helpers.js";
 
 /* ===================== DOM REFERENCES ===================== */
@@ -12,8 +12,8 @@ const mapContainer = document.getElementById("geoRiskMap");
 
 /* ===================== MAP STATE ===================== */
 
-let mapInstance = null;
-let markerLayer = null;
+let map = null;
+let geoLayer = null;
 
 /* ============================================================================
    INIT
@@ -22,73 +22,90 @@ let markerLayer = null;
 function initFraudMap() {
   if (!mapContainer || !window.L) return;
 
-  // Initialize map when fraud view opens
+  // Load map ONLY when fraud overview opens
   document.addEventListener("view:change", (e) => {
     if (e.detail?.viewId === "view-fraud") {
       initMap();
-      loadGeoRiskData();
+      loadGeoRisk();
     }
   });
+
+  // Realtime refresh
+  document.addEventListener("fraud:alert", loadGeoRisk);
+  document.addEventListener("fraud:refresh", loadGeoRisk);
 }
 
 /* ============================================================================
-   MAP SETUP
+   MAP INITIALIZATION
 ============================================================================ */
 
 function initMap() {
-  if (mapInstance) return; // prevent re-init
+  if (map) return; // important: prevent re-init
 
-  mapInstance = L.map("geoRiskMap").setView([20.5937, 78.9629], 4); // India center
+  map = L.map("geoRiskMap", {
+    center: [20, 0],
+    zoom: 2,
+    minZoom: 2,
+    worldCopyJump: true,
+  });
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
-  }).addTo(mapInstance);
+  }).addTo(map);
 
-  markerLayer = L.layerGroup().addTo(mapInstance);
+  geoLayer = L.layerGroup().addTo(map);
 }
 
 /* ============================================================================
-   LOAD GEO DATA
+   LOAD GEO RISK DATA
 ============================================================================ */
 
-async function loadGeoRiskData() {
+async function loadGeoRisk() {
   try {
-    if (!markerLayer) return;
+    if (!geoLayer) return;
 
-    markerLayer.clearLayers();
+    geoLayer.clearLayers();
 
     /*
-      Expected backend response example:
-      [
-        { lat: 28.61, lng: 77.23, risk: "HIGH", count: 5 },
-        { lat: 19.07, lng: 72.87, risk: "LOW", count: 2 }
-      ]
+      Expected backend response:
+      {
+        countries: {
+          IN: 12,
+          US: 7,
+          GB: 3
+        }
+      }
     */
 
-    const data = await api_getFraudKPIs();
+    const data = await api_getGeoRisk();
+    const countries = data?.countries || {};
 
-    if (!Array.isArray(data?.geoRisk)) return;
+    Object.entries(countries).forEach(([countryCode, count]) => {
+      if (!count) return;
 
-    data.geoRisk.forEach((item) => {
-      const color = getRiskColor(item.risk);
+      const coords = getCountryCenter(countryCode);
+      if (!coords) return;
 
-      const marker = L.circleMarker([item.lat, item.lng], {
-        radius: 10,
+      const color = getRiskColor(count);
+
+      const marker = L.circleMarker(coords, {
+        radius: Math.min(25, 6 + count * 2),
         color,
         fillColor: color,
-        fillOpacity: 0.6,
+        fillOpacity: 0.75,
+        weight: 1,
       });
 
       marker.bindPopup(`
-        <strong>Risk:</strong> ${item.risk}<br/>
-        <strong>Cases:</strong> ${item.count}
+        <strong>Country:</strong> ${countryCode}<br/>
+        <strong>Fraud Cases:</strong> ${count}
       `);
 
-      markerLayer.addLayer(marker);
+      geoLayer.addLayer(marker);
     });
   } catch (err) {
     console.error("Failed to load fraud geo map:", err);
-    showToast("Failed to load geographic risk map", "error");
+    showToast("Failed to load fraud map", "error");
   }
 }
 
@@ -96,16 +113,31 @@ async function loadGeoRiskData() {
    HELPERS
 ============================================================================ */
 
-function getRiskColor(risk) {
-  if (risk === "HIGH") return "#dc2626"; // red
-  if (risk === "MEDIUM") return "#f59e0b"; // amber
+function getRiskColor(count) {
+  if (count >= 10) return "#dc2626"; // red
+  if (count >= 5) return "#f59e0b"; // amber
   return "#16a34a"; // green
+}
+
+/*
+  Minimal ISO country center lookup
+  (extend if needed later)
+*/
+function getCountryCenter(code) {
+  const centers = {
+    IN: [22.9734, 78.6569],
+    US: [37.0902, -95.7129],
+    GB: [55.3781, -3.4360],
+    AU: [-25.2744, 133.7751],
+    CA: [56.1304, -106.3468],
+  };
+  return centers[code] || null;
 }
 
 /* ============================================================================
    EXPORTS
 ============================================================================ */
 
-export{
+export {
   initFraudMap,
 };

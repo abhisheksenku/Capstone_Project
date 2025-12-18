@@ -89,6 +89,9 @@ body {
 .flash-red {
   animation: flashRed 0.8s ease;
 }
+#confirmationModal.active {
+  display: flex;
+}
 
 @keyframes flashGreen {
   from {
