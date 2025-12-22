@@ -6,6 +6,11 @@ const holdingController = require('../controllers/holdingController');
 const tradeTransactionController = require("../controllers/tradeTransactionController");
 const userAuthenticate = require('../middleware/auth');
 router.get('/fetch/profile',userAuthenticate.authenticate,userController.fetchProfile);
+
+router.put("/profile", userAuthenticate.authenticate,userController.updateProfile);
+router.put("/password", userAuthenticate.authenticate,userController.updatePassword);
+router.delete("/account", userAuthenticate.authenticate,userController.deleteAccount);
+
 router.get('/portfolio/list', userAuthenticate.authenticate, portfolioController.getPortfolios);
 router.post('/portfolio/create', userAuthenticate.authenticate, portfolioController.createPortfolio);
 // GET holdings

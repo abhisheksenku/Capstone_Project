@@ -5,42 +5,27 @@
 
 /* ===================== IMPORTS ===================== */
 
-import {
-  api_getAlerts,
-  api_markAllAlertsRead,
-} from "../core/api.js";
-
-import {
-  showToast,
-  escapeHtml,
-} from "../core/helpers.js";
+import { api_getAlerts, api_markAllAlertsRead } from "../core/api.js";
+import { showToast, escapeHtml } from "../core/helpers.js";
 
 /* ===================== DOM REFERENCES ===================== */
 
 const alertsList = document.getElementById("alerts-list");
 const alertsEmpty = document.getElementById("alerts-empty");
-const resolveAllAlertsBtn = document.getElementById(
-  "resolveAllAlertsBtn"
-);
+const resolveAllAlertsBtn = document.getElementById("resolveAllAlertsBtn");
 
 /* ============================================================================
    INIT
 ============================================================================ */
 
 export function initAlerts() {
-  // Load alerts when Alerts view opens
   document.addEventListener("view:change", (e) => {
     if (e.detail?.viewId === "view-alerts") {
       loadAlerts();
     }
   });
 
-  if (resolveAllAlertsBtn) {
-    resolveAllAlertsBtn.addEventListener(
-      "click",
-      handleResolveAll
-    );
-  }
+  resolveAllAlertsBtn?.addEventListener("click", handleResolveAll);
 }
 
 /* ============================================================================
@@ -53,18 +38,17 @@ export async function loadAlerts() {
 
     alertsList.innerHTML = "";
 
-    const data = await api_getAlerts();
+    const res = await api_getAlerts();
+    const alerts = res?.alerts || [];
 
-    if (!Array.isArray(data) || data.length === 0) {
+    if (!Array.isArray(alerts) || alerts.length === 0) {
       renderEmpty();
       return;
     }
 
-    if (alertsEmpty) {
-      alertsEmpty.classList.add("hidden");
-    }
+    alertsEmpty?.classList.add("hidden");
 
-    data.forEach((alert) => {
+    alerts.forEach((alert) => {
       const card = document.createElement("div");
 
       const severityClass = getSeverityClass(alert.severity);
@@ -81,13 +65,13 @@ export async function loadAlerts() {
 
         <div class="flex-1">
           <div class="font-semibold text-slate-800">
-            ${escapeHtml(alert.title || "Alert")}
+            ${escapeHtml(alert.alert_type || "Alert")}
           </div>
           <div class="text-sm text-slate-600 mt-1">
             ${escapeHtml(alert.message || "")}
           </div>
           <div class="text-xs text-slate-400 mt-2">
-            ${new Date(alert.createdAt).toLocaleString("en-IN")}
+            ${new Date(alert.triggered_at).toLocaleString("en-IN")}
           </div>
         </div>
       `;
@@ -120,8 +104,8 @@ async function handleResolveAll() {
 ============================================================================ */
 
 function renderEmpty() {
-  if (alertsList) alertsList.innerHTML = "";
-  if (alertsEmpty) alertsEmpty.classList.remove("hidden");
+  alertsList && (alertsList.innerHTML = "");
+  alertsEmpty?.classList.remove("hidden");
 }
 
 /* ============================================================================
@@ -129,7 +113,8 @@ function renderEmpty() {
 ============================================================================ */
 
 function getSeverityClass(severity) {
-  if (severity === "HIGH") return "text-rose-600";
-  if (severity === "MEDIUM") return "text-amber-500";
+  const s = severity?.toLowerCase();
+  if (s === "high") return "text-rose-600";
+  if (s === "medium") return "text-amber-500";
   return "text-slate-400";
 }

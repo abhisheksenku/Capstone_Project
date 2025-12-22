@@ -7,6 +7,9 @@
 
 import { requireAuth } from "./core/auth.js";
 import { initSocket } from "./core/socket.js";
+/* ===================== SETTINGS ===================== */
+
+import "./settings/profile.js";
 
 /* ===================== LAYOUT ===================== */
 
@@ -17,10 +20,7 @@ import {
 } from "./layout/navigation.js";
 
 import { initBreadcrumb } from "./layout/breadcrumb.js";
-import {
-  initProfileMenu,
-  loadUserProfile,
-} from "./layout/profile.js";
+import { initProfileMenu, loadUserProfile } from "./layout/profile.js";
 import { initTabs } from "./layout/tabs.js";
 
 /* ===================== DASHBOARD ===================== */
@@ -48,6 +48,7 @@ import { initFraudHistory } from "./fraud/fraud-history.js";
 import { initFraudCases } from "./fraud/fraud-cases.js";
 import { initFraudMap } from "./fraud/fraud-map.js";
 import { initFraudModals } from "./fraud/fraud-modal.js";
+import { initFraudScoreDistribution } from "./fraud/fraudScoreDistribution.js";
 
 /* ===================== ALERTS ===================== */
 
@@ -94,6 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initFraudCases();
     initFraudMap();
     initFraudModals();
+    initFraudScoreDistribution();
 
     initAlerts();
     initPremium();
@@ -102,16 +104,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("view:change", async (e) => {
       if (e.detail?.viewId === "view-overview") {
         initDashboardCharts();
-        await loadDashboard();        
+        await loadDashboard();
       }
     });
 
     /* ===================== FRAUD SUB-VIEW BUTTONS ===================== */
 
-    const btnViewFraudAnalysis =
-      document.getElementById("btnViewFraudAnalysis");
-    const btnViewFraudCases =
-      document.getElementById("btnViewFraudCases");
+    const btnViewFraudAnalysis = document.getElementById(
+      "btnViewFraudAnalysis"
+    );
+    const btnViewFraudCases = document.getElementById("btnViewFraudCases");
 
     if (btnViewFraudAnalysis) {
       btnViewFraudAnalysis.addEventListener("click", () => {

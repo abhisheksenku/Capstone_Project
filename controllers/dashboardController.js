@@ -4,14 +4,15 @@ const yf = new Yahoo();
 
 const Holding = require("../models/mysql/holding");
 const Portfolio = require("../models/mysql/portfolio");
-
+const { createDailySnapshot } = require("../services/portfolioSnapshotService");
+const PortfolioValueHistory = require("../models/mysql/portfolioHistory");
 /* ============================================================
    GET /api/user/dashboard/metrics
 ============================================================ */
 const getDashboardMetrics = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    await createDailySnapshot(userId);
     const holdings = await Holding.findAll({
       include: [
         {
@@ -47,7 +48,9 @@ const getDashboardMetrics = async (req, res) => {
           });
         }
       } catch (err) {
-        console.warn(`Yahoo failed for ${yahooSymbol}, using cached price: ${ltp}`);
+        console.warn(
+          `Yahoo failed for ${yahooSymbol}, using cached price: ${ltp}`
+        );
         // Continue with cached or avg_price
       }
 
@@ -143,19 +146,40 @@ const getDashboardHoldings = async (req, res) => {
 /* ============================================================
    GET /api/user/dashboard/value-history
 ============================================================ */
+// const getValueHistory = async (req, res) => {
+//   try {
+//     const data = [];
+//     const today = new Date();
+
+//     for (let i = 29; i >= 0; i--) {
+//       const d = new Date(today);
+//       d.setDate(d.getDate() - i);
+//       data.push({
+//         date: d.toISOString().split("T")[0],
+//         value: 100000 + Math.random() * 10000 - 5000,
+//       });
+//     }
+
+//     return res.json(data);
+//   } catch (err) {
+//     console.error("Value history error:", err);
+//     return res.status(500).json({ error: "Failed to load value history" });
+//   }
+// };
 const getValueHistory = async (req, res) => {
   try {
-    const data = [];
-    const today = new Date();
+    const userId = req.user.id;
 
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      data.push({
-        date: d.toISOString().split("T")[0],
-        value: 100000 + Math.random() * 10000 - 5000,
-      });
-    }
+    const rows = await PortfolioValueHistory.findAll({
+      where: { user_id: userId },
+      order: [["date", "ASC"]],
+      limit: 30,
+    });
+
+    const data = rows.map((r) => ({
+      date: r.date,
+      value: Number(r.total_value),
+    }));
 
     return res.json(data);
   } catch (err) {
@@ -163,7 +187,6 @@ const getValueHistory = async (req, res) => {
     return res.status(500).json({ error: "Failed to load value history" });
   }
 };
-
 /* ============================================================
    GET /api/user/dashboard/allocation
 ============================================================ */
@@ -187,7 +210,9 @@ const getAllocation = async (req, res) => {
       let ltp = Number(h.last_price) || Number(h.avg_price) || 0;
 
       try {
-        const quote = await yf.quote(h.symbol.endsWith(".NS") ? h.symbol : h.symbol + ".NS");
+        const quote = await yf.quote(
+          h.symbol.endsWith(".NS") ? h.symbol : h.symbol + ".NS"
+        );
         if (quote?.regularMarketPrice) {
           ltp = quote.regularMarketPrice;
           await h.update({ last_price: ltp, last_price_at: new Date() });
@@ -202,7 +227,12 @@ const getAllocation = async (req, res) => {
 
     const items = Object.keys(map).map((sym) => ({
       asset: sym,
-      percentage: Number(((map[sym] / Object.values(map).reduce((a, b) => a + b, 0)) * 100).toFixed(2)),
+      percentage: Number(
+        (
+          (map[sym] / Object.values(map).reduce((a, b) => a + b, 0)) *
+          100
+        ).toFixed(2)
+      ),
     }));
 
     return res.json({ items });

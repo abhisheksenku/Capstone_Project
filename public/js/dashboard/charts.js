@@ -1,6 +1,8 @@
 /* ============================================================================
    FIN-GUARD DASHBOARD CHARTS
-   Portfolio history + asset allocation charts
+   Handles:
+   - Portfolio value history (line)
+   - Asset allocation (doughnut)
 ============================================================================ */
 
 import { formatMoney } from "../core/helpers.js";
@@ -12,23 +14,31 @@ const allocationCanvas = document.getElementById(
   "portfolio-allocation-chart"
 );
 
-/* ===================== GLOBAL CHART INSTANCES ===================== */
+/* ===================== COLOR PALETTE ===================== */
+
+const ALLOCATION_COLORS = [
+  "#2563eb", // blue
+  "#16a34a", // green
+  "#f59e0b", // amber
+  "#dc2626", // red
+  "#7c3aed", // violet
+  "#0d9488", // teal
+  "#ea580c", // orange
+  "#475569", // slate
+];
+
+/* ===================== CHART INSTANCES ===================== */
 
 let portfolioHistoryChart = null;
 let portfolioAllocationChart = null;
 
 /* ============================================================================
-   INIT (CALLED ON DASHBOARD LOAD)
+   INIT (CALLED ON DASHBOARD VIEW OPEN)
 ============================================================================ */
 
 function initDashboardCharts() {
-  if (!portfolioHistoryChart) {
-    initPortfolioHistoryChart();
-  }
-
-  if (!portfolioAllocationChart) {
-    initAllocationChart();
-  }
+  if (!portfolioHistoryChart) initPortfolioHistoryChart();
+  if (!portfolioAllocationChart) initAllocationChart();
 }
 
 /* ===================== PORTFOLIO HISTORY ===================== */
@@ -47,6 +57,8 @@ function initPortfolioHistoryChart() {
           fill: true,
           tension: 0.3,
           borderWidth: 2,
+          borderColor: "#2563eb",
+          backgroundColor: "rgba(37, 99, 235, 0.12)",
         },
       ],
     },
@@ -62,9 +74,7 @@ function initPortfolioHistoryChart() {
         },
       },
       scales: {
-        x: {
-          grid: { display: false },
-        },
+        x: { grid: { display: false } },
         y: {
           ticks: {
             callback: (v) => formatMoney(v),
@@ -88,6 +98,7 @@ function initAllocationChart() {
         {
           data: [],
           borderWidth: 1,
+          backgroundColor: [],
         },
       ],
     },
@@ -95,13 +106,11 @@ function initAllocationChart() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: "bottom",
-        },
+        legend: { position: "bottom" },
         tooltip: {
           callbacks: {
             label: (ctx) =>
-              `${ctx.label}: ${formatMoney(ctx.parsed)}`,
+              `${ctx.label}: ${ctx.parsed.toFixed(2)}%`,
           },
         },
       },
@@ -126,6 +135,10 @@ function updateAllocation(labels = [], values = []) {
 
   portfolioAllocationChart.data.labels = labels;
   portfolioAllocationChart.data.datasets[0].data = values;
+
+  portfolioAllocationChart.data.datasets[0].backgroundColor =
+    labels.map((_, i) => ALLOCATION_COLORS[i % ALLOCATION_COLORS.length]);
+
   portfolioAllocationChart.update();
 }
 

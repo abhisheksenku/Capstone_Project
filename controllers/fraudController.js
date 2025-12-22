@@ -180,6 +180,40 @@ const getFraudDetail = async (req, res) => {
     res.status(500).json({ error: "Failed to load detail" });
   }
 };
+// GET /api/fraud/score-distribution
+const getFraudScoreDistribution = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const records = await FraudModelOutput.find(
+      { userId },
+      { fraudScore: 1 }
+    );
+
+    const bins = {
+      "0-0.2": 0,
+      "0.2-0.4": 0,
+      "0.4-0.6": 0,
+      "0.6-0.8": 0,
+      "0.8-1.0": 0,
+    };
+
+    records.forEach(r => {
+      const s = Number(r.fraudScore || 0);
+      if (s < 0.2) bins["0-0.2"]++;
+      else if (s < 0.4) bins["0.2-0.4"]++;
+      else if (s < 0.6) bins["0.4-0.6"]++;
+      else if (s < 0.8) bins["0.6-0.8"]++;
+      else bins["0.8-1.0"]++;
+    });
+
+    res.json({ bins });
+  } catch (err) {
+    console.error("Score distribution error:", err);
+    res.status(500).json({ error: "Failed to load distribution" });
+  }
+};
+
 module.exports = {
   getFraudStats,
   getModelHistory,
@@ -187,4 +221,5 @@ module.exports = {
   getFraudCases,
   testFraud,
   getFraudDetail,
+  getFraudScoreDistribution
 };

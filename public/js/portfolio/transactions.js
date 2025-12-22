@@ -12,17 +12,11 @@
 
 /* ===================== IMPORTS ===================== */
 
-import {
-  api_getTransactions,
-  api_addTransaction,
-} from "../core/api.js";
+import { api_getTransactions, api_addTransaction } from "../core/api.js";
 
 import { STORE_HOLDINGS_PAGE, getSocket } from "../core/state.js";
 
-import {
-  showToast,
-  buildPagination,
-} from "../core/helpers.js";
+import { showToast, buildPagination } from "../core/helpers.js";
 
 import { showView } from "../layout/navigation.js";
 
@@ -130,11 +124,8 @@ async function loadTransactions(holdingId, page = 1) {
     });
 
     if (transactionsPagination) {
-      buildPagination(
-        transactionsPagination,
-        page,
-        totalPages,
-        (p) => loadTransactions(holdingId, p)
+      buildPagination(transactionsPagination, page, totalPages, (p) =>
+        loadTransactions(holdingId, p)
       );
     }
 
@@ -178,6 +169,17 @@ async function handleAddTransaction(e) {
     const socket = getSocket();
     if (socket) {
       socket.emit("transaction_created", transaction);
+    }
+    if (socket && transaction?.fraudScore > 0.1) {
+      console.log("[FRONTEND] Emitting fraud_check_result", {
+        transactionId: transaction.transaction?.id,
+        score: transaction.fraudScore,
+      });
+      socket.emit("fraud_check_result", {
+        transactionId: transaction.transaction?.id ?? transaction.id,
+        score: transaction.fraudScore,
+        reasons: transaction.reasons || [],
+      });
     }
 
     showToast("Transaction added successfully", "success");

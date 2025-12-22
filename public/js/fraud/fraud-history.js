@@ -21,12 +21,20 @@ const fraudHistoryEmpty = document.getElementById("fraud-history-empty");
 
 function initFraudHistory() {
   document.addEventListener("view:change", (e) => {
-    if (e.detail?.viewId === "view-fraud-analysis") {
-      showAnalysisSection();
-      loadFraudHistory();
+    if (e.detail?.viewId === "view-fraud") {
+      // DO NOTHING here
+      // overview should be default
     }
   });
+
+  document
+    .getElementById("btnViewFraudAnalysis")
+    ?.addEventListener("click", () => {
+      showAnalysisSection();
+      loadFraudHistory();
+    });
 }
+
 
 /* ============================================================================
    SECTION VISIBILITY
@@ -44,40 +52,55 @@ function showAnalysisSection() {
 
 async function loadFraudHistory() {
   try {
+    console.log("[FRAUD] loadFraudHistory() called");
+
     if (!fraudHistoryBody) return;
 
     fraudHistoryBody.innerHTML = "";
 
-    const data = await api_getFraudHistory();
+    const res = await api_getFraudHistory();
+    console.log("[FRAUD] API raw response:", res);
 
-    if (!Array.isArray(data) || data.length === 0) {
+    // ✅ Support both API shapes:
+    // 1) res = { items: [...] }
+    // 2) res = [...]
+    const items = Array.isArray(res) ? res : (res?.items || []);
+
+    console.log("[FRAUD] Parsed items:", items);
+
+    if (!Array.isArray(items) || items.length === 0) {
       renderEmpty();
       return;
     }
 
     fraudHistoryEmpty?.classList.add("hidden");
 
-    data.forEach((item) => {
-      const probability = Number(
-        item.probability ??
-        item.fraudScore ??
-        item.fraud_score ??
-        0
-      ).toFixed(4);
+    items.forEach((item) => {
+      const scoreRaw =
+        item.fraudScore ?? item.fraud_score ?? item.probability ?? 0;
 
+      const score = Number(scoreRaw) || 0;
+
+      // ✅ Your schema mostly stores fraudScore but not "label"
+      // So derive label if missing
       const isFraud =
-        item.label === "FRAUD" || item.label === 1 || item.label === true;
+        item.label === "FRAUD" ||
+        item.label === 1 ||
+        item.label === true ||
+        score >= 0.7;
 
       const row = document.createElement("tr");
       row.className = "hover:bg-slate-50 cursor-pointer";
 
       row.innerHTML = `
         <td class="border p-2">
-          ${escapeHtml(item.transactionId || "--")}
+          ${escapeHtml(item.transactionId || item.transaction_id || "--")}
         </td>
+
         <td class="border p-2">
-          ${probability}
+          ${score.toFixed(4)}
         </td>
+
         <td class="border p-2 ${
           isFraud
             ? "text-rose-600 font-semibold"
@@ -85,9 +108,11 @@ async function loadFraudHistory() {
         }">
           ${isFraud ? "FRAUD" : "NORMAL"}
         </td>
+
         <td class="border p-2">
           ${escapeHtml(item.modelVersion || item.model_version || "--")}
         </td>
+
         <td class="border p-2">
           ${
             item.createdAt
@@ -102,8 +127,11 @@ async function loadFraudHistory() {
   } catch (err) {
     console.error("Failed to load fraud history:", err);
     showToast("Failed to load fraud history", "error");
+    renderEmpty();
   }
 }
+
+
 
 /* ============================================================================
    EMPTY STATE
@@ -118,7 +146,4 @@ function renderEmpty() {
    EXPORTS
 ============================================================================ */
 
-export {
-  initFraudHistory,
-  loadFraudHistory,
-};
+export { initFraudHistory, loadFraudHistory };

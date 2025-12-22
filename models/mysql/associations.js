@@ -11,6 +11,8 @@ const SystemConfig = require("./systemConfig");
 const AuditLog = require("./auditLog");
 const ImpersonationSession = require("./impersonationSession");
 const WatchlistItem = require("./watchlist");
+const PortfolioValueHistory = require("./portfolioHistory");
+
 /* ============================================================
    USERS RELATIONSHIPS
    ============================================================ */
@@ -155,6 +157,16 @@ User.hasMany(SystemConfig, {
 User.hasMany(WatchlistItem, { foreignKey: "user_id", as: "watchlist" });
 WatchlistItem.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
+// User → Portfolio Value History (1:M)
+User.hasMany(PortfolioValueHistory, {
+  foreignKey: "user_id",
+  as: "portfolio_history",
+});
+
+PortfolioValueHistory.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user",
+});
 
 /* ============================================================
    FEATURE FLAGS
@@ -186,4 +198,5 @@ module.exports = {
   SystemConfig,
   AuditLog,
   ImpersonationSession,
+  PortfolioValueHistory
 };

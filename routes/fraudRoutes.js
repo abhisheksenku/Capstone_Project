@@ -43,5 +43,10 @@ router.get(
   userAuthenticate.authenticate,
   fraudController.getFraudDetail
 );
+router.get(
+  "/score-distribution",
+  userAuthenticate.authenticate,
+  fraudController.getFraudScoreDistribution
+);
 
 module.exports = router;

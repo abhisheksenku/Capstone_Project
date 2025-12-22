@@ -6,7 +6,6 @@
 const axios = window.axios;
 import { getToken } from "./auth.js";
 
-
 /* ===================== AXIOS INSTANCE ===================== */
 
 const api = axios.create({
@@ -47,6 +46,19 @@ api.interceptors.response.use(
 ============================================================================ */
 function api_getUserProfile() {
   return api.get("/api/user/fetch/profile");
+}
+/* ===================== USER SETTINGS ===================== */
+
+function api_updateProfile(payload) {
+  return api.put("/api/user/profile", payload);
+}
+
+function api_updatePassword(payload) {
+  return api.put("/api/user/password", payload);
+}
+
+function api_deleteAccount() {
+  return api.delete("/api/user/account");
 }
 
 /* ============================================================================
@@ -94,7 +106,6 @@ function api_createHolding(payload) {
   return api.post("/api/user/portfolio/holdings/add", payload);
 }
 
-
 function api_deleteHolding(holdingId) {
   return api.delete(`/api/user/delete/holding/${holdingId}`);
 }
@@ -112,7 +123,6 @@ function api_getTransactions(holdingId, page = 1) {
 function api_addTransaction(payload) {
   return api.post("/api/user/portfolio/transactions/add", payload);
 }
-
 
 /* ============================================================================
    MARKET
@@ -153,7 +163,6 @@ function api_removeFromWatchlist(symbol) {
   return api.delete(`/api/user/watchlist/remove/${symbol}`);
 }
 
-
 /* ============================================================================
    FRAUD ANALYTICS
 ============================================================================ */
@@ -173,6 +182,10 @@ function api_getFraudCases(page = 1) {
 function api_testFraudScore(payload) {
   return api.post("/api/fraud/score", payload);
 }
+function api_getFraudScoreDistribution() {
+  return api.get("/api/fraud/score-distribution");
+}
+
 /* ============================================================================
    FRAUD GEO RISK
 ============================================================================ */
@@ -209,7 +222,6 @@ function api_verifyPremiumPayment(orderId) {
   return api.get(`/api/premium/payment-status?order_id=${orderId}`);
 }
 
-
 function api_getGoldPrices() {
   return api.get("/api/premium/gold");
 }
@@ -219,6 +231,9 @@ function api_getGoldPrices() {
 ============================================================================ */
 export {
   api_getUserProfile,
+  api_updateProfile,
+  api_updatePassword,
+  api_deleteAccount,
   // Dashboard
   api_getDashboardSummary,
   api_getDashboardHoldings,
@@ -257,6 +272,7 @@ export {
   api_getFraudCases,
   api_testFraudScore,
   api_getGeoRisk,
+  api_getFraudScoreDistribution,
 
   // Alerts
   api_getAlerts,
