@@ -7,10 +7,13 @@ const Portfolio = require("../models/mysql/portfolio");
 // ======================================================
 const getAlerts = async (req, res) => {
   try {
-    const userId = req.user.id; // from auth middleware
+    const userId = req.user.id;
 
     const alerts = await RiskAlert.findAll({
-      where: { user_id: userId },
+      where: {
+        user_id: userId,
+        resolved_at: null,
+      },
       order: [["triggered_at", "DESC"]],
     });
 
@@ -19,6 +22,7 @@ const getAlerts = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 // ======================================================
 // PATCH /api/alerts/:id/resolve

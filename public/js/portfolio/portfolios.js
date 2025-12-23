@@ -1,14 +1,8 @@
 /* ============================================================================
-   FIN-GUARD PORTFOLIOS (FRONTEND)
-   Portfolio listing, creation, deletion, pagination
-
-   Pattern:
-   - REST for data persistence
-   - Socket for realtime notifications
-   - Toasts ONLY via socket listener (core/socket.js)
-
-   IMPORTANT:
-   - Do NOT show toast here for create/delete
+   FIN-GUARD PORTFOLIOS MODULE
+   - Portfolio list, create, delete
+   - Enforces: delete holdings before deleting portfolio
+   - Refresh-safe & view-driven
 ============================================================================ */
 
 /* ===================== IMPORTS ===================== */
@@ -17,9 +11,14 @@ import {
   api_getPortfolios,
   api_createPortfolio,
   api_deletePortfolio,
+  api_getHoldings,
 } from "../core/api.js";
 
-import { STORE_PORTFOLIO_PAGE, getSocket } from "../core/state.js";
+import {
+  setActivePortfolio,
+  clearActivePortfolio,
+  getSocket,
+} from "../core/state.js";
 
 import {
   escapeHtml,
@@ -39,28 +38,24 @@ const addNewPortfolioBtn = document.getElementById("addNewPortfolioBtn");
 const portfolioCreateForm = document.getElementById("portfolioCreateForm");
 const createCancelBtn = document.getElementById("createPortfolioCancel");
 
-/* ============================================================================
-   INIT
-============================================================================ */
+/* ===================== INIT ===================== */
 
 function initPortfolios() {
-  console.log("[PORTFOLIO] initPortfolios");
+  /* ---- Navigation ---- */
 
-  if (addNewPortfolioBtn) {
-    addNewPortfolioBtn.addEventListener("click", () => {
-      showView("view-portfolio-create");
-    });
-  }
+  addNewPortfolioBtn?.addEventListener("click", () => {
+    showView("view-portfolio-create");
+  });
 
-  if (createCancelBtn) {
-    createCancelBtn.addEventListener("click", () => {
-      showView("view-portfolios");
-    });
-  }
+  createCancelBtn?.addEventListener("click", () => {
+    showView("view-portfolios");
+  });
 
-  if (portfolioCreateForm) {
-    portfolioCreateForm.addEventListener("submit", handleCreatePortfolio);
-  }
+  /* ---- Create ---- */
+
+  portfolioCreateForm?.addEventListener("submit", handleCreatePortfolio);
+
+  /* ---- Load when view activates ---- */
 
   document.addEventListener("view:change", (e) => {
     if (e.detail?.viewId === "view-portfolios") {
@@ -69,30 +64,37 @@ function initPortfolios() {
   });
 }
 
-/* ============================================================================
-   LOAD PORTFOLIOS
-============================================================================ */
+/* ===================== LOAD PORTFOLIOS ===================== */
 
 async function loadPortfolios(page = 1) {
+  if (!portfolioList) return;
+
   try {
-    if (!portfolioList) return;
-
-    sessionStorage.setItem(STORE_PORTFOLIO_PAGE, page);
-
     const res = await api_getPortfolios(page);
-    const portfolios = res?.portfolios || [];
-    const totalPages = res?.pagination?.totalPages || 1;
+    const portfolios = res?.portfolios ?? [];
+    const totalPages = res?.pagination?.totalPages ?? 1;
 
     portfolioList.innerHTML = "";
+    paginationContainer.innerHTML = "";
 
-    if (!portfolios.length) {
+    /* ---- Empty state ---- */
+
+    if (portfolios.length === 0) {
       portfolioList.innerHTML = `
         <div class="text-slate-500 text-center py-6">
-          No portfolios found.
+          No portfolios found. Create your first portfolio to get started.
         </div>
       `;
+
+      const activeId =
+        sessionStorage.getItem("fg_active_portfolio_id");
+      if (activeId) {
+        clearActivePortfolio();
+      }
       return;
     }
+
+    /* ---- Render cards ---- */
 
     portfolios.forEach((p) => {
       const card = document.createElement("div");
@@ -106,21 +108,22 @@ async function loadPortfolios(page = 1) {
               ${escapeHtml(p.name)}
             </h3>
             <p class="text-sm text-slate-500">
-              ${escapeHtml(p.description || "")}
+              ${escapeHtml(p.description || "—")}
             </p>
           </div>
 
           <div class="flex gap-3">
             <button
-              data-id="${p.id}"
               class="view-holdings-btn text-blue-600 text-sm underline"
+              data-id="${p.id}"
+              data-name="${escapeHtml(p.name)}"
             >
               View
             </button>
 
             <button
-              data-id="${p.id}"
               class="delete-portfolio-btn text-rose-600 text-sm underline"
+              data-id="${p.id}"
             >
               Delete
             </button>
@@ -133,101 +136,117 @@ async function loadPortfolios(page = 1) {
 
     attachPortfolioActions();
 
-    if (paginationContainer) {
-      buildPagination(paginationContainer, page, totalPages, loadPortfolios);
+    /* ---- Pagination ---- */
+
+    if (paginationContainer && totalPages > 1) {
+      buildPagination(
+        paginationContainer,
+        page,
+        totalPages,
+        loadPortfolios
+      );
     }
   } catch (err) {
-    console.error("[PORTFOLIO] Load failed:", err);
+    console.error("[PORTFOLIOS] Load failed:", err);
     showToast("Failed to load portfolios", "error");
   }
 }
 
-/* ============================================================================
-   CREATE PORTFOLIO (REST → SOCKET EMIT ONLY)
-============================================================================ */
+/* ===================== CREATE PORTFOLIO ===================== */
 
 async function handleCreatePortfolio(e) {
   e.preventDefault();
 
   try {
-    const name = document.getElementById("portfolioName")?.value.trim();
-    const description = document
-      .getElementById("portfolioDescription")
-      ?.value.trim();
+    const name =
+      document.getElementById("portfolioName")?.value.trim();
+    const description =
+      document.getElementById("portfolioDescription")?.value.trim();
 
     if (!name) {
       showToast("Portfolio name is required", "error");
       return;
     }
 
-    // 1️⃣ REST call
-    const portfolio = await api_createPortfolio({ name, description });
+    const portfolio = await api_createPortfolio({
+      name,
+      description,
+    });
 
-    // 2️⃣ SOCKET emit (toast will come from socket.js)
-    const socket = getSocket();
-    console.log("[PORTFOLIO] socket instance:", socket);
+    getSocket()?.emit("portfolio_created", portfolio);
 
-    if (socket) {
-      console.log("[PORTFOLIO] emitting portfolio_created");
-      socket.emit("portfolio_created", portfolio);
-    }
-
-    // 3️⃣ UI navigation only (NO toast here)
     portfolioCreateForm.reset();
+    showToast("Portfolio created successfully", "success");
+
     showView("view-portfolios");
-    loadPortfolios(1);
   } catch (err) {
-    console.error("[PORTFOLIO] Create failed:", err);
+    console.error("[PORTFOLIOS] Create failed:", err);
     showToast("Failed to create portfolio", "error");
   }
 }
 
-/* ============================================================================
-   DELETE PORTFOLIO (REST → SOCKET EMIT ONLY)
-============================================================================ */
+/* ===================== ACTION HANDLERS ===================== */
 
 function attachPortfolioActions() {
-  document.querySelectorAll(".delete-portfolio-btn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const id = btn.dataset.id;
-      if (!id) return;
+  /* ---- View holdings ---- */
 
+  document.querySelectorAll(".view-holdings-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const name = btn.dataset.name;
+      if (!id || !name) return;
+
+      setActivePortfolio(id, name);
+      showView("view-holdings");
+    };
+  });
+
+  /* ---- Delete portfolio ---- */
+
+  document.querySelectorAll(".delete-portfolio-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      const portfolioId = btn.dataset.id;
+      if (!portfolioId) return;
+
+      /* 🔍 Step 1: Check holdings */
+      try {
+        const res = await api_getHoldings(portfolioId, 1);
+        const holdingCount = res?.holdings?.length || 0;
+
+        if (holdingCount > 0) {
+          showToast(
+            "Please delete all holdings before deleting this portfolio",
+            "warning"
+          );
+          return;
+        }
+      } catch (err) {
+        console.error("[PORTFOLIOS] Holding check failed:", err);
+        showToast("Unable to verify holdings", "error");
+        return;
+      }
+
+      /* ✅ Step 2: Confirm delete */
       const confirmed = await showConfirm(
         "Are you sure you want to delete this portfolio?"
       );
-
       if (!confirmed) return;
 
+      /* 🗑 Step 3: Delete portfolio */
       try {
-        await api_deletePortfolio(id);
+        await api_deletePortfolio(portfolioId);
+        getSocket()?.emit("portfolio_deleted", { portfolioId });
 
-        const socket = getSocket();
-        if (socket) {
-          socket.emit("portfolio_deleted", { id });
-        }
-
-        const page = Number(sessionStorage.getItem(STORE_PORTFOLIO_PAGE)) || 1;
-        loadPortfolios(page);
+        showToast("Portfolio deleted", "success");
+        loadPortfolios(1);
       } catch (err) {
-        console.error("[PORTFOLIO] Delete failed:", err);
+        console.error("[PORTFOLIOS] Delete failed:", err);
         showToast("Failed to delete portfolio", "error");
       }
-    });
-  });
-
-  document.querySelectorAll(".view-holdings-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.id;
-      if (!id) return;
-
-      sessionStorage.setItem("activePortfolioId", id);
-      showView("view-holdings");
-    });
+    };
   });
 }
 
-/* ============================================================================
-   EXPORTS
-============================================================================ */
+/* ===================== EXPORTS ===================== */
 
 export { initPortfolios, loadPortfolios };

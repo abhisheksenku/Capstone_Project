@@ -1,72 +1,51 @@
 /* ============================================================================
    FIN-GUARD FRAUD HISTORY (ML OUTPUT)
    Handles Fraud Analysis History sub-view
+   - Refresh-safe
+   - Subview-driven
+   - No UI ownership conflicts
 ============================================================================ */
 
 import { api_getFraudHistory } from "../core/api.js";
 import { showToast, escapeHtml } from "../core/helpers.js";
+import { showFraudSubView } from "./fraudSubView.js";
 
 /* ===================== DOM REFERENCES ===================== */
-
-const sectionOverview = document.getElementById("fraud-overview-section");
-const sectionAnalysis = document.getElementById("fraud-analysis-section");
-const sectionCases = document.getElementById("fraud-cases-section");
 
 const fraudHistoryBody = document.getElementById("fraud-history-body");
 const fraudHistoryEmpty = document.getElementById("fraud-history-empty");
 
-/* ============================================================================
-   INIT
-============================================================================ */
+/* ===================== INIT ===================== */
 
 function initFraudHistory() {
-  document.addEventListener("view:change", (e) => {
-    if (e.detail?.viewId === "view-fraud") {
-      // DO NOTHING here
-      // overview should be default
-    }
-  });
-
+  // Button → Analysis History
   document
     .getElementById("btnViewFraudAnalysis")
     ?.addEventListener("click", () => {
-      showAnalysisSection();
+      showFraudSubView("analysis");
       loadFraudHistory();
     });
+
+  // Restore on refresh / navigation
+  document.addEventListener("fraud:subview", (e) => {
+    if (e.detail?.type === "analysis") {
+      loadFraudHistory();
+    }
+  });
 }
 
-
-/* ============================================================================
-   SECTION VISIBILITY
-============================================================================ */
-
-function showAnalysisSection() {
-  sectionOverview?.classList.add("hidden");
-  sectionCases?.classList.add("hidden");
-  sectionAnalysis?.classList.remove("hidden");
-}
-
-/* ============================================================================
-   LOAD FRAUD HISTORY
-============================================================================ */
+/* ===================== LOAD HISTORY ===================== */
 
 async function loadFraudHistory() {
   try {
-    console.log("[FRAUD] loadFraudHistory() called");
-
     if (!fraudHistoryBody) return;
 
     fraudHistoryBody.innerHTML = "";
 
     const res = await api_getFraudHistory();
-    console.log("[FRAUD] API raw response:", res);
 
-    // ✅ Support both API shapes:
-    // 1) res = { items: [...] }
-    // 2) res = [...]
-    const items = Array.isArray(res) ? res : (res?.items || []);
-
-    console.log("[FRAUD] Parsed items:", items);
+    // Support both API shapes
+    const items = Array.isArray(res) ? res : res?.items || [];
 
     if (!Array.isArray(items) || items.length === 0) {
       renderEmpty();
@@ -76,13 +55,13 @@ async function loadFraudHistory() {
     fraudHistoryEmpty?.classList.add("hidden");
 
     items.forEach((item) => {
-      const scoreRaw =
-        item.fraudScore ?? item.fraud_score ?? item.probability ?? 0;
+      const score = Number(
+        item.fraudScore ??
+          item.fraud_score ??
+          item.probability ??
+          0
+      );
 
-      const score = Number(scoreRaw) || 0;
-
-      // ✅ Your schema mostly stores fraudScore but not "label"
-      // So derive label if missing
       const isFraud =
         item.label === "FRAUD" ||
         item.label === 1 ||
@@ -90,7 +69,7 @@ async function loadFraudHistory() {
         score >= 0.7;
 
       const row = document.createElement("tr");
-      row.className = "hover:bg-slate-50 cursor-pointer";
+      row.className = "hover:bg-slate-50";
 
       row.innerHTML = `
         <td class="border p-2">
@@ -125,25 +104,19 @@ async function loadFraudHistory() {
       fraudHistoryBody.appendChild(row);
     });
   } catch (err) {
-    console.error("Failed to load fraud history:", err);
+    console.error("[FRAUD] Failed to load history:", err);
     showToast("Failed to load fraud history", "error");
     renderEmpty();
   }
 }
 
-
-
-/* ============================================================================
-   EMPTY STATE
-============================================================================ */
+/* ===================== EMPTY STATE ===================== */
 
 function renderEmpty() {
   fraudHistoryBody.innerHTML = "";
   fraudHistoryEmpty?.classList.remove("hidden");
 }
 
-/* ============================================================================
-   EXPORTS
-============================================================================ */
+/* ===================== EXPORTS ===================== */
 
 export { initFraudHistory, loadFraudHistory };

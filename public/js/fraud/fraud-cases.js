@@ -1,17 +1,25 @@
 /* ============================================================================
    FIN-GUARD FRAUD CASES (USER)
-   Handles Fraud Case History sub-view + Test Fraud Score action
+   Handles Fraud Case History sub-view + Test Fraud Score
+   - Subview-driven
+   - Refresh-safe
+   - No manual DOM ownership
 ============================================================================ */
 
-import { api_getFraudCases, api_testFraudScore } from "../core/api.js";
+import {
+  api_getFraudCases,
+  api_testFraudScore,
+} from "../core/api.js";
 
-import { showToast, escapeHtml, buildPagination } from "../core/helpers.js";
+import {
+  showToast,
+  escapeHtml,
+  buildPagination,
+} from "../core/helpers.js";
+
+import { showFraudSubView } from "./fraudSubView.js";
 
 /* ===================== DOM REFERENCES ===================== */
-
-const sectionOverview = document.getElementById("fraud-overview-section");
-const sectionAnalysis = document.getElementById("fraud-analysis-section");
-const sectionCases = document.getElementById("fraud-cases-section");
 
 const fraudCasesBody = document.getElementById("fraud-cases-body");
 const fraudCasesEmpty = document.getElementById("fraud-cases-empty");
@@ -19,36 +27,29 @@ const fraudCasesPagination = document.getElementById("fraud-cases-pagination");
 
 const testFraudBtn = document.getElementById("testFraudBtn");
 
-/* ============================================================================
-   INIT
-============================================================================ */
+/* ===================== INIT ===================== */
 
 function initFraudCases() {
-  // View switch
-  document.addEventListener("view:change", (e) => {
-    if (e.detail?.viewId === "view-fraud-cases") {
-      showCasesSection();
+  // Button → Cases
+  document
+    .getElementById("btnViewFraudCases")
+    ?.addEventListener("click", () => {
+      showFraudSubView("cases");
+      loadFraudCases(1);
+    });
+
+  // Restore / breadcrumb / refresh
+  document.addEventListener("fraud:subview", (e) => {
+    if (e.detail?.type === "cases") {
       loadFraudCases(1);
     }
   });
 
-  // Test fraud score button
+  // Test fraud score
   testFraudBtn?.addEventListener("click", handleTestFraud);
 }
 
-/* ============================================================================
-   SECTION VISIBILITY
-============================================================================ */
-
-function showCasesSection() {
-  sectionOverview?.classList.add("hidden");
-  sectionAnalysis?.classList.add("hidden");
-  sectionCases?.classList.remove("hidden");
-}
-
-/* ============================================================================
-   LOAD FRAUD CASES
-============================================================================ */
+/* ===================== LOAD CASES ===================== */
 
 async function loadFraudCases(page = 1) {
   try {
@@ -59,8 +60,8 @@ async function loadFraudCases(page = 1) {
 
     const res = await api_getFraudCases(page);
 
-    const cases = res?.cases || [];
-    const pagination = res?.pagination || {};
+    const cases = res?.cases ?? [];
+    const pagination = res?.pagination ?? {};
 
     if (!cases.length) {
       renderEmpty();
@@ -80,22 +81,28 @@ async function loadFraudCases(page = 1) {
         <td class="border p-2">
           ${escapeHtml(c.case_id || "--")}
         </td>
+
         <td class="border p-2 font-semibold ${
           isHighRisk ? "text-rose-600" : "text-amber-600"
         }">
           ${(score * 100).toFixed(2)}%
         </td>
+
         <td class="border p-2">
           ${escapeHtml(
             c.reason ||
-              (c.fraud_score >= 0.7
+              (isHighRisk
                 ? "High anomaly score detected"
                 : "Transaction within normal behavior")
           )}
-
         </td>
+
         <td class="border p-2">
-          ${new Date(c.createdAt).toLocaleDateString("en-IN")}
+          ${
+            c.createdAt
+              ? new Date(c.createdAt).toLocaleDateString("en-IN")
+              : "--"
+          }
         </td>
       `;
 
@@ -111,14 +118,13 @@ async function loadFraudCases(page = 1) {
       );
     }
   } catch (err) {
-    console.error("Failed to load fraud cases:", err);
+    console.error("[FRAUD] Failed to load cases:", err);
     showToast("Failed to load fraud cases", "error");
+    renderEmpty();
   }
 }
 
-/* ============================================================================
-   TEST FRAUD SCORE (FIXED)
-============================================================================ */
+/* ===================== TEST FRAUD ===================== */
 
 async function handleTestFraud() {
   try {
@@ -131,24 +137,21 @@ async function handleTestFraud() {
 
     const result = await api_testFraudScore(payload);
 
-    // 🔥 This event opens the modal
     document.dispatchEvent(
       new CustomEvent("fraud:testResult", {
         detail: result,
       })
     );
 
-    // Optional auto-refresh
+    // Auto-refresh cases
     loadFraudCases(1);
   } catch (err) {
-    console.error("Fraud test failed:", err);
+    console.error("[FRAUD] Test failed:", err);
     showToast("Fraud test failed", "error");
   }
 }
 
-/* ============================================================================
-   EMPTY STATE
-============================================================================ */
+/* ===================== EMPTY ===================== */
 
 function renderEmpty() {
   fraudCasesBody.innerHTML = "";
@@ -156,8 +159,6 @@ function renderEmpty() {
   fraudCasesPagination.innerHTML = "";
 }
 
-/* ============================================================================
-   EXPORTS
-============================================================================ */
+/* ===================== EXPORTS ===================== */
 
 export { initFraudCases, loadFraudCases };

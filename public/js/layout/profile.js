@@ -1,7 +1,12 @@
 /* ============================================================================
    FIN-GUARD PROFILE HANDLER
-   Header profile dropdown + user info rendering + Settings population (API-based)
+   - Header profile dropdown
+   - User info rendering
+   - Settings view population (API-driven)
+   - Navigation-safe (uses showView ONLY)
 ============================================================================ */
+
+/* ===================== IMPORTS ===================== */
 
 import {
   api_getUserProfile,
@@ -9,27 +14,22 @@ import {
 } from "../core/api.js";
 
 import { showToast } from "../core/helpers.js";
+import { showView } from "../layout/navigation.js";
 
 /* ===================== DOM REFERENCES ===================== */
 
-// Header dropdown toggle & menu
+// Dropdown
 const profileToggle = document.getElementById("profile-menu-toggle");
 const profileMenu = document.getElementById("profileMenu");
 
-// Dropdown actions
+// Menu actions
 const viewProfileBtn = document.getElementById("viewProfileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 
-// Header user info (text)
-const profileNameEl = document.querySelector(
-  ".group .text-sm.font-semibold"
-);
-const profileRoleEl = document.querySelector(
-  ".group .text-xs.text-slate-500"
-);
+// Header info
+const profileNameEl = document.querySelector(".group .text-sm.font-semibold");
+const profileRoleEl = document.querySelector(".group .text-xs.text-slate-500");
 const premiumBadgeEls = document.querySelectorAll("#premium-badge");
-
-// Header avatar image
 const headerAvatarImg = document.getElementById("headerAvatar");
 
 // Settings page fields
@@ -38,7 +38,7 @@ const settingsEmailInput = document.getElementById("email");
 const settingsPhoneInput = document.getElementById("phone");
 const settingsAvatar = document.getElementById("profileAvatar");
 
-/* ===================== PROFILE MENU ===================== */
+/* ===================== INIT MENU ===================== */
 
 function initProfileMenu() {
   if (!profileToggle || !profileMenu) return;
@@ -59,29 +59,20 @@ function initProfileMenu() {
     e.stopPropagation();
   });
 
-  // View Profile → switch to Settings view
-  if (viewProfileBtn) {
-    viewProfileBtn.addEventListener("click", () => {
-      profileMenu.classList.add("hidden");
-
-      document.dispatchEvent(
-        new CustomEvent("view:change", {
-          detail: { viewId: "view-settings" },
-        })
-      );
-    });
-  }
+  // View Profile → Settings
+  viewProfileBtn?.addEventListener("click", () => {
+    profileMenu.classList.add("hidden");
+    showView("view-settings");
+  });
 
   // Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      sessionStorage.clear();
-      window.location.href = "/login";
-    });
-  }
+  logoutBtn?.addEventListener("click", () => {
+    sessionStorage.clear();
+    window.location.href = "/login";
+  });
 }
 
-/* ===================== LOAD USER PROFILE (API) ===================== */
+/* ===================== LOAD USER PROFILE ===================== */
 
 async function loadUserProfile() {
   try {
@@ -89,13 +80,11 @@ async function loadUserProfile() {
     const user = res?.user || res;
     if (!user) return;
 
-    // Cache user for reuse
+    // Cache user
     sessionStorage.setItem("user", JSON.stringify(user));
 
     // Header name
-    if (profileNameEl && user.name) {
-      profileNameEl.textContent = user.name;
-    }
+    if (profileNameEl) profileNameEl.textContent = user.name || "";
 
     // Header role
     if (profileRoleEl && user.role) {
@@ -103,7 +92,7 @@ async function loadUserProfile() {
         user.role.charAt(0).toUpperCase() + user.role.slice(1);
     }
 
-    // Header avatar (image)
+    // Avatar
     if (headerAvatarImg && user.name) {
       headerAvatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
         user.name
@@ -117,53 +106,46 @@ async function loadUserProfile() {
   }
 }
 
-/* ===================== POPULATE SETTINGS (API-BASED) ===================== */
+/* ===================== SETTINGS POPULATION ===================== */
 
-async function populateSettingsFromApi() {
+async function populateSettings() {
   try {
     const res = await api_getUserProfile();
     const user = res?.user || res;
     if (!user) return;
-    console.log("User premium status:", user.isPremium);
+
     if (settingsNameInput) settingsNameInput.value = user.name || "";
     if (settingsEmailInput) settingsEmailInput.value = user.email || "";
     if (settingsPhoneInput) settingsPhoneInput.value = user.phone || "";
 
     if (settingsAvatar && user.name) {
-      settingsAvatar.textContent =
-        user.name.charAt(0).toUpperCase();
-    }
-
-    if (headerAvatarImg && user.name) {
-      headerAvatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        user.name
-      )}&background=0D8ABC&color=fff`;
+      settingsAvatar.textContent = user.name.charAt(0).toUpperCase();
     }
   } catch (err) {
-    console.error("[PROFILE] Settings population failed:", err);
+    console.error("[PROFILE] Settings load failed:", err);
   }
 }
 
-/* ===================== VIEW CHANGE LISTENER ===================== */
+/* ===================== VIEW LISTENER ===================== */
 
 document.addEventListener("view:change", (e) => {
   if (e.detail?.viewId === "view-settings") {
-    populateSettingsFromApi();
+    populateSettings();
   }
 });
 
-/* ===================== PREMIUM STATUS ===================== */
+/* ===================== PREMIUM ===================== */
 
 async function applyPremiumStatus() {
   try {
     const res = await api_checkPremiumStatus();
+    const isPremium = Boolean(res?.isPremium);
 
     premiumBadgeEls.forEach((el) => {
-      if (res?.isPremium) el.classList.remove("hidden");
-      else el.classList.add("hidden");
+      el.classList.toggle("hidden", !isPremium);
     });
   } catch {
-    console.warn("[PROFILE] Premium status check failed");
+    console.warn("[PROFILE] Premium check failed");
   }
 }
 

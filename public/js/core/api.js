@@ -44,9 +44,11 @@ api.interceptors.response.use(
 /* ============================================================================
    PROFILE
 ============================================================================ */
+
 function api_getUserProfile() {
   return api.get("/api/user/fetch/profile");
 }
+
 /* ===================== USER SETTINGS ===================== */
 
 function api_updateProfile(payload) {
@@ -72,9 +74,11 @@ function api_getDashboardSummary() {
 function api_getDashboardHoldings() {
   return api.get("/api/user/dashboard/holdings");
 }
+
 function api_getDashboardHistory() {
   return api.get("/api/user/dashboard/history");
 }
+
 function api_getDashboardAllocation() {
   return api.get("/api/user/dashboard/allocation");
 }
@@ -98,6 +102,7 @@ function api_deletePortfolio(portfolioId) {
 /* ============================================================================
    HOLDINGS
 ============================================================================ */
+
 function api_getHoldings(portfolioId, page = 1) {
   return api.get(`/api/user/portfolio/holdings/${portfolioId}?page=${page}`);
 }
@@ -124,6 +129,10 @@ function api_addTransaction(payload) {
   return api.post("/api/user/portfolio/transactions/add", payload);
 }
 
+function api_deleteTransaction(transactionId) {
+  return api.delete(`/api/user/delete/transaction/${transactionId}`);
+}
+
 /* ============================================================================
    MARKET
 ============================================================================ */
@@ -143,6 +152,7 @@ function api_getMarketHeatmap() {
 function api_getTrendingStocks() {
   return api.get("/api/user/market/trending");
 }
+
 function api_getMarketHistory(symbol) {
   return api.get(`/api/user/market/history/${symbol}`);
 }
@@ -182,6 +192,7 @@ function api_getFraudCases(page = 1) {
 function api_testFraudScore(payload) {
   return api.post("/api/fraud/score", payload);
 }
+
 function api_getFraudScoreDistribution() {
   return api.get("/api/fraud/score-distribution");
 }
@@ -229,56 +240,41 @@ function api_getGoldPrices() {
 /* ============================================================================
    EXPORTS
 ============================================================================ */
+
 export {
   api_getUserProfile,
   api_updateProfile,
   api_updatePassword,
   api_deleteAccount,
-  // Dashboard
   api_getDashboardSummary,
   api_getDashboardHoldings,
   api_getDashboardHistory,
   api_getDashboardAllocation,
-
-  // Portfolios
   api_getPortfolios,
   api_createPortfolio,
   api_deletePortfolio,
-
-  // Holdings
   api_getHoldings,
   api_createHolding,
   api_deleteHolding,
-
-  // Transactions
   api_getTransactions,
   api_addTransaction,
-
-  // Market
+  api_deleteTransaction,
   api_searchMarket,
   api_getMarketQuote,
   api_getMarketHeatmap,
   api_getTrendingStocks,
   api_getMarketHistory,
-
-  // Watchlist
   api_getWatchlist,
   api_addToWatchlist,
   api_removeFromWatchlist,
-
-  // Fraud
   api_getFraudKPIs,
   api_getFraudHistory,
   api_getFraudCases,
   api_testFraudScore,
-  api_getGeoRisk,
   api_getFraudScoreDistribution,
-
-  // Alerts
+  api_getGeoRisk,
   api_getAlerts,
   api_markAllAlertsRead,
-
-  // Premium
   api_checkPremiumStatus,
   api_createPremiumOrder,
   api_verifyPremiumPayment,

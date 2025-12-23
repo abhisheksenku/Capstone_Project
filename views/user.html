@@ -261,7 +261,7 @@
       class="lg:ml-64 mt-16 p-4 sm:p-6 min-h-[calc(100vh-4rem)] transition-all duration-300"
     >
       <!-- Dynamic Page Header -->
-      <div
+      <!-- <div
         class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 animate-fade-in gap-4"
       >
         <div>
@@ -288,16 +288,29 @@
             Refresh
           </button>
         </div>
-      </div>
+      </div> -->
 
       <!-- Breadcrumb -->
-      <div id="breadcrumb" class="text-sm text-slate-500 mb-4">
-        <span id="breadcrumb-overview" class="cursor-pointer hover:underline">
+      <!-- Breadcrumb -->
+      <nav
+        id="breadcrumb"
+        class="text-sm text-slate-500 mb-4 flex items-center gap-2"
+      >
+        <span
+          id="breadcrumb-overview"
+          class="cursor-pointer text-blue-600 hover:underline"
+          data-view="view-overview"
+        >
           Overview
         </span>
-        <span id="breadcrumb-divider" class="mx-2 hidden">/</span>
-        <span id="breadcrumb-sub" class="hidden"></span>
-      </div>
+
+        <span id="breadcrumb-divider" class="hidden">/</span>
+
+        <span
+          id="breadcrumb-sub"
+          class="hidden cursor-pointer hover:underline"
+        ></span>
+      </nav>
 
       <!-- ======================================================= -->
       <!-- VIEW 1: DASHBOARD (Overview) -->
@@ -907,21 +920,6 @@
       <!-- VIEW: FRAUD ANALYTICS (USER VERSION) -->
       <!-- ======================================================= -->
       <section id="view-fraud" class="view-section hidden animate-fade-in mt-4">
-        <!-- ========================= BREADCRUMB ========================= -->
-        <div class="text-sm text-slate-500 mb-4 flex items-center gap-2">
-          <span id="bc-overview" class="cursor-pointer hover:underline"
-            >Overview</span
-          >
-          <span>/</span>
-          <span id="bc-fraud" class="cursor-pointer hover:underline"
-            >Fraud Analytics</span
-          >
-
-          <!-- ONLY SHOW WHEN HISTORY OR CASES IS OPEN -->
-          <span id="bc-divider-3" class="hidden">/</span>
-          <span id="bc-sub" class="hidden"></span>
-        </div>
-
         <!-- ========================================================= -->
         <!-- SECTION 0: FRAUD OVERVIEW (DEFAULT)                       -->
         <!-- ========================================================= -->

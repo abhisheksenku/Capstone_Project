@@ -1,22 +1,26 @@
 /* ============================================================================
-   FIN-GUARD TRANSACTIONS (FRONTEND)
-   Holding transactions listing, creation, pagination
-   REST-first + Socket relay (aligned with Portfolio & Holdings pattern)
-
-   Responsibilities:
-   - Fetch transactions via REST APIs
-   - Add transactions via REST
-   - Emit socket events AFTER successful REST actions
-   - Render transaction list and pagination
+   FIN-GUARD TRANSACTIONS MODULE
+   - Holding-scoped transaction list
+   - Add / Delete transactions
+   - Refresh-safe
+   - REST first, socket after
 ============================================================================ */
 
 /* ===================== IMPORTS ===================== */
 
-import { api_getTransactions, api_addTransaction } from "../core/api.js";
+import {
+  api_getTransactions,
+  api_addTransaction,
+  api_deleteTransaction,
+} from "../core/api.js";
 
-import { STORE_HOLDINGS_PAGE, getSocket } from "../core/state.js";
+import { getSocket } from "../core/state.js";
 
-import { showToast, buildPagination } from "../core/helpers.js";
+import {
+  showToast,
+  buildPagination,
+  showConfirm,
+} from "../core/helpers.js";
 
 import { showView } from "../layout/navigation.js";
 
@@ -29,6 +33,7 @@ const transactionsPagination = document.getElementById(
 
 const openAddTransactionBtn = document.getElementById("openAddTransactionBtn");
 const cancelTransactionBtn = document.getElementById("cancelTransactionBtn");
+const backToHoldingsBtn = document.getElementById("backToHoldings");
 
 const transactionsTableContainer = document.getElementById(
   "transactions-table-container"
@@ -38,67 +43,62 @@ const transactionFormContainer = document.getElementById(
 );
 
 const addTransactionForm = document.getElementById("addTransactionForm");
-const backToHoldingsBtn = document.getElementById("backToHoldings");
 
-/* ============================================================================
-   INIT
-============================================================================ */
+/* ===================== INIT ===================== */
 
 function initTransactions() {
-  if (openAddTransactionBtn) {
-    openAddTransactionBtn.addEventListener("click", () =>
-      toggleTransactionForm(true)
-    );
-  }
+  /* ---- UI buttons ---- */
 
-  if (cancelTransactionBtn) {
-    cancelTransactionBtn.addEventListener("click", () =>
-      toggleTransactionForm(false)
-    );
-  }
+  openAddTransactionBtn?.addEventListener("click", () =>
+    toggleTransactionForm(true)
+  );
 
-  if (backToHoldingsBtn) {
-    backToHoldingsBtn.addEventListener("click", () =>
-      showView("view-holdings")
-    );
-  }
+  cancelTransactionBtn?.addEventListener("click", () =>
+    toggleTransactionForm(false)
+  );
 
-  if (addTransactionForm) {
-    addTransactionForm.addEventListener("submit", handleAddTransaction);
-  }
+  backToHoldingsBtn?.addEventListener("click", () => {
+    showView("view-holdings");
+  });
+
+  addTransactionForm?.addEventListener("submit", handleAddTransaction);
+
+  /* ---- Load on view activation ---- */
 
   document.addEventListener("view:change", (e) => {
     if (e.detail?.viewId === "view-holding-transactions") {
-      const holdingId = sessionStorage.getItem("activeHoldingId");
-      if (holdingId) {
-        loadTransactions(holdingId);
+      const holdingId = sessionStorage.getItem("fg_active_holding_id");
+
+      if (!holdingId) {
+        showToast("No holding selected", "warning");
+        showView("view-holdings");
+        return;
       }
+
+      loadTransactions(Number(holdingId), 1);
     }
   });
 }
 
-/* ============================================================================
-   LOAD TRANSACTIONS
-============================================================================ */
+/* ===================== LOAD TRANSACTIONS ===================== */
 
 async function loadTransactions(holdingId, page = 1) {
+  if (!transactionsList || !holdingId) return;
+
   try {
-    if (!transactionsList || !holdingId) return;
-
-    sessionStorage.setItem(STORE_HOLDINGS_PAGE, page);
-
     const res = await api_getTransactions(holdingId, page);
     const transactions = res?.transactions || [];
     const totalPages = res?.pagination?.totalPages || 1;
 
     transactionsList.innerHTML = "";
 
-    if (!transactions.length) {
+    if (transactions.length === 0) {
       transactionsList.innerHTML = `
         <div class="text-slate-500 text-center py-6">
-          No transactions found.
+          No transactions found for this holding.
         </div>
       `;
+      transactionsPagination.innerHTML = "";
       toggleTransactionForm(false);
       return;
     }
@@ -110,24 +110,41 @@ async function loadTransactions(holdingId, page = 1) {
 
       row.innerHTML = `
         <div>
-          <div class="font-medium text-slate-800">${t.txn_type}</div>
+          <div class="font-semibold text-slate-800">
+            ${t.txn_type}
+          </div>
           <div class="text-sm text-slate-500">
-            Qty: ${t.qty} @ ₹${t.price}
+            Qty: ${t.qty} @ ₹${Number(t.price).toFixed(2)}
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+            ${new Date(t.createdAt).toLocaleDateString("en-IN")}
           </div>
         </div>
-        <div class="text-sm text-slate-600">
-          ${new Date(t.createdAt).toLocaleDateString("en-IN")}
-        </div>
+
+        <button
+          class="text-rose-600 text-xs hover:underline"
+          data-id="${t.id}"
+        >
+          Delete
+        </button>
       `;
+
+      /* ---- Delete handler ---- */
+      row
+        .querySelector("button[data-id]")
+        ?.addEventListener("click", async () => {
+          await handleDeleteTransaction(t.id, holdingId, page);
+        });
 
       transactionsList.appendChild(row);
     });
 
-    if (transactionsPagination) {
-      buildPagination(transactionsPagination, page, totalPages, (p) =>
-        loadTransactions(holdingId, p)
-      );
-    }
+    buildPagination(
+      transactionsPagination,
+      page,
+      totalPages,
+      (p) => loadTransactions(holdingId, p)
+    );
 
     toggleTransactionForm(false);
   } catch (err) {
@@ -136,47 +153,47 @@ async function loadTransactions(holdingId, page = 1) {
   }
 }
 
-/* ============================================================================
-   ADD TRANSACTION (REST → SOCKET EMIT)
-============================================================================ */
+/* ===================== ADD TRANSACTION ===================== */
 
 async function handleAddTransaction(e) {
   e.preventDefault();
 
   try {
-    const holdingId = sessionStorage.getItem("activeHoldingId");
-    const symbol = sessionStorage.getItem("activeHoldingSymbol");
+    const holdingId = sessionStorage.getItem("fg_active_holding_id");
+    const symbol = sessionStorage.getItem("fg_active_holding_symbol");
+
+    if (!holdingId || !symbol) {
+      showToast("No holding selected", "error");
+      showView("view-holdings");
+      return;
+    }
 
     const txn_type = document.getElementById("txnType")?.value;
     const qty = Number(document.getElementById("txnQty")?.value);
     const price = Number(document.getElementById("txnPrice")?.value);
 
-    if (!holdingId || !symbol || !txn_type || qty <= 0 || price <= 0) {
+    if (!txn_type || qty <= 0 || price <= 0) {
       showToast("Invalid transaction details", "error");
       return;
     }
 
-    // REST call
-    const transaction = await api_addTransaction({
+    const payload = {
       holdingId: Number(holdingId),
       symbol,
+      txn_type,
       qty,
       price,
-      txn_type,
-    });
+    };
 
-    // Socket emit (Expense-style pattern)
+    const transaction = await api_addTransaction(payload);
+
     const socket = getSocket();
-    if (socket) {
-      socket.emit("transaction_created", transaction);
-    }
+    socket?.emit("transaction_created", transaction);
+
     if (socket && transaction?.fraudScore > 0.1) {
-      console.log("[FRONTEND] Emitting fraud_check_result", {
-        transactionId: transaction.transaction?.id,
-        score: transaction.fraudScore,
-      });
       socket.emit("fraud_check_result", {
-        transactionId: transaction.transaction?.id ?? transaction.id,
+        transactionId:
+          transaction.transaction?.id ?? transaction.id,
         score: transaction.fraudScore,
         reasons: transaction.reasons || [],
       });
@@ -185,16 +202,33 @@ async function handleAddTransaction(e) {
     showToast("Transaction added successfully", "success");
 
     addTransactionForm.reset();
-    loadTransactions(holdingId, 1);
+    loadTransactions(Number(holdingId), 1);
   } catch (err) {
     console.error("[TRANSACTIONS] Add failed:", err);
     showToast("Failed to add transaction", "error");
   }
 }
 
-/* ============================================================================
-   UI HELPERS
-============================================================================ */
+/* ===================== DELETE TRANSACTION ===================== */
+
+async function handleDeleteTransaction(transactionId, holdingId, page) {
+  const confirmed = await showConfirm(
+    "Delete this transaction? Holding values will be recalculated."
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await api_deleteTransaction(transactionId);
+    showToast("Transaction deleted", "success");
+    loadTransactions(holdingId, page);
+  } catch (err) {
+    console.error("[TRANSACTIONS] Delete failed:", err);
+    showToast("Failed to delete transaction", "error");
+  }
+}
+
+/* ===================== UI HELPERS ===================== */
 
 function toggleTransactionForm(show) {
   if (!transactionsTableContainer || !transactionFormContainer) return;
@@ -203,8 +237,6 @@ function toggleTransactionForm(show) {
   transactionFormContainer.classList.toggle("hidden", !show);
 }
 
-/* ============================================================================
-   EXPORTS
-============================================================================ */
+/* ===================== EXPORTS ===================== */
 
 export { initTransactions, loadTransactions };

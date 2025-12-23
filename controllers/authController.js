@@ -45,42 +45,55 @@ const signupUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res
         .status(400)
         .json({ message: "Email and password are required." });
     }
-    const loggeduser = await User.findOne({ where: { email } });
-    if (!loggeduser) {
+
+    // Find only active users
+    const user = await User.findOne({
+      where: {
+        email,
+        is_active: true
+      }
+    });
+
+    if (!user) {
       return res.status(401).json({ message: "Invalid credentials." });
     }
-    const isPasswordValid = await bcrypt.compare(password, loggeduser.password);
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    // Generate JWT token for the authenticated user
-    const token = generateAccessToken(loggeduser);
-    res
+    // Generate JWT
+    const token = generateAccessToken(user);
+
+    return res
       .status(200)
       .cookie("token", token, {
         httpOnly: true,
-        secure: false,
+        secure: false, // set true in production with HTTPS
         sameSite: "strict",
       })
       .json({
         message: "Login successful",
         token,
         user: {
-          id: loggeduser.id,
-          name: loggeduser.name,
-          email: loggeduser.email,
-          role: loggeduser.role,
-          isPremium: loggeduser.isPremium,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          isPremium: user.isPremium,
         },
       });
+
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Login error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 const requestPasswordReset = async (req, res) => {

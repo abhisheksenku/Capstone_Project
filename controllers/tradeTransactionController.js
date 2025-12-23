@@ -4,7 +4,7 @@ const Portfolio = require("../models/mysql/portfolio");
 const FraudModelOutput = require("../models/mongodb/fraudModelOutputSchema");
 const FraudCase = require("../models/mysql/fraudCase");
 const { scoreFraud } = require("../services/mlService");
-
+const RiskAlert = require('../models/mysql/riskAlert');
 /* ============================================================
    GET TRANSACTIONS FOR A HOLDING
    Route: GET /api/user/portfolio/holdings/:holdingId/transactions

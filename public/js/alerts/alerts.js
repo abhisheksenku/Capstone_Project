@@ -1,6 +1,8 @@
 /* ============================================================================
    FIN-GUARD ALERTS
    User risk alerts: load, render, mark-as-read
+   - Shows ONLY unresolved alerts
+   - Clears UI immediately on resolve
 ============================================================================ */
 
 /* ===================== IMPORTS ===================== */
@@ -14,9 +16,7 @@ const alertsList = document.getElementById("alerts-list");
 const alertsEmpty = document.getElementById("alerts-empty");
 const resolveAllAlertsBtn = document.getElementById("resolveAllAlertsBtn");
 
-/* ============================================================================
-   INIT
-============================================================================ */
+/* ===================== INIT ===================== */
 
 export function initAlerts() {
   document.addEventListener("view:change", (e) => {
@@ -28,25 +28,26 @@ export function initAlerts() {
   resolveAllAlertsBtn?.addEventListener("click", handleResolveAll);
 }
 
-/* ============================================================================
-   LOAD ALERTS
-============================================================================ */
+/* ===================== LOAD ALERTS ===================== */
 
 export async function loadAlerts() {
   try {
     if (!alertsList) return;
 
     alertsList.innerHTML = "";
+    alertsEmpty?.classList.add("hidden");
 
     const res = await api_getAlerts();
-    const alerts = res?.alerts || [];
 
-    if (!Array.isArray(alerts) || alerts.length === 0) {
+    // ✅ Defensive: show only unresolved alerts
+    const alerts = (res?.alerts || []).filter(
+      (a) => !a.resolved_at
+    );
+
+    if (!alerts.length) {
       renderEmpty();
       return;
     }
-
-    alertsEmpty?.classList.add("hidden");
 
     alerts.forEach((alert) => {
       const card = document.createElement("div");
@@ -79,38 +80,38 @@ export async function loadAlerts() {
       alertsList.appendChild(card);
     });
   } catch (err) {
-    console.error("Failed to load alerts:", err);
+    console.error("[ALERTS] Load failed:", err);
     showToast("Failed to load alerts", "error");
   }
 }
 
-/* ============================================================================
-   MARK ALL AS READ
-============================================================================ */
+/* ===================== MARK ALL AS READ ===================== */
 
 async function handleResolveAll() {
   try {
+    // ✅ Instant UI clear (no stale flash)
+    alertsList.innerHTML = "";
+    renderEmpty();
+
     await api_markAllAlertsRead();
     showToast("All alerts marked as read", "success");
-    loadAlerts();
   } catch (err) {
-    console.error("Resolve alerts failed:", err);
+    console.error("[ALERTS] Resolve failed:", err);
     showToast("Failed to resolve alerts", "error");
+
+    // Fallback: reload from API
+    loadAlerts();
   }
 }
 
-/* ============================================================================
-   EMPTY STATE
-============================================================================ */
+/* ===================== EMPTY STATE ===================== */
 
 function renderEmpty() {
-  alertsList && (alertsList.innerHTML = "");
+  alertsList.innerHTML = "";
   alertsEmpty?.classList.remove("hidden");
 }
 
-/* ============================================================================
-   HELPERS
-============================================================================ */
+/* ===================== HELPERS ===================== */
 
 function getSeverityClass(severity) {
   const s = severity?.toLowerCase();
