@@ -1,4 +1,5 @@
-# Fin-Guard 🛡️  
+# Fin-Guard 🛡️
+
 **Intelligent Portfolio Monitoring & Fraud Analytics Platform**
 
 Fin-Guard is a full-stack web application for **investment portfolio management**, **market monitoring**, and **fraud analytics**.  
@@ -9,18 +10,21 @@ It is built with a **refresh-safe, event-driven frontend** and a **REST + realti
 ## 🚀 Features
 
 ### 📊 Portfolio Management
+
 - Create, view, and delete portfolios
 - Portfolio-scoped holdings
 - Holding-scoped transactions
 - Persistent context across refresh (portfolio / holding)
 
 ### 📈 Dashboard & Market Analytics
+
 - KPI summary (Investment, P/L, Risk)
 - Portfolio history & asset allocation
 - Market overview, heatmap, trending assets
 - Watchlist tracking
 
 ### 🛡️ Fraud Analytics
+
 - Fraud overview KPIs
 - ML-based fraud analysis history
 - User fraud case history
@@ -32,11 +36,13 @@ It is built with a **refresh-safe, event-driven frontend** and a **REST + realti
   - Case History
 
 ### ⚡ Real-Time Updates
+
 - Socket.IO integration
 - Live updates for portfolios, holdings, and transactions
 - Optional fraud alerts on transaction events
 
 ### 👤 User & Premium System
+
 - JWT-based authentication
 - Protected routes
 - Premium feature gating
@@ -47,6 +53,7 @@ It is built with a **refresh-safe, event-driven frontend** and a **REST + realti
 ## 🧱 Tech Stack
 
 ### Frontend
+
 - Vanilla JavaScript (ES Modules)
 - Tailwind CSS
 - Event-driven UI (no framework)
@@ -54,6 +61,7 @@ It is built with a **refresh-safe, event-driven frontend** and a **REST + realti
 - Socket.IO client
 
 ### Backend
+
 - Node.js + Express
 - Sequelize ORM
 - MySQL
@@ -95,13 +103,14 @@ fin-guard/
 ├── .env
 └── README.md
 
-````
+```
 
 ---
 
 ## 🧠 Frontend Architecture
 
 ### Key Principles
+
 - **Single Source of Truth** (`core/state.js`)
 - **Event-driven UI** (`view:change`, `fraud:subview`)
 - **Refresh-safe navigation**
@@ -125,7 +134,7 @@ flowchart LR
     F --> I[Holdings]
     F --> J[Transactions]
     F --> K[Fraud Analytics]
-````
+```
 
 ---
 
@@ -167,12 +176,12 @@ stateDiagram-v2
 
 Responsibilities:
 
-* Authentication check
-* Socket initialization
-* Navigation & breadcrumb bootstrap
-* Module initialization
-* View restoration
-* Dashboard lazy loading
+- Authentication check
+- Socket initialization
+- Navigation & breadcrumb bootstrap
+- Module initialization
+- View restoration
+- Dashboard lazy loading
 
 ---
 
@@ -225,10 +234,10 @@ npm run dev
 
 ## 🧪 Development Notes
 
-* Tailwind CDN is used for development
-* Production should use Tailwind CLI / PostCSS
-* Fraud ML logic is modular & extensible
-* Yahoo Finance API notice may appear during runtime
+- Tailwind CDN is used for development
+- Production should use Tailwind CLI / PostCSS
+- Fraud ML logic is modular & extensible
+- Yahoo Finance API notice may appear during runtime
 
 ---
 
@@ -236,12 +245,12 @@ npm run dev
 
 | Feature                 | Status |
 | ----------------------- | ------ |
-| Portfolio Management    | ✅      |
-| Dashboard Analytics     | ✅      |
-| Market Monitoring       | ✅      |
-| Fraud Analytics         | ✅      |
-| Realtime Updates        | ✅      |
-| Refresh Safety          | ✅      |
+| Portfolio Management    | ✅     |
+| Dashboard Analytics     | ✅     |
+| Market Monitoring       | ✅     |
+| Fraud Analytics         | ✅     |
+| Realtime Updates        | ✅     |
+| Refresh Safety          | ✅     |
 | Production Optimization | 🟡     |
 
 ---
@@ -250,15 +259,17 @@ npm run dev
 
 Built as a **capstone-grade full-stack project**, focusing on:
 
-* Clean architecture
-* Predictable UI behavior
-* Real-world finance workflows
-* Maintainability over frameworks
+- Clean architecture
+- Predictable UI behavior
+- Real-world finance workflows
+- Maintainability over frameworks
 
 ---
 
 ## 📄 License
 
 This project is intended for **academic, learning, and demonstration purposes**.
+
+```
 
 ```
