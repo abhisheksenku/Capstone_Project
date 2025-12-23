@@ -2,8 +2,9 @@
 
 **Intelligent Portfolio Monitoring & Fraud Analytics Platform**
 
-Fin-Guard is a full-stack web application for **investment portfolio management**, **market monitoring**, and **fraud analytics**.  
-It is built with a **refresh-safe, event-driven frontend** and a **REST + realtime backend**, designed to resemble a real-world financial monitoring system.
+Fin-Guard is a **capstone-grade full-stack web application** for **investment portfolio management**, **market monitoring**, and **fraud analytics**.
+
+It is designed to resemble a **real-world financial monitoring system**, featuring a **refresh-safe, event-driven frontend** and a **REST + real-time backend**.
 
 ---
 
@@ -11,42 +12,44 @@ It is built with a **refresh-safe, event-driven frontend** and a **REST + realti
 
 ### 📊 Portfolio Management
 
-- Create, view, and delete portfolios
-- Portfolio-scoped holdings
-- Holding-scoped transactions
-- Persistent context across refresh (portfolio / holding)
+* Create, view, and delete portfolios
+* Portfolio-scoped holdings
+* Holding-scoped transactions
+* Persistent context across refresh (portfolio / holding)
 
 ### 📈 Dashboard & Market Analytics
 
-- KPI summary (Investment, P/L, Risk)
-- Portfolio history & asset allocation
-- Market overview, heatmap, trending assets
-- Watchlist tracking
+* KPI summary (Investment, P/L, Risk)
+* Portfolio history & asset allocation
+* Market overview, heatmap, trending assets
+* Watchlist tracking
 
 ### 🛡️ Fraud Analytics
 
-- Fraud overview KPIs
-- ML-based fraud analysis history
-- User fraud case history
-- Geo-risk & fraud score distribution
-- Fraud test simulation
-- Breadcrumb-aware fraud subviews:
-  - Overview
-  - Analysis History
-  - Case History
+* Fraud overview KPIs
+* ML-based fraud analysis history
+* User fraud case history
+* Geo-risk & fraud score distribution
+* Fraud test simulation
+
+**Breadcrumb-aware fraud subviews:**
+
+* Overview
+* Analysis History
+* Case History
 
 ### ⚡ Real-Time Updates
 
-- Socket.IO integration
-- Live updates for portfolios, holdings, and transactions
-- Optional fraud alerts on transaction events
+* Socket.IO integration
+* Live updates for portfolios, holdings, and transactions
+* Optional fraud alerts on transaction events
 
 ### 👤 User & Premium System
 
-- JWT-based authentication
-- Protected routes
-- Premium feature gating
-- Profile management
+* JWT-based authentication
+* Protected routes
+* Premium feature gating
+* Profile management
 
 ---
 
@@ -54,27 +57,26 @@ It is built with a **refresh-safe, event-driven frontend** and a **REST + realti
 
 ### Frontend
 
-- Vanilla JavaScript (ES Modules)
-- Tailwind CSS
-- Event-driven UI (no framework)
-- Chart.js
-- Socket.IO client
+* Vanilla JavaScript (ES Modules)
+* Tailwind CSS
+* Event-driven UI (no framework)
+* Chart.js
+* Socket.IO Client
 
 ### Backend
 
-- Node.js + Express
-- Sequelize ORM
-- MySQL
-- JWT Authentication
-- Yahoo Finance API
-- Socket.IO server
+* Node.js + Express
+* Sequelize ORM
+* MySQL
+* JWT Authentication
+* Yahoo Finance API
+* Socket.IO Server
 
 ---
 
 ## 📁 Project Structure
 
 ```
-
 fin-guard/
 │
 ├── public/
@@ -88,7 +90,7 @@ fin-guard/
 │       ├── fraud/         # fraud analytics modules
 │       ├── alerts/        # alerts & risk notifications
 │       ├── premium/       # premium feature logic
-│       └── user.js        # main frontend entry
+│       └── user.js        # frontend entry point
 │
 ├── src/
 │   ├── controllers/
@@ -102,24 +104,23 @@ fin-guard/
 ├── package.json
 ├── .env
 └── README.md
-
 ```
 
 ---
 
 ## 🧠 Frontend Architecture
 
-### Key Principles
+### Design Principles
 
-- **Single Source of Truth** (`core/state.js`)
-- **Event-driven UI** (`view:change`, `fraud:subview`)
-- **Refresh-safe navigation**
-- **Domain-isolated modules**
-- **No framework lock-in**
+* **Single Source of Truth** (`core/state.js`)
+* **Event-Driven UI** (`view:change`, `fraud:subview`)
+* **Refresh-Safe Navigation**
+* **Domain-Isolated Modules**
+* **No Framework Lock-In**
 
 ---
 
-## 🔁 Frontend View Flow (Mermaid)
+## 🔁 Frontend View Flow
 
 ```mermaid
 flowchart LR
@@ -138,17 +139,17 @@ flowchart LR
 
 ---
 
-## 🗂️ State Management (Mermaid)
+## 🗂️ State Management
 
 ```mermaid
 classDiagram
     class State {
-        +currentView
-        +activePortfolioId
-        +activePortfolioName
-        +activeHoldingId
-        +activeHoldingSymbol
-        +fraudSubview
+        currentView
+        activePortfolioId
+        activePortfolioName
+        activeHoldingId
+        activeHoldingSymbol
+        fraudSubview
     }
 
     State --> sessionStorage
@@ -157,7 +158,7 @@ classDiagram
 
 ---
 
-## 🛡️ Fraud Analytics Subviews (Mermaid)
+## 🛡️ Fraud Analytics Subviews
 
 ```mermaid
 stateDiagram-v2
@@ -174,14 +175,14 @@ stateDiagram-v2
 
 ### `public/js/user.js`
 
-Responsibilities:
+**Responsibilities:**
 
-- Authentication check
-- Socket initialization
-- Navigation & breadcrumb bootstrap
-- Module initialization
-- View restoration
-- Dashboard lazy loading
+* Authentication check
+* Socket initialization
+* Navigation & breadcrumb bootstrap
+* Module initialization
+* View restoration
+* Dashboard lazy loading
 
 ---
 
@@ -200,20 +201,22 @@ sequenceDiagram
 
 ## ⚙️ Environment Setup
 
-### 1️⃣ Clone
+### 1️⃣ Clone Repository
 
 ```bash
 git clone https://github.com/your-username/fin-guard.git
 cd fin-guard
 ```
 
-### 2️⃣ Install
+### 2️⃣ Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Configure `.env`
+### 3️⃣ Configure Environment Variables
+
+Create a `.env` file:
 
 ```env
 PORT=3000
@@ -224,7 +227,7 @@ DB_NAME=capstonedb
 JWT_SECRET=your_secret
 ```
 
-### 4️⃣ Run
+### 4️⃣ Run Development Server
 
 ```bash
 npm run dev
@@ -234,10 +237,10 @@ npm run dev
 
 ## 🧪 Development Notes
 
-- Tailwind CDN is used for development
-- Production should use Tailwind CLI / PostCSS
-- Fraud ML logic is modular & extensible
-- Yahoo Finance API notice may appear during runtime
+* Tailwind CDN is used for development
+* Production should use Tailwind CLI / PostCSS
+* Fraud ML logic is modular and extensible
+* Yahoo Finance API warnings may appear at runtime
 
 ---
 
@@ -245,31 +248,29 @@ npm run dev
 
 | Feature                 | Status |
 | ----------------------- | ------ |
-| Portfolio Management    | ✅     |
-| Dashboard Analytics     | ✅     |
-| Market Monitoring       | ✅     |
-| Fraud Analytics         | ✅     |
-| Realtime Updates        | ✅     |
-| Refresh Safety          | ✅     |
+| Portfolio Management    | ✅      |
+| Dashboard Analytics     | ✅      |
+| Market Monitoring       | ✅      |
+| Fraud Analytics         | ✅      |
+| Real-Time Updates       | ✅      |
+| Refresh Safety          | ✅      |
 | Production Optimization | 🟡     |
 
 ---
 
 ## 👨‍💻 Author
 
-Built as a **capstone-grade full-stack project**, focusing on:
+Built as a **capstone-grade full-stack project** with emphasis on:
 
-- Clean architecture
-- Predictable UI behavior
-- Real-world finance workflows
-- Maintainability over frameworks
+* Clean architecture
+* Predictable UI behavior
+* Real-world financial workflows
+* Maintainability over frameworks
 
 ---
 
 ## 📄 License
 
-This project is intended for **academic, learning, and demonstration purposes**.
+This project is intended for **academic, learning, and demonstration purposes only**.
 
-```
-
-```
+---
