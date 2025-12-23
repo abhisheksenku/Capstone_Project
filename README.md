@@ -124,17 +124,17 @@ fin-guard/
 
 ```mermaid
 flowchart LR
-    A[Sidebar Click] --> B[showView(viewId)]
-    B --> C[Hide All Views]
-    B --> D[Show Target View]
-    B --> E[Persist viewId]
-    B --> F[Dispatch view:change]
+    A[Sidebar Navigation] --> B[View Resolver]
+    B --> C[Reset UI State]
+    B --> D[Mount View]
+    B --> E[Persist Navigation State]
+    B --> F[Broadcast view:change]
 
-    F --> G[Dashboard]
-    F --> H[Portfolios]
-    F --> I[Holdings]
-    F --> J[Transactions]
-    F --> K[Fraud Analytics]
+    F --> G[Dashboard Handler]
+    F --> H[Portfolio Handler]
+    F --> I[Holdings Handler]
+    F --> J[Transactions Handler]
+    F --> K[Fraud Handler]
 ```
 
 ---
